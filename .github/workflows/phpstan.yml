@@ -1,0 +1,57 @@
+name: Static Analysis
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'src/**'
+      - 'composer.json'
+      - 'composer.lock'
+      - 'phpstan.neon'
+      - '.github/workflows/**'
+
+  pull_request:
+    paths:
+      - 'src/**'
+      - 'composer.json'
+      - 'composer.lock'
+      - 'phpstan.neon'
+
+concurrency:
+  group: phpstan-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  phpstan:
+    name: PHPStan (PHP ${{ matrix.php }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.1', '8.2', '8.3']
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          coverage: none
+          tools: composer:v2
+          extensions: json
+
+      - run: composer validate --strict
+
+      - id: composer-cache
+        run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
+
+      - uses: actions/cache@v4
+        with:
+          path: ${{ steps.composer-cache.outputs.dir }}
+          key: composer-${{ runner.os }}-${{ matrix.php }}-${{ hashFiles('**/composer.lock') }}
+          restore-keys: composer-${{ runner.os }}-${{ matrix.php }}-
+
+      - run: composer install --no-interaction --prefer-dist --no-progress
+
+      - run: vendor/bin/phpstan analyse --no-progress --memory-limit=1G
