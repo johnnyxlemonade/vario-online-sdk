@@ -29,24 +29,49 @@ use Lemonade\Vario\Client\VarioClientInterface;
  */
 final class VarioApi
 {
-    /** @var array<class-string,object> */
+    /** @var array<class-string<AbstractApi>, callable(): AbstractApi> */
+    private array $factories;
+
+    /** @var array<class-string<AbstractApi>, AbstractApi> */
     private array $apis = [];
 
+    /**
+     * @param array<class-string<AbstractApi>, callable(): AbstractApi> $factories
+     */
     public function __construct(
-        private readonly VarioClientInterface $client
-    ) {}
+        private readonly VarioClientInterface $client,
+        array $factories
+    ) {
+        $this->factories = $factories;
+    }
+
+    public function client(): VarioClientInterface
+    {
+        return $this->client;
+    }
 
     /**
      * @template T of AbstractApi
      * @param class-string<T> $class
      * @return T
      */
-    public final function api(string $class): object
+    public function api(string $class): AbstractApi
     {
+        if (!isset($this->apis[$class])) {
+            if (!isset($this->factories[$class])) {
+                throw new \LogicException(sprintf(
+                    'API factory for "%s" not registered.',
+                    $class
+                ));
+            }
+
+            $this->apis[$class] = ($this->factories[$class])();
+        }
+
         /** @var T */
-        return $this->apis[$class]
-            ??= new $class($this->client);
+        return $this->apis[$class];
     }
+
 
     public function datasetView(): DatasetViewApi
     {

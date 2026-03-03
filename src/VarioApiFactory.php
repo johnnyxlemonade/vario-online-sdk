@@ -2,9 +2,16 @@
 
 namespace Lemonade\Vario;
 
+use Lemonade\Vario\Api\DatasetViewApi;
+use Lemonade\Vario\Api\IncomingOrderApi;
+use Lemonade\Vario\Api\KnownPartyApi;
+use Lemonade\Vario\Api\OutgoingInvoiceApi;
 use Lemonade\Vario\Auth\Authenticator;
 use Lemonade\Vario\Auth\InMemoryTokenStorage;
 use Lemonade\Vario\Client\VarioClient;
+use Lemonade\Vario\Domain\KnownParty\DefaultKnownPartyFactory;
+use Lemonade\Vario\Domain\KnownParty\KnownPartyInputNormalizer;
+use Lemonade\Vario\Domain\KnownParty\KnownPartyMapper;
 use Lemonade\Vario\Http\Adapter\HttpAdapterInterface;
 
 /**
@@ -49,7 +56,29 @@ final class VarioApiFactory
         // fail fast authentication
         $authenticator->authenticate();
 
-        return new VarioApi($client);
+        return new VarioApi(
+            client: $client,
+            factories: [
+
+                DatasetViewApi::class => fn() =>
+                new DatasetViewApi($client),
+
+                IncomingOrderApi::class => fn() =>
+                new IncomingOrderApi($client),
+
+                OutgoingInvoiceApi::class => fn() =>
+                new OutgoingInvoiceApi($client),
+
+                KnownPartyApi::class => fn() =>
+                new KnownPartyApi(
+                    $client,
+                    new KnownPartyMapper(
+                        new DefaultKnownPartyFactory()
+                    ),
+                    new KnownPartyInputNormalizer()
+                ),
+            ]
+        );
     }
 
     /**
