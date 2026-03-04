@@ -1,31 +1,33 @@
-name: Static Analysis
+name: Tests
 
 on:
   push:
     branches: [ main, master ]
     paths:
       - 'src/**'
+      - 'tests/**'
       - 'composer.json'
       - 'composer.lock'
-      - 'phpstan.neon'
+      - 'phpunit.xml*'
       - '.github/workflows/**'
 
   pull_request:
     paths:
       - 'src/**'
+      - 'tests/**'
       - 'composer.json'
       - 'composer.lock'
-      - 'phpstan.neon'
+      - 'phpunit.xml*'
 
   workflow_dispatch:
 
 concurrency:
-  group: phpstan-${{ github.ref }}
+  group: phpunit-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  phpstan:
-    name: PHPStan (PHP ${{ matrix.php }})
+  tests:
+    name: PHPUnit (PHP ${{ matrix.php }})
     runs-on: ubuntu-latest
 
     strategy:
@@ -36,14 +38,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Validate repository structure
-        run: |
-          set -euo pipefail
-          if [ ! -f composer.json ]; then
-            echo "::error::composer.json is missing. Repository is in invalid state."
-            exit 1
-          fi
-
       - uses: shivammathur/setup-php@v2
         with:
           php-version: ${{ matrix.php }}
@@ -51,9 +45,11 @@ jobs:
           tools: composer:v2
           extensions: json
 
-      - run: composer validate --strict
+      - name: Validate composer.json
+        run: composer validate --strict
 
-      - id: composer-cache
+      - name: Get Composer cache directory
+        id: composer-cache
         run: echo "dir=$(composer config cache-files-dir)" >> $GITHUB_OUTPUT
 
       - uses: actions/cache@v4
@@ -62,7 +58,8 @@ jobs:
           key: composer-${{ runner.os }}-${{ matrix.php }}-${{ hashFiles('**/composer.lock') }}
           restore-keys: composer-${{ runner.os }}-${{ matrix.php }}-
 
-      - run: composer install --no-interaction --prefer-dist --no-progress --no-scripts
+      - name: Install dependencies
+        run: composer install --no-interaction --prefer-dist --no-progress
 
-      - name: Run PHPStan
-        run: composer stan:ci
+      - name: Run PHPUnit
+        run: composer test
