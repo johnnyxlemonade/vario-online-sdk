@@ -1,0 +1,17 @@
+# Composer
+/vendor
+
+# PHPUnit
+.phpunit.cache
+
+# PHPStan
+.phpstan
+build/phpstan
+
+# IDE
+.idea
+.vscode
+
+# OS files
+.DS_Store
+Thumbs.db
