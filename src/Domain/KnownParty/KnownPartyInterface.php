@@ -40,6 +40,8 @@ interface KnownPartyInterface
     public function getStreetLine(): ?string;
     public function getCityLine(): ?string;
     public function getPostalCode(): ?string;
+    public function getStreetName(): ?string;
+    public function getBuildingNumber(): ?string;
     public function getPostalAddress(): ?PostalAddress;
     public function getIdentifications(): ?IdentificationCollection;
     public function hasIdentifications(): bool;

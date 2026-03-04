@@ -16,32 +16,53 @@ namespace Lemonade\Vario\Domain\KnownParty;
  * @author      Honza Mudrak <honzamudrak@gmail.com>
  * @license     MIT
  * @since       1.0
+ *
+ * @phpstan-type KnownPartyPayload array{
+ *     UUID?: string,
+ *     ID?: string,
+ *     Kind?: int,
+ *     Name: string,
+ *     ContactPerson?: string,
+ *     ElectronicMail?: string,
+ *     Telephone?: string,
+ *     PostalAddress?: array{
+ *         StreetName: string,
+ *         BuildingNumber?: string,
+ *         CityName: string,
+ *         PostalZone: string,
+ *         CountryIso: string,
+ *         Formated?: string
+ *     },
+ *     Identifications?: list<array{
+ *         Scheme: int,
+ *         ID: string,
+ *         OriginCountry?: string
+ *     }>,
+ *     TextualAttribute: list<array{
+ *         LangID?: string,
+ *         Name?: string,
+ *         AttributeKind?: int,
+ *         Value?: string
+ *     }>,
+ *     NumericAttribute: list<array{
+ *         Name?: string,
+ *         AttributeKind?: int,
+ *         Value?: float|int,
+ *         UnitCode?: string
+ *     }>
+ * }
  */
 final class KnownPartyInputNormalizer
 {
     /**
-     * @return array{
-     *     Name: string,
-     *     ContactPerson?: string,
-     *     ElectronicMail?: string,
-     *     Telephone?: string,
-     *     PostalAddress?: array{
-     *         StreetName: string,
-     *         CityName: string,
-     *         PostalZone: string,
-     *         CountryIso: string,
-     *         Formated?: string
-     *     },
-     *     Identifications?: list<array{
-     *         Scheme: int,
-     *         ID: string,
-     *         OriginCountry?: string
-     *     }>
-     * }
+     * @phpstan-return KnownPartyPayload
      */
     public function normalize(KnownPartyInput $input): array
     {
         $payload = [
+            'UUID' => $input->getUuid(),
+            'ID' => $input->getId(),
+            'Kind' => $input->getKind()?->value,
             'Name' => $input->getName(),
         ];
 
@@ -60,29 +81,39 @@ final class KnownPartyInputNormalizer
             $payload['Identifications'] = $identifications;
         }
 
-        /** @var array{
-         *     Name: string,
-         *     ContactPerson?: string,
-         *     ElectronicMail?: string,
-         *     Telephone?: string,
-         *     PostalAddress?: array{
-         *         StreetName: string,
-         *         CityName: string,
-         *         PostalZone: string,
-         *         CountryIso: string,
-         *         Formated?: string
-         *     },
-         *     Identifications?: list<array{
-         *         Scheme: int,
-         *         ID: string,
-         *         OriginCountry?: string
-         *     }>
-         * } $payload */
+        // Older Vario API versions expect these collections to exist even if they are empty.
+        /** @var list<array{
+         *     LangID?: string,
+         *     Name?: string,
+         *     AttributeKind?: int,
+         *     Value?: string
+         * }> $textual */
+        $textual = [];
+
+        /** @var list<array{
+         *     Name?: string,
+         *     AttributeKind?: int,
+         *     Value?: float|int,
+         *     UnitCode?: string
+         * }> $numeric */
+        $numeric = [];
+
+        $payload['TextualAttribute'] = $textual;
+        $payload['NumericAttribute'] = $numeric;
+
+        /** @var KnownPartyPayload $payload */
         return $payload;
     }
 
     /**
-     * @return array<string,mixed>|null
+     * @return array{
+     *     StreetName: string,
+     *     BuildingNumber?: string,
+     *     CityName: string,
+     *     PostalZone: string,
+     *     CountryIso: string,
+     *     Formated?: string
+     * }|null
      */
     private function normalizeAddress(?PostalAddress $address): ?array
     {
@@ -93,29 +124,49 @@ final class KnownPartyInputNormalizer
         $formatted = $address->getFormatted()
             ?? $address->getDisplayAddress();
 
-        return $this->filterEmptyStrings([
-            'StreetName' => $address->getStreet(),
-            'CityName'   => $address->getCity(),
+        $data = [
+            'StreetName' => $address->getStreetName(),
+            'CityName' => $address->getCity(),
             'PostalZone' => $address->getPostalCode(),
             'CountryIso' => $address->getCountryIso(),
-            'Formated'   => $formatted,
-        ]);
+        ];
+
+        $building = $address->getBuildingNumber();
+        if ($building !== null && $building !== '') {
+            $data['BuildingNumber'] = $building;
+        }
+
+        if ($formatted !== '') {
+            $data['Formated'] = $formatted;
+        }
+
+        return $data;
     }
 
     /**
      * @param list<Identification> $identifications
-     * @return list<array<string,mixed>>
+     * @return list<array{
+     *     Scheme: int,
+     *     ID: string,
+     *     OriginCountry?: string
+     * }>
      */
     private function normalizeIdentifications(array $identifications): array
     {
         $result = [];
 
         foreach ($identifications as $id) {
-            $result[] = $this->filterNullable([
+            $row = [
                 'Scheme' => $id->getScheme()->value,
                 'ID' => $id->getId(),
-                'OriginCountry' => $id->getOriginCountry(),
-            ]);
+            ];
+
+            $origin = $id->getOriginCountry();
+            if ($origin !== null && $origin !== '') {
+                $row['OriginCountry'] = $origin;
+            }
+
+            $result[] = $row;
         }
 
         return $result;
@@ -135,17 +186,4 @@ final class KnownPartyInputNormalizer
         );
     }
 
-    /**
-     * Removes empty strings from string-only arrays.
-     *
-     * @param array<string,string> $data
-     * @return array<string,string>
-     */
-    private function filterEmptyStrings(array $data): array
-    {
-        return array_filter(
-            $data,
-            static fn (string $v): bool => $v !== ''
-        );
-    }
 }

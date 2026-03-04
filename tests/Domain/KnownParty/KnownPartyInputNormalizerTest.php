@@ -9,15 +9,18 @@ use Lemonade\Vario\Domain\KnownParty\KnownPartyInputNormalizer;
 use Lemonade\Vario\Domain\KnownParty\PostalAddress;
 use PHPUnit\Framework\TestCase;
 
+/**
+ * @phpstan-import-type KnownPartyPayload from \Lemonade\Vario\Domain\KnownParty\KnownPartyInputNormalizer
+ */
 final class KnownPartyInputNormalizerTest extends TestCase
 {
     public function test_normalizes_basic_payload(): void
     {
         $input = new KnownPartyInput('Test Company');
 
+        /** @var KnownPartyPayload $payload */
         $payload = (new KnownPartyInputNormalizer())->normalize($input);
 
-        /** @var array{Name:string} $payload */
         self::assertSame('Test Company', $payload['Name']);
     }
 
@@ -28,14 +31,16 @@ final class KnownPartyInputNormalizerTest extends TestCase
             ->withEmail('john@example.com')
             ->withTelephone('123456');
 
+        /** @var KnownPartyPayload $payload */
         $payload = (new KnownPartyInputNormalizer())->normalize($input);
 
-        /** @var array{
-         *  Name:string,
-         *  ContactPerson:string,
-         *  ElectronicMail:string,
-         *  Telephone:string
-         * } $payload */
+        self::assertArrayHasKey('ContactPerson', $payload);
+        self::assertArrayHasKey('ElectronicMail', $payload);
+        self::assertArrayHasKey('Telephone', $payload);
+
+        assert(isset($payload['ContactPerson']));
+        assert(isset($payload['ElectronicMail']));
+        assert(isset($payload['Telephone']));
 
         self::assertSame('John Doe', $payload['ContactPerson']);
         self::assertSame('john@example.com', $payload['ElectronicMail']);
@@ -55,18 +60,12 @@ final class KnownPartyInputNormalizerTest extends TestCase
         $input = (new KnownPartyInput('Test Company'))
             ->withAddress($address);
 
+        /** @var KnownPartyPayload $payload */
         $payload = (new KnownPartyInputNormalizer())->normalize($input);
 
         self::assertArrayHasKey('PostalAddress', $payload);
 
         assert(isset($payload['PostalAddress']));
-        /** @var array{
-         *  StreetName:string,
-         *  CityName:string,
-         *  PostalZone:string,
-         *  CountryIso:string,
-         *  Formated?:string
-         * } $addr */
         $addr = $payload['PostalAddress'];
 
         self::assertSame('Main 10', $addr['StreetName']);
@@ -86,12 +85,12 @@ final class KnownPartyInputNormalizerTest extends TestCase
                 )
             );
 
+        /** @var KnownPartyPayload $payload */
         $payload = (new KnownPartyInputNormalizer())->normalize($input);
 
         self::assertArrayHasKey('Identifications', $payload);
 
         assert(isset($payload['Identifications']));
-        /** @var list<array{Scheme:int,ID:string,OriginCountry?:string}> $ids */
         $ids = $payload['Identifications'];
 
         self::assertCount(1, $ids);
@@ -108,6 +107,7 @@ final class KnownPartyInputNormalizerTest extends TestCase
     {
         $input = new KnownPartyInput('Test Company');
 
+        /** @var KnownPartyPayload $payload */
         $payload = (new KnownPartyInputNormalizer())->normalize($input);
 
         self::assertArrayNotHasKey('Identifications', $payload);

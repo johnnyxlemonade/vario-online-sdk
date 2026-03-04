@@ -102,6 +102,26 @@ final class PostalAddress implements Stringable, JsonSerializable
     }
 
     /**
+     * Extracts street name without building number.
+     */
+    public function getStreetName(): string
+    {
+        return $this->getStreetLine();
+    }
+
+    /**
+     * Extracts building number from street line if present.
+     */
+    public function getBuildingNumber(): ?string
+    {
+        if (preg_match('~(\d+[^\s]*)$~u', $this->street, $m) === 1) {
+            return $m[1];
+        }
+
+        return null;
+    }
+
+    /**
      * Structured representation.
      *
      * @return array{

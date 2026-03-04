@@ -115,6 +115,16 @@ class KnownParty implements KnownPartyInterface
         return $this->postalAddress?->getStreetLine();
     }
 
+    public function getStreetName(): ?string
+    {
+        return $this->postalAddress?->getStreetName();
+    }
+
+    public function getBuildingNumber(): ?string
+    {
+        return $this->postalAddress?->getBuildingNumber();
+    }
+
     public function getCityLine(): ?string
     {
         return $this->postalAddress?->getCityLine();

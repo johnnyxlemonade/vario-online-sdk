@@ -23,6 +23,10 @@ final class KnownPartyInput
 {
     private string $name;
 
+    private ?string $uuid = null;
+    private ?string $id = null;
+    private ?KnownPartyKind $kind = null;
+
     private ?string $contactPerson = null;
     private ?string $email = null;
     private ?string $telephone = null;
@@ -44,6 +48,21 @@ final class KnownPartyInput
     public function getName(): string
     {
         return $this->name;
+    }
+
+    public function getUuid(): ?string
+    {
+        return $this->uuid;
+    }
+
+    public function getId(): ?string
+    {
+        return $this->id;
+    }
+
+    public function getKind(): ?KnownPartyKind
+    {
+        return $this->kind;
     }
 
     public function getContactPerson(): ?string
@@ -81,6 +100,24 @@ final class KnownPartyInput
     public function withContactPerson(?string $contactPerson): self
     {
         $this->contactPerson = $contactPerson;
+        return $this;
+    }
+
+    public function withUuid(?string $uuid): self
+    {
+        $this->uuid = $uuid;
+        return $this;
+    }
+
+    public function withId(?string $id): self
+    {
+        $this->id = $id;
+        return $this;
+    }
+
+    public function withKind(?KnownPartyKind $kind): self
+    {
+        $this->kind = $kind;
         return $this;
     }
 
