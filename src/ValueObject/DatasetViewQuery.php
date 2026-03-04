@@ -2,6 +2,8 @@
 
 namespace Lemonade\Vario\ValueObject;
 
+use Lemonade\Vario\Query\QueryFilterCollection;
+
 /**
  * Class DatasetViewQuery
  *
@@ -19,21 +21,18 @@ namespace Lemonade\Vario\ValueObject;
 final class DatasetViewQuery extends AbstractPagedQuery
 {
 
-    /**
-     * @param list<array<string,mixed>>|null $filterCriteria
-     */
     public function __construct(
         int $pageIndex = 0,
         int $pageLength = 10000,
         ?string $sortColumn = null,
-        ?array $filterCriteria = null,
+        ?QueryFilterCollection $filters = null,
         private readonly DatasetViewInterface $datasetView = DatasetView::KATALOG_ALL,
     ) {
         parent::__construct(
             $pageIndex,
             $pageLength,
             $sortColumn,
-            $filterCriteria
+            $filters
         );
     }
 

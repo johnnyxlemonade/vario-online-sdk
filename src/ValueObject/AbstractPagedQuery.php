@@ -2,6 +2,9 @@
 
 namespace Lemonade\Vario\ValueObject;
 
+use Lemonade\Vario\Query\QueryFilterCollection;
+use Lemonade\Vario\Query\Filter\QueryFilterInterface;
+
 /**
  * Base immutable query for paged Vario endpoints.
  *
@@ -9,14 +12,12 @@ namespace Lemonade\Vario\ValueObject;
  */
 abstract class AbstractPagedQuery implements PagedQueryInterface
 {
-    /**
-     * @param list<array<string,mixed>>|null $filterCriteria
-     */
+
     public function __construct(
         protected readonly int $pageIndex = 0,
         protected readonly int $pageLength = 100,
         protected readonly ?string $sortColumn = null,
-        protected readonly ?array $filterCriteria = null,
+        protected readonly ?QueryFilterCollection $filters = null,
     ) {}
 
     /* =========================
@@ -38,38 +39,98 @@ abstract class AbstractPagedQuery implements PagedQueryInterface
         return $this->sortColumn;
     }
 
-    /**
-     * @return list<array<string,mixed>>|null
-     */
-    public function getFilterCriteria(): ?array
+    public function getFilters(): ?QueryFilterCollection
     {
-        return $this->filterCriteria;
+        return $this->filters;
+    }
+
+    protected function newInstance(
+        int $pageIndex,
+        int $pageLength,
+        ?string $sortColumn,
+        ?QueryFilterCollection $filters
+    ): static {
+        return new static($pageIndex, $pageLength, $sortColumn, $filters);
     }
 
     /* =========================
      * Immutable modifiers
      * ========================= */
 
-    public function withSort(string $column): static
+    public function nextPage(): static
     {
-        return new static(
-            pageIndex: $this->pageIndex,
-            pageLength: $this->pageLength,
-            sortColumn: $column,
-            filterCriteria: $this->filterCriteria
+        return $this->newInstance(
+            $this->pageIndex + 1,
+            $this->pageLength,
+            $this->sortColumn,
+            $this->filters
         );
     }
 
-    /**
-     * @param list<array<string,mixed>> $criteria
-     */
-    public function withCriteria(array $criteria): static
+    public function previousPage(): static
     {
-        return new static(
-            pageIndex: $this->pageIndex,
-            pageLength: $this->pageLength,
-            sortColumn: $this->sortColumn,
-            filterCriteria: $criteria
+        return $this->newInstance(
+            max(0, $this->pageIndex - 1),
+            $this->pageLength,
+            $this->sortColumn,
+            $this->filters
+        );
+    }
+
+    public function nextPageFrom(int $pageCount): ?static
+    {
+        if ($this->pageIndex + 1 >= $pageCount) {
+            return null;
+        }
+
+        return $this->nextPage();
+    }
+
+    public function withPageIndex(int $pageIndex): static
+    {
+        return $this->newInstance(
+            $pageIndex,
+            $this->pageLength,
+            $this->sortColumn,
+            $this->filters
+        );
+    }
+
+    public function withPageLength(int $pageLength): static
+    {
+        return $this->newInstance(
+            $this->pageIndex,
+            $pageLength,
+            $this->sortColumn,
+            $this->filters
+        );
+    }
+
+    public function withSort(string $column): static
+    {
+        return $this->newInstance(
+            $this->pageIndex,
+            $this->pageLength,
+            $column,
+            $this->filters
+        );
+    }
+
+    public function withFilters(QueryFilterCollection $filters): static
+    {
+        return $this->newInstance(
+            $this->pageIndex,
+            $this->pageLength,
+            $this->sortColumn,
+            $filters
+        );
+    }
+
+    public function withFilter(QueryFilterInterface $filter): static
+    {
+        return $this->withFilters(
+            ($this->filters ?? QueryFilterCollection::empty())
+                ->withFilter($filter)
         );
     }
 
@@ -95,8 +156,8 @@ abstract class AbstractPagedQuery implements PagedQueryInterface
             $data[$p . 'SortColumn'] = $this->sortColumn;
         }
 
-        if ($this->filterCriteria !== null && $this->filterCriteria !== []) {
-            $data[$p . 'FilterCriteria'] = $this->filterCriteria;
+        if ($this->filters !== null && !$this->filters->isEmpty()) {
+            $data[$p . 'FilterCriteria'] = $this->filters->toArray();
         }
 
         return $data;

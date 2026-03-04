@@ -18,16 +18,17 @@ It provides clean abstractions over Vario endpoints, dataset views and paged que
 
 ## Features
 
-- Typed API facade (`VarioApi`)
-- Domain-driven read models (KnownParty, PostalAddress, Identification)
-- Immutable value objects
-- Automatic authentication & token refresh
-- PSR‑18 HTTP client support
-- Replaceable HTTP adapter (no vendor lock‑in)
-- Lazy‑loaded API modules
-- Explicit anti‑corruption mapping layer
-- Unified exception model
-- PHPStan **level max** ready (strict typing)
+-   Typed API facade (`VarioApi`)
+-   Domain-driven read models (KnownParty, PostalAddress,
+    Identification)
+-   Immutable value objects
+-   Automatic authentication & token refresh
+-   PSR‑18 HTTP client support
+-   Replaceable HTTP adapter (no vendor lock‑in)
+-   Lazy‑loaded API modules
+-   Explicit anti‑corruption mapping layer
+-   Unified exception model
+-   PHPStan **level max** ready (strict typing)
 
 ------------------------------------------------------------------------
 
@@ -73,7 +74,7 @@ Any PSR-18 compatible client can be used with the SDK.
 
 ## Quick Start
 
-```php
+``` php
 use Lemonade\Vario\VarioApiFactory;
 use Lemonade\Vario\VarioClientConfig;
 use Lemonade\Vario\ValueObject\DatasetViewQuery;
@@ -102,11 +103,11 @@ $data = $vario->datasetView()->get($query);
 
 ------------------------------------------------------------------------
 
-## Domain Example — Known Parties
+## Domain Example --- Known Parties
 
 The SDK exposes typed domain entities instead of raw arrays.
 
-```php
+``` php
 use Lemonade\Vario\ValueObject\KnownPartyQuery;
 
 $items = $vario->knownParties()->query(
@@ -122,6 +123,16 @@ foreach ($items as $party) {
 
 Entities provide semantic helpers:
 
+-   `getDisplayAddress()`
+-   `getCityLine()` / `getStreetLine()`
+-   `getCompanyNumber()`
+-   `getVatId()`
+-   `getIdentificationsOrEmpty()`
+
+No manual array parsing required.
+
+Entities provide semantic helpers:
+
 - `getDisplayAddress()`
 - `getCityLine()` / `getStreetLine()`
 - `getCompanyNumber()`
@@ -129,6 +140,55 @@ Entities provide semantic helpers:
 - `getIdentificationsOrEmpty()`
 
 No manual array parsing required.
+
+------------------------------------------------------------------------
+
+## Filtering & Sorting
+
+Queries support paging, sorting and composable filters.
+
+### Basic filtering
+
+``` php
+use Lemonade\Vario\ValueObject\KnownPartyQuery;
+use Lemonade\Vario\Query\QueryFilters;
+
+$query = (new KnownPartyQuery())
+    ->withPageLength(50)
+    ->withSort('Name')
+    ->withFilter(
+        QueryFilters::equals('ElectronicMail', 'email@adress.com')
+    );
+
+$items = $vario->knownParties()->query($query);
+```
+
+**Note:**\
+Filtering is limited to properties exposed by the Vario API endpoint.
+Only fields that are **supported by the backend DatasetView** can be used in `FilterCriteria`.
+
+For example:
+``` text
+ElectronicMail
+Name
+UUID
+Kind
+```
+
+Nested or computed fields may not be filterable unless the backend explicitly supports them.
+
+### Multiple filters
+
+``` php
+$query = (new KnownPartyQuery())
+    ->withPageLength(50)
+    ->withFilter(
+        QueryFilters::equals('Kind', 'Organization')
+    )
+    ->withFilter(
+        QueryFilters::like('Name', 'Mapri%')
+    );
+```
 
 ------------------------------------------------------------------------
 

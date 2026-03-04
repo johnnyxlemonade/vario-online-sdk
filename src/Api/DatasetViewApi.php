@@ -62,7 +62,7 @@ final class DatasetViewApi extends AbstractApi
                 pageIndex: $pageIndex,
                 pageLength: $pageLength,
                 sortColumn: $baseQuery->getSortColumn(),
-                filterCriteria: $baseQuery->getFilterCriteria()
+                filters: $baseQuery->getFilters()
             );
 
             $result = $this->get($query);
