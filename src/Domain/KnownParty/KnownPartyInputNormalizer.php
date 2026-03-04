@@ -20,7 +20,24 @@ namespace Lemonade\Vario\Domain\KnownParty;
 final class KnownPartyInputNormalizer
 {
     /**
-     * @return array<string,mixed>
+     * @return array{
+     *     Name: string,
+     *     ContactPerson?: string,
+     *     ElectronicMail?: string,
+     *     Telephone?: string,
+     *     PostalAddress?: array{
+     *         StreetName: string,
+     *         CityName: string,
+     *         PostalZone: string,
+     *         CountryIso: string,
+     *         Formated?: string
+     *     },
+     *     Identifications?: list<array{
+     *         Scheme: int,
+     *         ID: string,
+     *         OriginCountry?: string
+     *     }>
+     * }
      */
     public function normalize(KnownPartyInput $input): array
     {
@@ -43,6 +60,24 @@ final class KnownPartyInputNormalizer
             $payload['Identifications'] = $identifications;
         }
 
+        /** @var array{
+         *     Name: string,
+         *     ContactPerson?: string,
+         *     ElectronicMail?: string,
+         *     Telephone?: string,
+         *     PostalAddress?: array{
+         *         StreetName: string,
+         *         CityName: string,
+         *         PostalZone: string,
+         *         CountryIso: string,
+         *         Formated?: string
+         *     },
+         *     Identifications?: list<array{
+         *         Scheme: int,
+         *         ID: string,
+         *         OriginCountry?: string
+         *     }>
+         * } $payload */
         return $payload;
     }
 

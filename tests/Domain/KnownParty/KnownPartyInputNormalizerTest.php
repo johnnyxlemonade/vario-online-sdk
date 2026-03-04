@@ -17,6 +17,7 @@ final class KnownPartyInputNormalizerTest extends TestCase
 
         $payload = (new KnownPartyInputNormalizer())->normalize($input);
 
+        /** @var array{Name:string} $payload */
         self::assertSame('Test Company', $payload['Name']);
     }
 
@@ -28,6 +29,13 @@ final class KnownPartyInputNormalizerTest extends TestCase
             ->withTelephone('123456');
 
         $payload = (new KnownPartyInputNormalizer())->normalize($input);
+
+        /** @var array{
+         *  Name:string,
+         *  ContactPerson:string,
+         *  ElectronicMail:string,
+         *  Telephone:string
+         * } $payload */
 
         self::assertSame('John Doe', $payload['ContactPerson']);
         self::assertSame('john@example.com', $payload['ElectronicMail']);
@@ -51,6 +59,14 @@ final class KnownPartyInputNormalizerTest extends TestCase
 
         self::assertArrayHasKey('PostalAddress', $payload);
 
+        assert(isset($payload['PostalAddress']));
+        /** @var array{
+         *  StreetName:string,
+         *  CityName:string,
+         *  PostalZone:string,
+         *  CountryIso:string,
+         *  Formated?:string
+         * } $addr */
         $addr = $payload['PostalAddress'];
 
         self::assertSame('Main 10', $addr['StreetName']);
@@ -74,6 +90,8 @@ final class KnownPartyInputNormalizerTest extends TestCase
 
         self::assertArrayHasKey('Identifications', $payload);
 
+        assert(isset($payload['Identifications']));
+        /** @var list<array{Scheme:int,ID:string,OriginCountry?:string}> $ids */
         $ids = $payload['Identifications'];
 
         self::assertCount(1, $ids);

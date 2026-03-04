@@ -200,6 +200,8 @@ final class KnownPartyMapperTest extends TestCase
         $party = $this->mapper->map($payload);
         $address = $party->getPostalAddress();
 
+        self::assertNotNull($address);
+
         self::assertSame('Main 10', $address->getStreet());
         self::assertSame('Prague', $address->getCity());
     }

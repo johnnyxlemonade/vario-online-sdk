@@ -5,6 +5,7 @@ namespace Lemonade\Vario\Tests\Http\Adapter;
 use Lemonade\Vario\Http\Adapter\HttpAdapterInterface;
 use Lemonade\Vario\VarioApiFactory;
 use Lemonade\Vario\VarioClientConfig;
+use Lemonade\Vario\VarioApi;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -40,10 +41,13 @@ final class CustomHttpAdapterTest extends TestCase
 
                     public function sendRequest(RequestInterface $request): ResponseInterface
                     {
+                        $body = json_encode(['AccessToken' => 'fake']);
+                        assert($body !== false);
+
                         return new Response(
                             200,
                             [],
-                            json_encode(['AccessToken' => 'fake'])
+                            $body
                         );
                     }
                 };
@@ -62,6 +66,6 @@ final class CustomHttpAdapterTest extends TestCase
 
         $vario = VarioApiFactory::create($config, $adapter);
 
-        self::assertNotNull($vario);
+        self::assertInstanceOf(VarioApi::class, $vario);
     }
 }

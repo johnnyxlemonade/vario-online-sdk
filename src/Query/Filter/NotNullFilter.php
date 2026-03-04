@@ -15,20 +15,20 @@ namespace Lemonade\Vario\Query\Filter;
  * @license     MIT
  * @since       1.0
  */
-final class NotNullFilter extends AbstractFilter
+final class NotNullFilter implements QueryFilterInterface
 {
     public function __construct(
         private readonly string $property
     ) {}
 
-    /**
-     * @return list<list<array<string,mixed>>>
-     */
     public function toArray(): array
     {
-        return $this->group([
-            'Property' => $this->property,
-            'Operator' => Operator::NOT_NULL->value,
-        ]);
+        return [[
+            [
+                'Property' => $this->property,
+                'Operator' => Operator::NOT_EQUALS->value,
+                'Value'    => null,
+            ],
+        ]];
     }
 }

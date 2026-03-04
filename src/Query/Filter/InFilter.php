@@ -15,7 +15,7 @@ namespace Lemonade\Vario\Query\Filter;
  * @license     MIT
  * @since       1.0
  */
-final class InFilter extends AbstractFilter
+final class InFilter implements QueryFilterInterface
 {
     /**
      * @param list<string|int|float|bool> $values
@@ -25,15 +25,18 @@ final class InFilter extends AbstractFilter
         private readonly array $values
     ) {}
 
-    /**
-     * @return list<list<array<string,mixed>>>
-     */
     public function toArray(): array
     {
-        return $this->group([
-            'Property' => $this->property,
-            'Operator' => Operator::IN->value,
-            'Value'    => $this->values,
-        ]);
+        $result = [];
+
+        foreach ($this->values as $value) {
+            $result[] = [[
+                'Property' => $this->property,
+                'Operator' => Operator::EQUALS->value,
+                'Value'    => $value,
+            ]];
+        }
+
+        return $result;
     }
 }

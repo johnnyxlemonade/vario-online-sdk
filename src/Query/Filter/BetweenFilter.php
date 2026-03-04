@@ -15,7 +15,7 @@ namespace Lemonade\Vario\Query\Filter;
  * @license     MIT
  * @since       1.0
  */
-final class BetweenFilter extends AbstractFilter
+final class BetweenFilter implements QueryFilterInterface
 {
     public function __construct(
         private readonly string $property,
@@ -23,15 +23,19 @@ final class BetweenFilter extends AbstractFilter
         private readonly int|float|string $to
     ) {}
 
-    /**
-     * @return list<list<array<string,mixed>>>
-     */
     public function toArray(): array
     {
-        return $this->group([
-            'Property' => $this->property,
-            'Operator' => Operator::BETWEEN->value,
-            'Value'    => [$this->from, $this->to],
-        ]);
+        return [[
+            [
+                'Property' => $this->property,
+                'Operator' => Operator::GREATER_OR_EQUAL->value,
+                'Value'    => $this->from,
+            ],
+            [
+                'Property' => $this->property,
+                'Operator' => Operator::LESS_OR_EQUAL->value,
+                'Value'    => $this->to,
+            ],
+        ]];
     }
 }
