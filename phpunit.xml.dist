@@ -17,15 +17,13 @@
     </testsuites>
 
     <source>
-        <include>
-            <directory>src</directory>
-        </include>
+        <directory>src</directory>
     </source>
 
     <coverage>
-        <include>
-            <directory>src</directory>
-        </include>
+        <report>
+            <text/>
+        </report>
     </coverage>
 
     <php>

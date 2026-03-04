@@ -55,8 +55,9 @@
   "scripts": {
     "test": "phpunit",
     "stan": "phpstan analyse",
+    "stan:ci": "phpstan analyse --no-progress --memory-limit=1G",
     "ci": [
-      "@stan",
+      "@stan:ci",
       "@test"
     ]
   },
