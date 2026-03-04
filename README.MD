@@ -7,28 +7,58 @@
 [![PHPUnit](https://github.com/johnnyxlemonade/vario-online-sdk/actions/workflows/phpunit.yml/badge.svg)](https://github.com/johnnyxlemonade/vario-online-sdk/actions/workflows/phpunit.yml)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
+
 Typed, PSR-compatible PHP SDK for integrating with **Vario Online API**.
 
-A modern, strongly‑typed SDK designed for PHP 8.1+ applications.
-The SDK exposes a stable **domain-oriented API**, not just a transport wrapper.
+A modern, strongly-typed SDK designed for PHP 8.1+ applications that
+provides domain-oriented abstractions over the Vario Online API.
 
-It provides clean abstractions over Vario endpoints, dataset views and paged queries, including automatic authentication, retry handling and a fully replaceable HTTP layer.
+The SDK exposes a stable **domain-oriented API**, not just a transport wrapper.
+It provides clean abstractions over Vario endpoints, dataset views and paged
+queries, including automatic authentication, retry handling and a fully
+replaceable HTTP layer.
+
+------------------------------------------------------------------------
+
+## Why this SDK exists
+
+The official Vario Online API exposes data primarily through
+generic **DatasetView responses**, which return loosely structured
+arrays tied to backend column names.
+
+While flexible, this makes integrations harder to maintain because:
+
+- dataset column names may vary between installations
+- responses require manual array parsing
+- business logic becomes tightly coupled to API payload structure
+
+This SDK introduces a **domain-oriented layer** on top of the API.
+
+Instead of working with raw arrays, developers interact with
+**typed domain models** such as `KnownParty` or `Product`, backed by
+immutable value objects and a configurable mapping layer.
+
+The goal is to provide:
+
+- a **stable integration surface**
+- strong typing and IDE support
+- separation between API payloads and application logic
+- a maintainable foundation for ERP integrations
 
 ------------------------------------------------------------------------
 
 ## Features
 
 -   Typed API facade (`VarioApi`)
--   Domain-driven read models (KnownParty, PostalAddress,
-    Identification)
+-   Domain-driven read models (KnownParty, Product)
 -   Immutable value objects
+-   DatasetView → Domain mapping layer
 -   Automatic authentication & token refresh
--   PSR‑18 HTTP client support
--   Replaceable HTTP adapter (no vendor lock‑in)
--   Lazy‑loaded API modules
--   Explicit anti‑corruption mapping layer
+-   PSR-18 HTTP client support
+-   Replaceable HTTP adapter (no vendor lock-in)
+-   Lazy-loaded API modules
 -   Unified exception model
--   PHPStan **level max** ready (strict typing)
+-   PHPStan **level max** ready
 
 ------------------------------------------------------------------------
 
@@ -103,7 +133,7 @@ $data = $vario->datasetView()->get($query);
 
 ------------------------------------------------------------------------
 
-## Domain Example --- Known Parties
+## Domain Example — Known Parties
 
 The SDK exposes typed domain entities instead of raw arrays.
 
@@ -123,16 +153,6 @@ foreach ($items as $party) {
 
 Entities provide semantic helpers:
 
--   `getDisplayAddress()`
--   `getCityLine()` / `getStreetLine()`
--   `getCompanyNumber()`
--   `getVatId()`
--   `getIdentificationsOrEmpty()`
-
-No manual array parsing required.
-
-Entities provide semantic helpers:
-
 - `getDisplayAddress()`
 - `getCityLine()` / `getStreetLine()`
 - `getCompanyNumber()`
@@ -140,6 +160,41 @@ Entities provide semantic helpers:
 - `getIdentificationsOrEmpty()`
 
 No manual array parsing required.
+
+------------------------------------------------------------------------
+## Domain Example — Products
+
+The SDK provides a typed **Product domain model** for working with
+catalogue data exposed through Vario `DatasetView` endpoints.
+
+Dataset rows are mapped into a normalized `Product` aggregate using
+the `ProductMapper`, acting as an anti-corruption layer between
+Vario DatasetView responses and the SDK domain model.
+
+```php
+use Lemonade\Vario\Domain\Product\DatasetRow;
+use Lemonade\Vario\Domain\Product\ProductDatasetMapping;
+use Lemonade\Vario\Domain\Product\ProductMapper;
+use Lemonade\Vario\ValueObject\DatasetViewQuery;
+use Lemonade\Vario\ValueObject\CustomDatasetView;
+
+$query = DatasetViewQuery::for(
+    new CustomDatasetView('Katalog/KatalogCenikAPI'),
+    pageLength: 50
+);
+
+$response = $vario->datasetView()->get($query);
+
+$mapper = new ProductMapper(new ProductDatasetMapping());
+
+foreach ($response['Data'] ?? [] as $row) {
+
+    $product = $mapper->map(new DatasetRow($row));
+
+    echo $product->getIdentity()->getName();
+    echo $product->getPricing()?->getPrice();
+}
+```
 
 ------------------------------------------------------------------------
 
@@ -157,7 +212,7 @@ $query = (new KnownPartyQuery())
     ->withPageLength(50)
     ->withSort('Name')
     ->withFilter(
-        QueryFilters::equals('ElectronicMail', 'email@adress.com')
+        QueryFilters::equals('ElectronicMail', 'email@address.com')
     );
 
 $items = $vario->knownParties()->query($query);
@@ -269,7 +324,7 @@ Layered (ports & adapters + domain mapping):
             ↓
     Mapper (anti‑corruption layer)
             ↓
-    Domain Models
+    Domain Models (KnownParty, Product)
             ↓
     VarioClient (transport + retry + auth)
             ↓
