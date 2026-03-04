@@ -19,13 +19,7 @@
     <source>
         <directory>src</directory>
     </source>
-
-    <coverage>
-        <report>
-            <text/>
-        </report>
-    </coverage>
-
+    
     <php>
         <ini name="display_errors" value="1"/>
         <ini name="error_reporting" value="-1"/>
