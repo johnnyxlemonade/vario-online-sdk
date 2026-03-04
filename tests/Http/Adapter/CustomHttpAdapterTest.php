@@ -2,6 +2,7 @@
 
 namespace Lemonade\Vario\Tests\Http\Adapter;
 
+use Lemonade\Vario\Auth\InMemoryTokenStorage;
 use Lemonade\Vario\Http\Adapter\HttpAdapterInterface;
 use Lemonade\Vario\VarioApiFactory;
 use Lemonade\Vario\VarioClientConfig;
@@ -64,7 +65,11 @@ final class CustomHttpAdapterTest extends TestCase
             }
         };
 
-        $vario = VarioApiFactory::create($config, $adapter);
+        $vario = VarioApiFactory::create(
+            $config,
+            $adapter,
+            new InMemoryTokenStorage()
+        );
 
         self::assertInstanceOf(VarioApi::class, $vario);
     }

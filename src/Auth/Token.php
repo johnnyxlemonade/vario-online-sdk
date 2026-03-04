@@ -5,9 +5,8 @@ namespace Lemonade\Vario\Auth;
 /**
  * Class Token
  *
- * Value object reprezentující access token vydaný Vario API.
- * Zapouzdřuje samotnou hodnotu tokenu a volitelnou informaci
- * o jeho expiraci v UTC.
+ * Value object representing the access token issued by the Vario API.
+ * Encapsulates the token value and optional information about its expiration in UTC.
  *
  * @package     Lemonade Framework
  * @subpackage  Lemonade\Vario\Auth
@@ -25,28 +24,26 @@ final class Token
     ) {}
 
     /**
-     * Vytvoří instanci tokenu přímo z odpovědi Vario API.
+     * Create token from serialized storage payload.
      *
      * @param array<string,mixed> $data
      */
-    public static function fromApiResponse(array $data): self
+    public static function fromArray(array $data): ?self
     {
-        $rawValue = $data['AccessToken'] ?? null;
+        // Ensure 'value' is a string, otherwise return null (invalid token data)
+        $value = is_string($data['value'] ?? null) ? $data['value'] : null;
+        if ($value === null) {
+            return null; // If no valid value, return null.
+        }
 
-        // PHPStan level 9 safe narrowing
-        $value = is_string($rawValue) ? $rawValue : '';
-
-        $expiration = $data['ExpirationUtc'] ?? null;
-
+        $expires = $data['expiresAtUtc'] ?? null;
         $expiresAt = null;
-        if (is_string($expiration) && $expiration !== '') {
+
+        if (is_string($expires) && $expires !== '') {
             try {
-                $expiresAt = new \DateTimeImmutable(
-                    $expiration,
-                    new \DateTimeZone('UTC')
-                );
+                $expiresAt = new \DateTimeImmutable($expires, new \DateTimeZone('UTC'));
             } catch (\Throwable) {
-                $expiresAt = null;
+                $expiresAt = null; // If invalid date format, return null.
             }
         }
 
@@ -58,9 +55,19 @@ final class Token
         return $this->expiresAtUtc;
     }
 
-    public function isExpired(
-        \DateTimeImmutable $nowUtc = new \DateTimeImmutable('now', new \DateTimeZone('UTC'))
-    ): bool {
+    public function isExpired(\DateTimeImmutable $nowUtc = new \DateTimeImmutable('now', new \DateTimeZone('UTC'))): bool
+    {
         return $this->expiresAtUtc !== null && $nowUtc >= $this->expiresAtUtc;
+    }
+
+    /**
+     * @return array<string, string|null>
+     */
+    public function toArray(): array
+    {
+        return [
+            'value' => $this->value,
+            'expiresAtUtc' => $this->expiresAtUtc?->format('Y-m-d\TH:i:s\Z')
+        ];
     }
 }

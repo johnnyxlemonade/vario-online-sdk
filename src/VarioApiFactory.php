@@ -8,6 +8,7 @@ use Lemonade\Vario\Api\KnownPartyApi;
 use Lemonade\Vario\Api\OutgoingInvoiceApi;
 use Lemonade\Vario\Auth\Authenticator;
 use Lemonade\Vario\Auth\InMemoryTokenStorage;
+use Lemonade\Vario\Auth\TokenStorageInterface;
 use Lemonade\Vario\Client\VarioClient;
 use Lemonade\Vario\Domain\KnownParty\DefaultKnownPartyFactory;
 use Lemonade\Vario\Domain\KnownParty\KnownPartyInputNormalizer;
@@ -35,10 +36,9 @@ final class VarioApiFactory
 {
     public static function create(
         VarioClientConfig $config,
-        HttpAdapterInterface $httpAdapter
+        HttpAdapterInterface $httpAdapter,
+        TokenStorageInterface $tokenStorage
     ): VarioApi {
-
-        $tokenStorage = new InMemoryTokenStorage();
 
         $authenticator = self::createAuthenticator(
             $config,
@@ -87,7 +87,7 @@ final class VarioApiFactory
     private static function createAuthenticator(
         VarioClientConfig $config,
         HttpAdapterInterface $httpAdapter,
-        InMemoryTokenStorage $tokenStorage
+        TokenStorageInterface $tokenStorage
     ): Authenticator {
         return new Authenticator(
             httpClient: $httpAdapter->client(),

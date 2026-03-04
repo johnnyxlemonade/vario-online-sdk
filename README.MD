@@ -1,3 +1,4 @@
+
 # Vario Online PHP SDK
 
 [![PHP Version](https://img.shields.io/badge/php-%5E8.1-blue.svg)](https://www.php.net/)
@@ -6,7 +7,6 @@
 [![Static Analysis](https://github.com/johnnyxlemonade/vario-online-sdk/actions/workflows/phpstan.yml/badge.svg)](https://github.com/johnnyxlemonade/vario-online-sdk/actions/workflows/phpstan.yml)
 [![PHPUnit](https://github.com/johnnyxlemonade/vario-online-sdk/actions/workflows/phpunit.yml/badge.svg)](https://github.com/johnnyxlemonade/vario-online-sdk/actions/workflows/phpunit.yml)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-
 
 Typed, PSR-compatible PHP SDK for integrating with **Vario Online API**.
 
@@ -84,8 +84,8 @@ Instead, it follows the **PSR-18 HTTP Client standard**, which allows you to use
 
 To use the SDK you must install:
 
- - a **PSR-18 HTTP client**
- - a **PSR-7 / PSR-17 implementation**
+- a **PSR-18 HTTP client**
+- a **PSR-7 / PSR-17 implementation**
 
 Example using **Guzzle**:
 
@@ -198,6 +198,22 @@ foreach ($response['Data'] ?? [] as $row) {
 
 ------------------------------------------------------------------------
 
+## Token Storage Implementations
+
+The SDK offers several options for storing and managing access tokens. You can choose from the following implementations based on your requirements:
+
+1. **In-Memory Storage** (`InMemoryTokenStorage`): Stores the token temporarily in memory. Ideal for short-lived applications or testing environments.
+
+2. **File Storage** (`FileTokenStorage`): Stores the token in a file on the filesystem. This is useful for CLI tools or cron jobs where the token needs to persist between script executions.
+
+3. **Session Storage** (`SessionTokenStorage`): Stores the token in PHP sessions. This is suitable for web applications where the token needs to persist across multiple user sessions.
+
+4. **Redis Storage** (`RedisTokenStorage`): Stores the token in Redis. This is suitable for distributed systems or applications that require high availability and scalability.
+
+You can choose any of these storage methods by providing the appropriate implementation of the `TokenStorageInterface` when configuring the `VarioApiFactory`.
+
+------------------------------------------------------------------------
+
 ## Filtering & Sorting
 
 Queries support paging, sorting and composable filters.
@@ -218,8 +234,7 @@ $query = (new KnownPartyQuery())
 $items = $vario->knownParties()->query($query);
 ```
 
-**Note:**\
-Filtering is limited to properties exposed by the Vario API endpoint.
+**Note:**Filtering is limited to properties exposed by the Vario API endpoint.
 Only fields that are **supported by the backend DatasetView** can be used in `FilterCriteria`.
 
 For example:

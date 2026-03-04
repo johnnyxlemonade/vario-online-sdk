@@ -2,6 +2,7 @@
 
 namespace Lemonade\Vario\Tests;
 
+use Lemonade\Vario\Auth\InMemoryTokenStorage;
 use Lemonade\Vario\Exception\AuthenticationException;
 use Lemonade\Vario\Http\Adapter\HttpAdapterInterface;
 use Lemonade\Vario\VarioApiFactory;
@@ -42,6 +43,10 @@ final class VarioApiFactoryTest extends TestCase
 
         $this->expectException(AuthenticationException::class);
 
-        VarioApiFactory::create($config, $adapter);
+        VarioApiFactory::create(
+            $config,
+            $adapter,
+            new InMemoryTokenStorage()
+        );
     }
 }

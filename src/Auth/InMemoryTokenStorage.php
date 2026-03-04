@@ -5,8 +5,8 @@ namespace Lemonade\Vario\Auth;
 /**
  * Class InMemoryTokenStorage
  *
- * Jednoduchá in-memory implementace TokenStorageInterface.
- * Slouží pro dočasné uložení access tokenu během běhu aplikace.
+ * Simple in-memory implementation of TokenStorageInterface.
+ * Used for temporarily storing access tokens during the application's runtime.
  *
  * @package     Lemonade Framework
  * @subpackage  Lemonade\Vario\Auth
@@ -20,9 +20,6 @@ final class InMemoryTokenStorage implements TokenStorageInterface
 {
     private ?Token $token = null;
 
-    /**
-     * Vrátí aktuálně uložený token.
-     */
     public function get(): ?Token
     {
         if ($this->token === null) {
@@ -30,24 +27,18 @@ final class InMemoryTokenStorage implements TokenStorageInterface
         }
 
         if ($this->token->isExpired()) {
-            $this->token = null;
+            $this->clear();
             return null;
         }
 
         return $this->token;
     }
 
-    /**
-     * Uloží access token do paměti.
-     */
     public function store(Token $token): void
     {
         $this->token = $token;
     }
 
-    /**
-     * Explicitně vymaže uložený token.
-     */
     public function clear(): void
     {
         $this->token = null;
