@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\Product\Mapping;
 
@@ -31,7 +33,16 @@ final class ProductPricingMapping
         private readonly ?string $priceIncludesVat = 'Ceny_vcetne_DPH',
     ) {}
 
-    public function getPrice(): ?string { return $this->price; }
-    public function getVatRate(): ?string { return $this->vatRate; }
-    public function getPriceIncludesVat(): ?string { return $this->priceIncludesVat; }
+    public function getPrice(): ?string
+    {
+        return $this->price;
+    }
+    public function getVatRate(): ?string
+    {
+        return $this->vatRate;
+    }
+    public function getPriceIncludesVat(): ?string
+    {
+        return $this->priceIncludesVat;
+    }
 }

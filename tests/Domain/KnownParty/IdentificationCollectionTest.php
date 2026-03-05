@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Lemonade\Vario\Tests\Domain\KnownParty;
 
@@ -16,7 +18,7 @@ final class IdentificationCollectionTest extends TestCase
                 IdentificationScheme::UIN,
                 '12345678',
                 'CZ'
-            )
+            ),
         ]);
 
         self::assertSame('12345678', $collection->getCompanyNumberValue());
@@ -29,7 +31,7 @@ final class IdentificationCollectionTest extends TestCase
                 IdentificationScheme::UIN,
                 'CZ12345678',
                 'CZ'
-            )
+            ),
         ]);
 
         self::assertNull($collection->getCompanyNumberValue());
@@ -42,7 +44,7 @@ final class IdentificationCollectionTest extends TestCase
                 IdentificationScheme::VAT,
                 'CZ12345678',
                 'CZ'
-            )
+            ),
         ]);
 
         self::assertSame('CZ12345678', $collection->getVatIdValue());
@@ -55,7 +57,7 @@ final class IdentificationCollectionTest extends TestCase
                 IdentificationScheme::UIN,
                 'CZ12345678',
                 'CZ'
-            )
+            ),
         ]);
 
         self::assertSame('CZ12345678', $collection->getVatIdValue());
@@ -101,7 +103,7 @@ final class IdentificationCollectionTest extends TestCase
                 IdentificationScheme::VAT,
                 'CZ12345678',
                 'CZ'
-            )
+            ),
         ]);
 
         $array = $collection->toArray();
@@ -122,7 +124,7 @@ final class IdentificationCollectionTest extends TestCase
     public function test_iterator_returns_identifications(): void
     {
         $collection = new IdentificationCollection([
-            new Identification(IdentificationScheme::VAT, 'CZ123', 'CZ')
+            new Identification(IdentificationScheme::VAT, 'CZ123', 'CZ'),
         ]);
 
         foreach ($collection as $item) {

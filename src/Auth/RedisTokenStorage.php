@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Lemonade\Vario\Auth;
 
@@ -20,7 +22,6 @@ use Redis;
  */
 final class RedisTokenStorage implements TokenStorageInterface
 {
-
     private ?Token $token = null;
 
     public function __construct(

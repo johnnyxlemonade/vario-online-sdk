@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\Product\Mapping;
 
@@ -33,8 +35,20 @@ final class ProductIdentityMapping
         private readonly ?string $name = 'Nazev_produktu',
     ) {}
 
-    public function getUuid(): ?string { return $this->uuid; }
-    public function getSku(): ?string { return $this->sku; }
-    public function getCatalogNumber(): ?string { return $this->catalogNumber; }
-    public function getName(): ?string { return $this->name; }
+    public function getUuid(): ?string
+    {
+        return $this->uuid;
+    }
+    public function getSku(): ?string
+    {
+        return $this->sku;
+    }
+    public function getCatalogNumber(): ?string
+    {
+        return $this->catalogNumber;
+    }
+    public function getName(): ?string
+    {
+        return $this->name;
+    }
 }

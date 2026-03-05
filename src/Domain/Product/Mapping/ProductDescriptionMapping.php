@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\Product\Mapping;
 
@@ -27,6 +29,12 @@ final class ProductDescriptionMapping
         private readonly ?string $description = 'Text',
     ) {}
 
-    public function getShortDescription(): ?string { return $this->shortDescription; }
-    public function getDescription(): ?string { return $this->description; }
+    public function getShortDescription(): ?string
+    {
+        return $this->shortDescription;
+    }
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
 }

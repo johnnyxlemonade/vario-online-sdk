@@ -1,24 +1,25 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Lemonade\Vario\Query;
 
-use Lemonade\Vario\Query\Filter\GroupOperator;
-use Lemonade\Vario\Query\Filter\QueryFilterInterface;
-use Lemonade\Vario\Query\Filter\FilterGroup;
-use Lemonade\Vario\Query\Filter\Operator;
-use Lemonade\Vario\Query\Filter\EqualsFilter;
-use Lemonade\Vario\Query\Filter\NotEqualsFilter;
-use Lemonade\Vario\Query\Filter\LikeFilter;
-use Lemonade\Vario\Query\Filter\StartsWithFilter;
-use Lemonade\Vario\Query\Filter\EndsWithFilter;
 use Lemonade\Vario\Query\Filter\BetweenFilter;
-use Lemonade\Vario\Query\Filter\GreaterThanFilter;
+use Lemonade\Vario\Query\Filter\EndsWithFilter;
+use Lemonade\Vario\Query\Filter\EqualsFilter;
+use Lemonade\Vario\Query\Filter\FilterGroup;
 use Lemonade\Vario\Query\Filter\GreaterOrEqualFilter;
-use Lemonade\Vario\Query\Filter\LessThanFilter;
-use Lemonade\Vario\Query\Filter\LessOrEqualFilter;
+use Lemonade\Vario\Query\Filter\GreaterThanFilter;
+use Lemonade\Vario\Query\Filter\GroupOperator;
 use Lemonade\Vario\Query\Filter\InFilter;
 use Lemonade\Vario\Query\Filter\IsNullFilter;
+use Lemonade\Vario\Query\Filter\LessOrEqualFilter;
+use Lemonade\Vario\Query\Filter\LessThanFilter;
+use Lemonade\Vario\Query\Filter\LikeFilter;
+use Lemonade\Vario\Query\Filter\NotEqualsFilter;
 use Lemonade\Vario\Query\Filter\NotNullFilter;
+use Lemonade\Vario\Query\Filter\QueryFilterInterface;
+use Lemonade\Vario\Query\Filter\StartsWithFilter;
 
 /**
  * Class QueryFilters

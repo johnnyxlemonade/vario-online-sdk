@@ -1,15 +1,17 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Lemonade\Vario\Tests\Domain\Product;
 
 use Lemonade\Vario\Domain\Product\DatasetRow;
 use Lemonade\Vario\Domain\Product\Mapping\ProductAttributesMapping;
+use Lemonade\Vario\Domain\Product\Mapping\ProductFlagsMapping;
+use Lemonade\Vario\Domain\Product\Mapping\ProductIdentityMapping;
+use Lemonade\Vario\Domain\Product\Mapping\ProductInventoryMapping;
+use Lemonade\Vario\Domain\Product\Mapping\ProductPricingMapping;
 use Lemonade\Vario\Domain\Product\ProductDatasetMapping;
 use Lemonade\Vario\Domain\Product\ProductMapper;
-use Lemonade\Vario\Domain\Product\Mapping\ProductIdentityMapping;
-use Lemonade\Vario\Domain\Product\Mapping\ProductPricingMapping;
-use Lemonade\Vario\Domain\Product\Mapping\ProductInventoryMapping;
-use Lemonade\Vario\Domain\Product\Mapping\ProductFlagsMapping;
 use Lemonade\Vario\Domain\Product\ValueObject\ProductAttributes;
 use PHPUnit\Framework\TestCase;
 

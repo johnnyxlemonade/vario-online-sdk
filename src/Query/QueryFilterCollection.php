@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 /**
  * Class QueryFilterCollection
@@ -18,9 +20,9 @@
 
 namespace Lemonade\Vario\Query;
 
+use IteratorAggregate;
 use Lemonade\Vario\Query\Filter\QueryFilterInterface;
 use Traversable;
-use IteratorAggregate;
 
 /**
  * @implements IteratorAggregate<int,QueryFilterInterface>

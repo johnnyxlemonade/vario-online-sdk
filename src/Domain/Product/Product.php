@@ -1,16 +1,18 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\Product;
 
-use Lemonade\Vario\Domain\Product\ValueObject\ProductIdentity;
-use Lemonade\Vario\Domain\Product\ValueObject\ProductDescription;
-use Lemonade\Vario\Domain\Product\ValueObject\ProductFlags;
-use Lemonade\Vario\Domain\Product\ValueObject\ProductDimensions;
-use Lemonade\Vario\Domain\Product\ValueObject\ProductPricing;
-use Lemonade\Vario\Domain\Product\ValueObject\ProductInventory;
-use Lemonade\Vario\Domain\Product\ValueObject\ProductIdentifiers;
-use Lemonade\Vario\Domain\Product\ValueObject\ProductClassification;
 use Lemonade\Vario\Domain\Product\ValueObject\ProductAttributes;
+use Lemonade\Vario\Domain\Product\ValueObject\ProductClassification;
+use Lemonade\Vario\Domain\Product\ValueObject\ProductDescription;
+use Lemonade\Vario\Domain\Product\ValueObject\ProductDimensions;
+use Lemonade\Vario\Domain\Product\ValueObject\ProductFlags;
+use Lemonade\Vario\Domain\Product\ValueObject\ProductIdentifiers;
+use Lemonade\Vario\Domain\Product\ValueObject\ProductIdentity;
+use Lemonade\Vario\Domain\Product\ValueObject\ProductInventory;
+use Lemonade\Vario\Domain\Product\ValueObject\ProductPricing;
 
 /**
  * Class Product

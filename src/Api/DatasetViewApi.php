@@ -1,10 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Lemonade\Vario\Api;
 
 use Lemonade\Vario\Enum\HttpMethod;
 use Lemonade\Vario\Enum\VarioEndpoint;
-use Lemonade\Vario\Exception\ApiException;
 use Lemonade\Vario\ValueObject\DatasetViewQuery;
 
 /**

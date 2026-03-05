@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Lemonade\Vario\Tests;
 
@@ -24,7 +26,6 @@ final class VarioApiFactoryTest extends TestCase
         );
 
         $adapter = new class implements HttpAdapterInterface {
-
             public function client(): ClientInterface
             {
                 return new \GuzzleHttp\Client();

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\KnownParty;
 
@@ -172,7 +174,7 @@ final class KnownPartyInputNormalizer
     {
         return array_filter(
             $data,
-            static fn ($v): bool => $v !== null && $v !== ''
+            static fn($v): bool => $v !== null && $v !== ''
         );
     }
 

@@ -1,20 +1,22 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Lemonade\Vario\Tests\Http\Adapter;
 
+use GuzzleHttp\Psr7\HttpFactory;
+use GuzzleHttp\Psr7\Response;
 use Lemonade\Vario\Auth\Storage\InMemoryTokenStorage;
 use Lemonade\Vario\Http\Adapter\HttpAdapterInterface;
+use Lemonade\Vario\VarioApi;
 use Lemonade\Vario\VarioApiFactory;
 use Lemonade\Vario\VarioClientConfig;
-use Lemonade\Vario\VarioApi;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
-use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
-use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Psr7\HttpFactory;
+use Psr\Http\Message\StreamFactoryInterface;
 
 final class CustomHttpAdapterTest extends TestCase
 {
@@ -28,7 +30,6 @@ final class CustomHttpAdapterTest extends TestCase
         );
 
         $adapter = new class implements HttpAdapterInterface {
-
             private HttpFactory $factory;
 
             public function __construct()
@@ -39,7 +40,6 @@ final class CustomHttpAdapterTest extends TestCase
             public function client(): ClientInterface
             {
                 return new class implements ClientInterface {
-
                     public function sendRequest(RequestInterface $request): ResponseInterface
                     {
                         $body = json_encode(['AccessToken' => 'fake']);

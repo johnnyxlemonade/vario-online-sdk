@@ -1,11 +1,13 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\KnownParty;
 
-use IteratorAggregate;
-use Traversable;
 use ArrayIterator;
 use Countable;
+use IteratorAggregate;
+use Traversable;
 
 /**
  * Class IdentificationCollection
@@ -139,7 +141,7 @@ final class IdentificationCollection implements IteratorAggregate, Countable
     public function toArray(): array
     {
         return array_map(
-            static fn (Identification $i): array => [
+            static fn(Identification $i): array => [
                 'scheme' => $i->getScheme()->name,
                 'id' => $i->getId(),
                 'originCountry' => $i->getOriginCountry(),

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\Product\Mapping;
 
@@ -32,8 +34,20 @@ final class ProductInventoryMapping
         private readonly ?string $warrantyMonths = 'Zaruka',
     ) {}
 
-    public function getStock(): ?string { return $this->stock; }
-    public function getDeliveryTime(): ?string { return $this->deliveryTime; }
-    public function getUnit(): ?string { return $this->unit; }
-    public function getWarrantyMonths(): ?string { return $this->warrantyMonths; }
+    public function getStock(): ?string
+    {
+        return $this->stock;
+    }
+    public function getDeliveryTime(): ?string
+    {
+        return $this->deliveryTime;
+    }
+    public function getUnit(): ?string
+    {
+        return $this->unit;
+    }
+    public function getWarrantyMonths(): ?string
+    {
+        return $this->warrantyMonths;
+    }
 }

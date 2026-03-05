@@ -1,19 +1,21 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Lemonade\Vario\Client;
 
+use Closure;
 use Lemonade\Vario\Auth\Storage\TokenStorageInterface;
 use Lemonade\Vario\Enum\HttpMethod;
 use Lemonade\Vario\Exception\ApiException;
 use Lemonade\Vario\Exception\AuthenticationException;
 use Lemonade\Vario\Exception\ForbiddenException;
-use Psr\Http\Client\ClientInterface;
 use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Log\LoggerInterface;
-use Closure;
 
 /**
  * Class VarioClient
@@ -187,7 +189,7 @@ final class VarioClient implements VarioClientInterface
             'uri' => $uri->getPath(),
             'query' => $uri->getQuery(),
             'authorized' => $request->hasHeader('Authorization'),
-            'content_length' => $request->getBody()->getSize()
+            'content_length' => $request->getBody()->getSize(),
         ]);
 
         $start = microtime(true);
@@ -201,7 +203,7 @@ final class VarioClient implements VarioClientInterface
             $this->logger->error('Vario API HTTP request failed', [
                 'uri' => (string) $request->getUri(),
                 'duration_ms' => round($duration, 2),
-                'exception' => $e
+                'exception' => $e,
             ]);
 
             throw new ApiException(
@@ -220,7 +222,7 @@ final class VarioClient implements VarioClientInterface
             'uri' => $uri->getPath(),
             'query' => $uri->getQuery(),
             'content_length' => $response->getBody()->getSize(),
-            'duration_ms' => round($duration, 2)
+            'duration_ms' => round($duration, 2),
         ]);
 
         // 401 handling
@@ -228,7 +230,7 @@ final class VarioClient implements VarioClientInterface
 
             $this->logger->warning('Vario API unauthorized (401)', [
                 'uri' => (string) $request->getUri(),
-                'retry' => $allowRetry
+                'retry' => $allowRetry,
             ]);
 
             if ($allowRetry) {
@@ -247,7 +249,7 @@ final class VarioClient implements VarioClientInterface
 
 
             $this->logger->warning('Vario API forbidden', [
-                'uri' => (string) $request->getUri()
+                'uri' => (string) $request->getUri(),
             ]);
 
             throw new ForbiddenException(
@@ -266,7 +268,7 @@ final class VarioClient implements VarioClientInterface
 
             $this->logger->error('Vario API error', [
                 'status' => $status,
-                'uri' => (string) $request->getUri()
+                'uri' => (string) $request->getUri(),
             ]);
 
             throw new ApiException(
@@ -315,7 +317,7 @@ final class VarioClient implements VarioClientInterface
         } catch (\Throwable $e) {
 
             $this->logger->error('Vario API re-authentication failed', [
-                'exception' => $e
+                'exception' => $e,
             ]);
 
             throw new AuthenticationException(

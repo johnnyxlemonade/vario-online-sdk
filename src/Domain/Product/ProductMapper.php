@@ -1,26 +1,28 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\Product;
 
+use Lemonade\Vario\Domain\Product\Mapping\ProductAttributesMapping;
+use Lemonade\Vario\Domain\Product\Mapping\ProductClassificationMapping;
 use Lemonade\Vario\Domain\Product\Mapping\ProductDescriptionMapping;
 use Lemonade\Vario\Domain\Product\Mapping\ProductDimensionsMapping;
 use Lemonade\Vario\Domain\Product\Mapping\ProductFlagsMapping;
+use Lemonade\Vario\Domain\Product\Mapping\ProductIdentifiersMapping;
 use Lemonade\Vario\Domain\Product\Mapping\ProductIdentityMapping;
 use Lemonade\Vario\Domain\Product\Mapping\ProductInventoryMapping;
 use Lemonade\Vario\Domain\Product\Mapping\ProductPricingMapping;
-use Lemonade\Vario\Domain\Product\Mapping\ProductIdentifiersMapping;
-use Lemonade\Vario\Domain\Product\Mapping\ProductClassificationMapping;
-use Lemonade\Vario\Domain\Product\Mapping\ProductAttributesMapping;
-use Lemonade\Vario\Domain\Product\ValueObject\ProductFlag;
-use Lemonade\Vario\Domain\Product\ValueObject\ProductIdentity;
-use Lemonade\Vario\Domain\Product\ValueObject\ProductDescription;
-use Lemonade\Vario\Domain\Product\ValueObject\ProductFlags;
-use Lemonade\Vario\Domain\Product\ValueObject\ProductDimensions;
-use Lemonade\Vario\Domain\Product\ValueObject\ProductPricing;
-use Lemonade\Vario\Domain\Product\ValueObject\ProductInventory;
-use Lemonade\Vario\Domain\Product\ValueObject\ProductIdentifiers;
-use Lemonade\Vario\Domain\Product\ValueObject\ProductClassification;
 use Lemonade\Vario\Domain\Product\ValueObject\ProductAttributes;
+use Lemonade\Vario\Domain\Product\ValueObject\ProductClassification;
+use Lemonade\Vario\Domain\Product\ValueObject\ProductDescription;
+use Lemonade\Vario\Domain\Product\ValueObject\ProductDimensions;
+use Lemonade\Vario\Domain\Product\ValueObject\ProductFlag;
+use Lemonade\Vario\Domain\Product\ValueObject\ProductFlags;
+use Lemonade\Vario\Domain\Product\ValueObject\ProductIdentifiers;
+use Lemonade\Vario\Domain\Product\ValueObject\ProductIdentity;
+use Lemonade\Vario\Domain\Product\ValueObject\ProductInventory;
+use Lemonade\Vario\Domain\Product\ValueObject\ProductPricing;
 
 /**
  * Class ProductMapper

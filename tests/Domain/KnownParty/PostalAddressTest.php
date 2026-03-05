@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Lemonade\Vario\Tests\Domain\KnownParty;
 
@@ -91,7 +93,7 @@ final class PostalAddressTest extends TestCase
 
         self::assertSame(
             'Main 10, 11000 Prague, CZ',
-            (string)$address
+            (string) $address
         );
     }
 

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\KnownParty;
 
@@ -224,7 +226,7 @@ final class KnownPartyMapper
         }
 
         if (is_scalar($value)) {
-            return trim((string)$value);
+            return trim((string) $value);
         }
 
         return null;
@@ -242,7 +244,7 @@ final class KnownPartyMapper
         }
 
         if (is_numeric($value)) {
-            return (int)$value;
+            return (int) $value;
         }
 
         return null;

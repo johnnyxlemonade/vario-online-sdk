@@ -1,9 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\KnownParty;
 
-use Stringable;
 use JsonSerializable;
+use Stringable;
 
 /**
  * Class PostalAddress
@@ -144,7 +146,7 @@ final class PostalAddress implements Stringable, JsonSerializable
 
     public function __toString(): string
     {
-        return $this->getDisplayAddress() ?? "";
+        return $this->getDisplayAddress() ?? '';
     }
 
     /**

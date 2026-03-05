@@ -1,12 +1,14 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Lemonade\Vario\Auth;
 
 use Lemonade\Vario\Auth\Storage\TokenStorageInterface;
 use Lemonade\Vario\Exception\AuthenticationException;
 use Lemonade\Vario\VarioClientConfig;
-use Psr\Http\Client\ClientInterface;
 use Psr\Http\Client\ClientExceptionInterface;
+use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\StreamFactoryInterface;

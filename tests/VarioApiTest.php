@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Lemonade\Vario\Tests;
 
@@ -13,12 +15,12 @@ final class VarioApiTest extends TestCase
     {
         $client = $this->createMock(VarioClientInterface::class);
 
-        $api = new class($client) extends AbstractApi {};
+        $api = new class ($client) extends AbstractApi {};
 
         $vario = new VarioApi(
             $client,
             [
-                $api::class => fn() => $api
+                $api::class => fn() => $api,
             ]
         );
 
@@ -38,8 +40,8 @@ final class VarioApiTest extends TestCase
             [
                 AbstractApi::class => function () use (&$factoryCalls, $client) {
                     $factoryCalls++;
-                    return new class($client) extends AbstractApi {};
-                }
+                    return new class ($client) extends AbstractApi {};
+                },
             ]
         );
 

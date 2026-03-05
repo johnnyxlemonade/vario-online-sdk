@@ -1,9 +1,11 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Lemonade\Vario\ValueObject;
 
-use Lemonade\Vario\Query\QueryFilterCollection;
 use Lemonade\Vario\Query\Filter\QueryFilterInterface;
+use Lemonade\Vario\Query\QueryFilterCollection;
 
 /**
  * Base immutable query for paged Vario endpoints.
@@ -12,7 +14,6 @@ use Lemonade\Vario\Query\Filter\QueryFilterInterface;
  */
 abstract class AbstractPagedQuery implements PagedQueryInterface
 {
-
     public function __construct(
         protected readonly int $pageIndex = 0,
         protected readonly int $pageLength = 100,

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Lemonade\Vario\Logging\Monolog;
 
@@ -56,9 +58,9 @@ final class FlatJsonFormatter implements FormatterInterface
         );
 
         return json_encode(
-                $flat,
-                JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
-            ) . "\n";
+            $flat,
+            JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+        ) . "\n";
     }
 
     public function formatBatch(array $records): string

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Lemonade\Vario\Auth;
 
@@ -67,7 +69,7 @@ final class Token
     {
         return [
             'value' => $this->value,
-            'expiresAtUtc' => $this->expiresAtUtc?->format('Y-m-d\TH:i:s\Z')
+            'expiresAtUtc' => $this->expiresAtUtc?->format('Y-m-d\TH:i:s\Z'),
         ];
     }
 }

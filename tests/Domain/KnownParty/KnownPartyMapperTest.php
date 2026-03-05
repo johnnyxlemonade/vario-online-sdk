@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Lemonade\Vario\Tests\Domain\KnownParty;
 
@@ -80,7 +82,7 @@ final class KnownPartyMapperTest extends TestCase
                 'CityName' => 'Prague',
                 'PostalZone' => '11000',
                 'CountryIso' => 'CZ',
-            ]
+            ],
         ];
 
         $party = $this->mapper->map($payload);
@@ -96,7 +98,7 @@ final class KnownPartyMapperTest extends TestCase
     {
         $payload = [
             'UUID' => 'abc',
-            'PostalAddress' => []
+            'PostalAddress' => [],
         ];
 
         $party = $this->mapper->map($payload);
@@ -113,8 +115,8 @@ final class KnownPartyMapperTest extends TestCase
                     'Scheme' => IdentificationScheme::VAT->value,
                     'ID' => 'CZ12345678',
                     'OriginCountry' => 'CZ',
-                ]
-            ]
+                ],
+            ],
         ];
 
         $party = $this->mapper->map($payload);
@@ -132,8 +134,8 @@ final class KnownPartyMapperTest extends TestCase
                 [
                     'Scheme' => 999,
                     'ID' => 'invalid',
-                ]
-            ]
+                ],
+            ],
         ];
 
         $party = $this->mapper->map($payload);
@@ -151,8 +153,8 @@ final class KnownPartyMapperTest extends TestCase
                 [
                     'Scheme' => IdentificationScheme::UIN->value,
                     'ID' => '12345678',
-                ]
-            ]
+                ],
+            ],
         ];
 
         $party = $this->mapper->map($payload);
@@ -168,8 +170,8 @@ final class KnownPartyMapperTest extends TestCase
                 [
                     'Scheme' => IdentificationScheme::VAT->value,
                     'ID' => 'CZ12345678',
-                ]
-            ]
+                ],
+            ],
         ];
 
         $party = $this->mapper->map($payload);
@@ -182,7 +184,7 @@ final class KnownPartyMapperTest extends TestCase
         $this->expectException(\UnexpectedValueException::class);
 
         $this->mapper->map([
-            'Name' => 'Company'
+            'Name' => 'Company',
         ]);
     }
 
@@ -194,7 +196,7 @@ final class KnownPartyMapperTest extends TestCase
                 'StreetName' => ' Main ',
                 'BuildingNumber' => ' 10 ',
                 'CityName' => ' Prague ',
-            ]
+            ],
         ];
 
         $party = $this->mapper->map($payload);
@@ -213,9 +215,9 @@ final class KnownPartyMapperTest extends TestCase
             'UUID' => 'abc',
             'Identifications' => [
                 [
-                    'Scheme' => IdentificationScheme::VAT->value
-                ]
-            ]
+                    'Scheme' => IdentificationScheme::VAT->value,
+                ],
+            ],
         ];
 
         $party = $this->mapper->map($payload);
@@ -230,7 +232,7 @@ final class KnownPartyMapperTest extends TestCase
         $payload = [
             'UUID' => 'abc',
             'Name' => 'Test',
-            'CustomField' => 'value'
+            'CustomField' => 'value',
         ];
 
         $party = $this->mapper->map($payload);
@@ -245,7 +247,7 @@ final class KnownPartyMapperTest extends TestCase
     {
         $payload = [
             'UUID' => 'abc',
-            'PostalAddress' => 'invalid'
+            'PostalAddress' => 'invalid',
         ];
 
         $party = $this->mapper->map($payload);
@@ -263,7 +265,7 @@ final class KnownPartyMapperTest extends TestCase
                 'CityName' => 'Prague',
                 'PostalZone' => '11000',
                 'CountryIso' => 'CZ',
-            ]
+            ],
         ];
 
         $party = $this->mapper->map($payload);

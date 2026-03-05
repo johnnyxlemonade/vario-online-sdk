@@ -1,16 +1,18 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\Product;
 
+use Lemonade\Vario\Domain\Product\Mapping\ProductAttributesMapping;
+use Lemonade\Vario\Domain\Product\Mapping\ProductClassificationMapping;
 use Lemonade\Vario\Domain\Product\Mapping\ProductDescriptionMapping;
 use Lemonade\Vario\Domain\Product\Mapping\ProductDimensionsMapping;
 use Lemonade\Vario\Domain\Product\Mapping\ProductFlagsMapping;
+use Lemonade\Vario\Domain\Product\Mapping\ProductIdentifiersMapping;
 use Lemonade\Vario\Domain\Product\Mapping\ProductIdentityMapping;
 use Lemonade\Vario\Domain\Product\Mapping\ProductInventoryMapping;
 use Lemonade\Vario\Domain\Product\Mapping\ProductPricingMapping;
-use Lemonade\Vario\Domain\Product\Mapping\ProductAttributesMapping;
-use Lemonade\Vario\Domain\Product\Mapping\ProductClassificationMapping;
-use Lemonade\Vario\Domain\Product\Mapping\ProductIdentifiersMapping;
 
 /**
  * Class ProductDatasetMapping

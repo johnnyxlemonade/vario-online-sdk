@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Lemonade\Vario\Tests\Domain\KnownParty;
 
@@ -28,7 +30,7 @@ final class KnownPartyTest extends TestCase
                     IdentificationScheme::UIN,
                     '12345678',
                     'CZ'
-                )
+                ),
             ]),
             extra: []
         );
@@ -52,7 +54,7 @@ final class KnownPartyTest extends TestCase
                     IdentificationScheme::VAT,
                     'CZ12345678',
                     'CZ'
-                )
+                ),
             ]),
             extra: []
         );
@@ -140,7 +142,7 @@ final class KnownPartyTest extends TestCase
             postalAddress: null,
             identifications: null,
             extra: [
-                'SomeFutureField' => 'value'
+                'SomeFutureField' => 'value',
             ]
         );
 

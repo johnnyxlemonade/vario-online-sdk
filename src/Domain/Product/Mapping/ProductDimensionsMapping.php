@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\Product\Mapping;
 
@@ -31,8 +33,20 @@ final class ProductDimensionsMapping
         private readonly ?string $weightKg = 'Hmotnost_kg',
     ) {}
 
-    public function getWidth(): ?string { return $this->width; }
-    public function getHeight(): ?string { return $this->height; }
-    public function getDepth(): ?string { return $this->depth; }
-    public function getWeightKg(): ?string { return $this->weightKg; }
+    public function getWidth(): ?string
+    {
+        return $this->width;
+    }
+    public function getHeight(): ?string
+    {
+        return $this->height;
+    }
+    public function getDepth(): ?string
+    {
+        return $this->depth;
+    }
+    public function getWeightKg(): ?string
+    {
+        return $this->weightKg;
+    }
 }

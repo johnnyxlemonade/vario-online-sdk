@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace Lemonade\Vario\ValueObject;
 
@@ -20,7 +22,6 @@ use Lemonade\Vario\Query\QueryFilterCollection;
  */
 final class DatasetViewQuery extends AbstractPagedQuery
 {
-
     public function __construct(
         int $pageIndex = 0,
         int $pageLength = 10000,
