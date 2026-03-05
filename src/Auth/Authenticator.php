@@ -2,7 +2,9 @@
 
 namespace Lemonade\Vario\Auth;
 
+use Lemonade\Vario\Auth\Storage\TokenStorageInterface;
 use Lemonade\Vario\Exception\AuthenticationException;
+use Lemonade\Vario\VarioClientConfig;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -12,12 +14,21 @@ use Psr\Http\Message\StreamFactoryInterface;
 /**
  * Class Authenticator
  *
- * Zajišťuje autentizaci vůči Vario Online API.
- * Odesílá autentizační request, získává access token
- * a ukládá jej do TokenStorage.
+ * Handles authentication against the Vario Online API.
  *
- * Implementace je postavena čistě na PSR rozhraních
- * (PSR-7, PSR-17, PSR-18).
+ * The authenticator sends an authentication request to obtain
+ * an access token and stores the token using a configured
+ * TokenStorageInterface implementation.
+ *
+ * This component is built entirely on PSR standards:
+ *
+ *  - PSR-7  HTTP messages
+ *  - PSR-17 HTTP factories
+ *  - PSR-18 HTTP client
+ *
+ * The class is responsible only for performing the authentication
+ * request and persisting the received token. It does not manage
+ * token lifecycle outside of the authentication process.
  *
  * @package     Lemonade Framework
  * @subpackage  Lemonade\Vario\Auth
@@ -34,19 +45,22 @@ final class Authenticator
         private readonly RequestFactoryInterface $requestFactory,
         private readonly StreamFactoryInterface $streamFactory,
         private readonly TokenStorageInterface $storage,
-        private readonly string $loginName,
-        private readonly string $password,
-        private readonly string $companyNumber
+        private readonly VarioClientConfig $config
     ) {}
 
-    /**
-     * Provede autentizaci vůči Vario API a uloží access token.
-     */
     public function authenticate(): void
     {
+        if ($this->storage->get() !== null) {
+            $this->config->getLogger()->debug('Vario authentication skipped: valid token already present');
+            return;
+        }
+
         try {
+            $this->config->getLogger()->info('Vario authentication started');
+
             $request  = $this->buildRequest();
             $response = $this->httpClient->sendRequest($request);
+
         } catch (ClientExceptionInterface $e) {
             throw new AuthenticationException(
                 'Authentication request failed',
@@ -61,11 +75,10 @@ final class Authenticator
         }
 
         $this->storage->store(new Token($token));
+
+        $this->config->getLogger()->info('Vario authentication successful');
     }
 
-    /**
-     * Vytvoří PSR-7 request pro získání access tokenu.
-     */
     private function buildRequest(): RequestInterface
     {
         $request = $this->requestFactory
@@ -75,9 +88,9 @@ final class Authenticator
 
         $body = $this->streamFactory->createStream(
             json_encode([
-                'LoginName'     => $this->loginName,
-                'Password'      => $this->password,
-                'CompanyNumber' => $this->companyNumber,
+                'LoginName'     => $this->config->getLoginName(),
+                'Password'      => $this->config->getPassword(),
+                'CompanyNumber' => $this->config->getCompanyNumber(),
             ], JSON_THROW_ON_ERROR)
         );
 

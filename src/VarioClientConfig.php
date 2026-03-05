@@ -3,17 +3,24 @@
 namespace Lemonade\Vario;
 
 use Lemonade\Vario\Exception\ConfigurationException;
+use Psr\Log\LoggerInterface;
+use Psr\Log\NullLogger;
 
 final class VarioClientConfig
 {
+    private LoggerInterface $logger;
+
     public function __construct(
         private readonly string $baseUrl,
         private readonly string $loginName,
         private readonly string $password,
         private readonly string $companyNumber,
         private readonly int $timeout = 30,
-        private readonly bool $verifySsl = false
-    ) {}
+        private readonly bool $verifySsl = false,
+        ?LoggerInterface $logger = null,
+    ) {
+        $this->logger = $logger ?? new NullLogger();
+    }
 
     public function getBaseUrl(): string
     {
@@ -43,6 +50,11 @@ final class VarioClientConfig
     public function isVerifySsl(): bool
     {
         return $this->verifySsl;
+    }
+
+    public function getLogger(): LoggerInterface
+    {
+        return $this->logger;
     }
 
     public static function fromEnv(): self

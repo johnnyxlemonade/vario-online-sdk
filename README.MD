@@ -1,22 +1,26 @@
-
 # Vario Online PHP SDK
 
-[![PHP Version](https://img.shields.io/badge/php-%5E8.1-blue.svg)](https://www.php.net/)
-[![Packagist Version](https://img.shields.io/packagist/v/lemonade/vario-online-sdk)](https://packagist.org/packages/lemonade/vario-online-sdk)
-[![PHPStan Level](https://img.shields.io/badge/PHPStan-level%20max-brightgreen.svg)](https://phpstan.org/)
-[![Static Analysis](https://github.com/johnnyxlemonade/vario-online-sdk/actions/workflows/phpstan.yml/badge.svg)](https://github.com/johnnyxlemonade/vario-online-sdk/actions/workflows/phpstan.yml)
-[![PHPUnit](https://github.com/johnnyxlemonade/vario-online-sdk/actions/workflows/phpunit.yml/badge.svg)](https://github.com/johnnyxlemonade/vario-online-sdk/actions/workflows/phpunit.yml)
+[![PHP
+Version](https://img.shields.io/badge/php-%5E8.1-blue.svg)](https://www.php.net/)
+[![Packagist
+Version](https://img.shields.io/packagist/v/lemonade/vario-online-sdk)](https://packagist.org/packages/lemonade/vario-online-sdk)
+[![PHPStan
+Level](https://img.shields.io/badge/PHPStan-level%20max-brightgreen.svg)](https://phpstan.org/)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 Typed, PSR-compatible PHP SDK for integrating with **Vario Online API**.
 
-A modern, strongly-typed SDK designed for PHP 8.1+ applications that
-provides domain-oriented abstractions over the Vario Online API.
+This library provides a modern, strongly‑typed integration layer for
+systems using **Vario ERP**.
 
-The SDK exposes a stable **domain-oriented API**, not just a transport wrapper.
-It provides clean abstractions over Vario endpoints, dataset views and paged
-queries, including automatic authentication, retry handling and a fully
-replaceable HTTP layer.
+More information about Vario ERP:
+
+https://vario.cz/
+
+The SDK exposes a stable **domain-oriented API**, not just a transport
+wrapper. It provides clean abstractions over Vario endpoints, dataset
+views and paged queries, including automatic authentication, retry
+handling and a fully replaceable HTTP layer.
 
 ------------------------------------------------------------------------
 
@@ -45,6 +49,7 @@ The goal is to provide:
 - separation between API payloads and application logic
 - a maintainable foundation for ERP integrations
 
+
 ------------------------------------------------------------------------
 
 ## Features
@@ -54,9 +59,13 @@ The goal is to provide:
 -   Immutable value objects
 -   DatasetView → Domain mapping layer
 -   Automatic authentication & token refresh
--   PSR-18 HTTP client support
--   Replaceable HTTP adapter (no vendor lock-in)
--   Lazy-loaded API modules
+-   PSR‑18 HTTP client support
+-   PSR‑3 logging support
+-   Structured request/response logging
+-   Request duration measurement
+-   Replaceable HTTP adapter (no vendor lock‑in)
+-   Configurable token storage (memory, session, custom)
+-   Lazy‑loaded API modules
 -   Unified exception model
 -   PHPStan **level max** ready
 
@@ -64,41 +73,32 @@ The goal is to provide:
 
 ## Requirements
 
-- PHP 8.1+
-- Composer
-- Access to Vario Online API (VPN + credentials)
-- A PSR‑18 HTTP client implementation
+-   PHP 8.1+
+-   Composer
+-   Access to Vario Online API (VPN + credentials)
+-   PSR‑18 HTTP client implementation
+-   PSR‑3 compatible logger
 
 ------------------------------------------------------------------------
 
 ## Installation
+
 Install the SDK via Composer:
 
-```bash
+``` bash
 composer require lemonade/vario-online-sdk
 ```
 
-The SDK itself does **not ship with a built-in HTTP client**.
+The SDK itself does **not ship with a built‑in HTTP client**.
 
-Instead, it follows the **PSR-18 HTTP Client standard**, which allows you to use any compatible HTTP client implementation. This keeps the SDK lightweight and avoids vendor lock-in.
-
-To use the SDK you must install:
-
-- a **PSR-18 HTTP client**
-- a **PSR-7 / PSR-17 implementation**
+Instead, it follows the **PSR‑18 HTTP Client standard**, which allows
+you to use any compatible HTTP client implementation.
 
 Example using **Guzzle**:
 
-```bash
+``` bash
 composer require guzzlehttp/guzzle guzzlehttp/psr7
 ```
-
-You can also use other implementations such as:
-- `symfony/http-client`
-- `nyholm/psr7`
-- `laminas/laminas-diactoros`
-
-Any PSR-18 compatible client can be used with the SDK.
 
 ------------------------------------------------------------------------
 
@@ -110,6 +110,7 @@ use Lemonade\Vario\VarioClientConfig;
 use Lemonade\Vario\ValueObject\DatasetViewQuery;
 use Lemonade\Vario\ValueObject\CustomDatasetView;
 use Lemonade\Vario\Http\Adapter\GuzzleHttpAdapter;
+use Lemonade\Vario\Auth\Storage\InMemoryTokenStorage;
 
 $config = new VarioClientConfig(
     baseUrl: 'https://your-vario-server',
@@ -119,8 +120,9 @@ $config = new VarioClientConfig(
 );
 
 $vario = VarioApiFactory::create(
-    $config,
-    new GuzzleHttpAdapter($config)
+    config: $config,
+    httpAdapter: new GuzzleHttpAdapter($config),
+    tokenStorage: new InMemoryTokenStorage()
 );
 
 $query = DatasetViewQuery::for(
@@ -132,6 +134,7 @@ $data = $vario->datasetView()->get($query);
 ```
 
 ------------------------------------------------------------------------
+
 
 ## Domain Example — Known Parties
 
@@ -160,6 +163,8 @@ Entities provide semantic helpers:
 - `getIdentificationsOrEmpty()`
 
 No manual array parsing required.
+
+------------------------------------------------------------------------
 
 ------------------------------------------------------------------------
 ## Domain Example — Products
@@ -196,23 +201,9 @@ foreach ($response['Data'] ?? [] as $row) {
 }
 ```
 
-------------------------------------------------------------------------
-
-## Token Storage Implementations
-
-The SDK offers several options for storing and managing access tokens. You can choose from the following implementations based on your requirements:
-
-1. **In-Memory Storage** (`InMemoryTokenStorage`): Stores the token temporarily in memory. Ideal for short-lived applications or testing environments.
-
-2. **File Storage** (`FileTokenStorage`): Stores the token in a file on the filesystem. This is useful for CLI tools or cron jobs where the token needs to persist between script executions.
-
-3. **Session Storage** (`SessionTokenStorage`): Stores the token in PHP sessions. This is suitable for web applications where the token needs to persist across multiple user sessions.
-
-4. **Redis Storage** (`RedisTokenStorage`): Stores the token in Redis. This is suitable for distributed systems or applications that require high availability and scalability.
-
-You can choose any of these storage methods by providing the appropriate implementation of the `TokenStorageInterface` when configuring the `VarioApiFactory`.
 
 ------------------------------------------------------------------------
+
 
 ## Filtering & Sorting
 
@@ -261,7 +252,6 @@ $query = (new KnownPartyQuery())
 ```
 
 ------------------------------------------------------------------------
-
 ## Configuration
 
 ### Manual configuration
@@ -275,9 +265,11 @@ $config = new VarioClientConfig(
 );
 
 $vario = VarioApiFactory::create(
-    $config,
-    new GuzzleHttpAdapter($config)
+    config: $config,
+    httpAdapter: new GuzzleHttpAdapter($config),
+    tokenStorage: new InMemoryTokenStorage()
 );
+
 ```
 
 ### Environment configuration
@@ -295,6 +287,228 @@ Required environment variables:
     VARIO_LOGIN
     VARIO_PASSWORD
     VARIO_COMPANY
+------------------------------------------------------------------------
+
+## Logging
+
+The SDK supports **PSR‑3 compatible logging**.
+
+All API requests and responses are logged using the configured logger.
+
+Logged metadata includes:
+
+-   HTTP method
+-   endpoint URI
+-   query string
+-   authorization presence
+-   request/response payload size
+-   response status code
+-   request duration (milliseconds)
+
+### Example log entry (Monolog default)
+
+When using Monolog with the default **LineFormatter**, logs are written
+as text lines:
+
+``` text
+[2026-03-05T10:40:27.123456+00:00] vario.DEBUG: Vario API response {"status":200,"uri":"/Api/GetDatasetView","query":"Agenda=Katalog&Pager.PageLength=50","content_length":2917,"duration_ms":178.28} []
+```
+
+Structure:
+
+    [timestamp] channel.level: message context extra
+
+-   **context** contains metadata logged by the SDK\
+-   **extra** contains data added by logger processors
+
+### Providing a logger
+
+``` php
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
+
+$logger = new Logger('vario');
+$logger->pushHandler(new StreamHandler(__DIR__.'/vario.log'));
+
+$config = new VarioClientConfig(
+    baseUrl: 'https://server',
+    loginName: 'USER',
+    password: 'PASSWORD',
+    companyNumber: 'COMPANY',
+    logger: $logger
+);
+```
+
+If no logger is provided, the SDK falls back to:
+
+    Psr\Log\NullLogger
+
+------------------------------------------------------------------------
+
+### Structured logging (optional)
+
+For structured logs the SDK provides optional Monolog helpers:
+
+-   `HybridRotatingFileHandler`
+-   `FlatJsonFormatter`
+
+These enable **JSON logging with automatic rotation**.
+
+``` php
+use Monolog\Logger;
+use Monolog\Processor\UidProcessor;
+use Monolog\Processor\MemoryUsageProcessor;
+use Monolog\Processor\MemoryPeakUsageProcessor;
+use Monolog\Processor\ProcessIdProcessor;
+
+use Lemonade\Vario\Logging\Monolog\HybridRotatingFileHandler;
+use Lemonade\Vario\Logging\Monolog\FlatJsonFormatter;
+
+$logger = new Logger('vario');
+
+$handler = new HybridRotatingFileHandler(
+    logDirectory: __DIR__ . '/logs',
+    channel: 'vario',
+    maxFileSizeBytes: 10 * 1024 * 1024
+);
+
+$handler->setFormatter(new FlatJsonFormatter());
+
+$logger->pushHandler($handler);
+$logger->pushProcessor(new UidProcessor());
+$logger->pushProcessor(new MemoryUsageProcessor());
+$logger->pushProcessor(new MemoryPeakUsageProcessor());
+$logger->pushProcessor(new ProcessIdProcessor());
+```
+
+Example JSON log entry:
+
+``` json
+{
+  "message": "Vario API response",
+  "status": 200,
+  "uri": "/Api/GetDatasetView",
+  "query": "Agenda=Katalog&Pager.PageLength=50",
+  "content_length": 2917,
+  "duration_ms": 178.28
+}
+```
+
+
+
+------------------------------------------------------------------------
+## Token Storage
+
+The SDK uses pluggable token storage implementations.\
+A storage implementation is responsible for persisting the **access
+token** received during authentication.
+
+All storage backends implement:
+
+`TokenStorageInterface`
+
+### Built-in implementations
+
+The SDK currently provides the following token storage implementations:
+
+-   **InMemoryTokenStorage**\
+    Stores the token only in memory. Suitable for CLI scripts or
+    short-lived processes.
+
+-   **FileTokenStorage**\
+    Persists the token to a file on disk. Useful for cron jobs or
+    integrations where the process runs repeatedly.
+
+-   **SessionTokenStorage**\
+    Stores the token inside a session implementation.
+
+-   **RedisTokenStorage**\
+    Stores the token in Redis. Suitable for distributed environments or
+    multiple workers.
+
+------------------------------------------------------------------------
+
+## Session abstraction
+
+The SDK does **not depend directly on native PHP sessions**.
+
+Instead it defines a minimal session abstraction:
+
+`SessionInterface`
+
+``` php
+interface SessionInterface
+{
+    public function get(string $key): mixed;
+    public function set(string $key, mixed $value): void;
+    public function has(string $key): bool;
+    public function remove(string $key): void;
+    public function isActive(): bool;
+}
+```
+
+This allows integrating the SDK with:
+
+-   native PHP sessions
+-   framework session services (Symfony, Laravel, Nette)
+-   custom session backends
+
+A default implementation is provided:
+
+`NativePhpSession`
+
+which wraps the standard `$_SESSION` storage.
+
+------------------------------------------------------------------------
+
+## Example - Session token storage
+
+``` php
+use Lemonade\Vario\Auth\Session\NativePhpSession;
+use Lemonade\Vario\Auth\Storage\SessionTokenStorage;
+
+$tokenStorage = new SessionTokenStorage(
+    new NativePhpSession()
+);
+```
+
+------------------------------------------------------------------------
+
+## Example - In-memory storage (CLI)
+
+``` php
+use Lemonade\Vario\Auth\Storage\InMemoryTokenStorage;
+
+$tokenStorage = new InMemoryTokenStorage();
+```
+
+------------------------------------------------------------------------
+
+## Using token storage in the SDK
+
+A storage implementation must be provided when creating the API client:
+
+``` php
+use Lemonade\Vario\VarioApiFactory;
+use Lemonade\Vario\Auth\Storage\InMemoryTokenStorage;
+
+$vario = VarioApiFactory::create(
+    $config,
+    new GuzzleHttpAdapter($config),
+    new InMemoryTokenStorage()
+);
+```
+
+------------------------------------------------------------------------
+
+### Recommended usage
+
+Environment        Recommended storage
+  ------------------ ------------------------
+CLI scripts        `InMemoryTokenStorage`
+Cron jobs          `FileTokenStorage`
+Web apps           `SessionTokenStorage`
+Distributed apps   `RedisTokenStorage`
 
 ------------------------------------------------------------------------
 
@@ -302,50 +516,32 @@ Required environment variables:
 
 Authentication is handled automatically:
 
-1. Initial authentication during factory creation (fail‑fast).
-2. Access token stored internally.
-3. When API returns **401**, the client:
-    - re‑authenticates
-    - retries the request once.
-4. Second failure throws `AuthenticationException`.
-
-No manual token handling is required.
-
-------------------------------------------------------------------------
-
-## Error Handling
-
-All SDK exceptions extend:
-
-    VarioException
-
-Hierarchy:
-
-    VarioException
-    ├── ConfigurationException
-    ├── AuthenticationException
-    └── ApiException
-         └── ForbiddenException
+1.  Initial authentication during factory creation
+2.  Access token stored internally
+3.  When API returns **401** the client:
+   -   re‑authenticates
+   -   retries the request once
+4.  Second failure throws `AuthenticationException`
 
 ------------------------------------------------------------------------
 
 ## Architecture
 
-Layered (ports & adapters + domain mapping):
+The SDK follows a layered architecture:
 
     VarioApi (Facade)
             ↓
     API Modules
             ↓
-    Mapper (anti‑corruption layer)
+    Mapper layer
             ↓
-    Domain Models (KnownParty, Product)
+    Domain Models
             ↓
     VarioClient (transport + retry + auth)
             ↓
     HttpAdapterInterface (PSR boundary)
             ↓
-    HTTP implementation (Guzzle / Symfony / custom)
+    HTTP client implementation
 
 ------------------------------------------------------------------------
 
@@ -353,20 +549,14 @@ Layered (ports & adapters + domain mapping):
 
 Run static analysis:
 
-```bash
+``` bash
 composer stan
 ```
 
 Run tests:
 
-```bash
+``` bash
 composer test
-```
-
-Run full CI locally:
-
-```bash
-composer ci
 ```
 
 ------------------------------------------------------------------------
@@ -376,5 +566,3 @@ composer ci
 MIT License
 
 Copyright (c) 2026 Jan Mudrák
-
-See the LICENSE file for details.

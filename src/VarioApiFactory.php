@@ -7,8 +7,7 @@ use Lemonade\Vario\Api\IncomingOrderApi;
 use Lemonade\Vario\Api\KnownPartyApi;
 use Lemonade\Vario\Api\OutgoingInvoiceApi;
 use Lemonade\Vario\Auth\Authenticator;
-use Lemonade\Vario\Auth\InMemoryTokenStorage;
-use Lemonade\Vario\Auth\TokenStorageInterface;
+use Lemonade\Vario\Auth\Storage\TokenStorageInterface;
 use Lemonade\Vario\Client\VarioClient;
 use Lemonade\Vario\Domain\KnownParty\DefaultKnownPartyFactory;
 use Lemonade\Vario\Domain\KnownParty\KnownPartyInputNormalizer;
@@ -50,7 +49,8 @@ final class VarioApiFactory
             httpClient: $httpAdapter->client(),
             tokenStorage: $tokenStorage,
             requestFactory: $httpAdapter->requestFactory(),
-            reauthCallback: $authenticator->authenticate(...)
+            logger: $config->getLogger(),
+            reauthCallback: $authenticator->authenticate(...),
         );
 
         // fail fast authentication
@@ -94,9 +94,7 @@ final class VarioApiFactory
             requestFactory: $httpAdapter->requestFactory(),
             streamFactory: $httpAdapter->streamFactory(),
             storage: $tokenStorage,
-            loginName: $config->getLoginName(),
-            password: $config->getPassword(),
-            companyNumber: $config->getCompanyNumber()
+            config: $config
         );
     }
 

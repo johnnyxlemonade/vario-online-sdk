@@ -2,7 +2,7 @@
 
 namespace Lemonade\Vario\Tests;
 
-use Lemonade\Vario\Auth\InMemoryTokenStorage;
+use Lemonade\Vario\Auth\Storage\InMemoryTokenStorage;
 use Lemonade\Vario\Exception\AuthenticationException;
 use Lemonade\Vario\Http\Adapter\HttpAdapterInterface;
 use Lemonade\Vario\VarioApiFactory;
