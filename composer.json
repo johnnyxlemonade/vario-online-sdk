@@ -50,6 +50,7 @@
   },
   "require-dev": {
     "guzzlehttp/guzzle": "^7.8",
+    "monolog/monolog": "^3.0",
     "phpstan/phpstan": "^2.1",
     "phpstan/phpstan-strict-rules": "^2.0",
     "phpunit/phpunit": "^10.5 || ^11.0"
