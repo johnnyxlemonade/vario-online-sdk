@@ -53,8 +53,7 @@ final class KnownPartyInputNormalizerTest extends TestCase
             street: 'Main 10',
             city: 'Prague',
             postalCode: '11000',
-            countryIso: 'CZ',
-            formatted: null
+            countryIso: 'CZ'
         );
 
         $input = (new KnownPartyInput('Test Company'))

@@ -88,24 +88,20 @@ final class KnownPartyMapper
             return null;
         }
 
-        $street = trim(
-            $this->string($data['StreetName'] ?? null) . ' ' .
-            $this->string($data['BuildingNumber'] ?? null)
+        $street = $this->string($data['StreetName'] ?? null);
+        $buildingNumber = $this->nullableTrim(
+            $this->stringOrNull($data['BuildingNumber'] ?? null)
         );
 
         $city = $this->string($data['CityName'] ?? null);
         $postalCode = $this->string($data['PostalZone'] ?? null);
         $countryIso = $this->string($data['CountryIso'] ?? null);
 
-        $formatted = $this->nullableTrim(
-            $this->stringOrNull($data['Formated'] ?? null)
-        );
-
         if (
             $street === '' &&
+            $buildingNumber === null &&
             $city === '' &&
-            $postalCode === '' &&
-            $formatted === null
+            $postalCode === ''
         ) {
             return null;
         }
@@ -115,7 +111,7 @@ final class KnownPartyMapper
             city: $city,
             postalCode: $postalCode,
             countryIso: $countryIso,
-            formatted: $formatted,
+            buildingNumber: $buildingNumber
         );
     }
 

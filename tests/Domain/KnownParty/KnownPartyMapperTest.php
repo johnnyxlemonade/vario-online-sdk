@@ -87,9 +87,9 @@ final class KnownPartyMapperTest extends TestCase
         $address = $party->getPostalAddress();
 
         self::assertNotNull($address);
-        self::assertSame('Main 123', $address->getStreet());
-        self::assertSame('Prague', $address->getCity());
-        self::assertSame('11000', $address->getPostalCode());
+        self::assertSame('Main', $address->getStreet());
+        self::assertSame('123', $address->getBuildingNumber());
+        self::assertSame('Main 123', $address->getStreetLine());
     }
 
     public function test_returns_null_address_when_empty(): void
@@ -202,8 +202,9 @@ final class KnownPartyMapperTest extends TestCase
 
         self::assertNotNull($address);
 
-        self::assertSame('Main 10', $address->getStreet());
-        self::assertSame('Prague', $address->getCity());
+        self::assertSame('Main', $address->getStreet());
+        self::assertSame('10', $address->getBuildingNumber());
+        self::assertSame('Main 10', $address->getStreetLine());
     }
 
     public function test_identification_without_id_is_ignored(): void
@@ -250,5 +251,29 @@ final class KnownPartyMapperTest extends TestCase
         $party = $this->mapper->map($payload);
 
         self::assertNull($party->getPostalAddress());
+    }
+
+    public function test_display_address_is_composed(): void
+    {
+        $payload = [
+            'UUID' => 'abc',
+            'PostalAddress' => [
+                'StreetName' => 'Main',
+                'BuildingNumber' => '10',
+                'CityName' => 'Prague',
+                'PostalZone' => '11000',
+                'CountryIso' => 'CZ',
+            ]
+        ];
+
+        $party = $this->mapper->map($payload);
+        $address = $party->getPostalAddress();
+
+        self::assertNotNull($address);
+
+        self::assertSame(
+            'Main 10, 11000 Prague, CZ',
+            $address->getDisplayAddress()
+        );
     }
 }

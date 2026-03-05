@@ -67,14 +67,13 @@ final class KnownPartyTest extends TestCase
             city: 'Prague',
             postalCode: '11000',
             countryIso: 'CZ',
-            formatted: null
         );
 
         $party = new KnownParty(
             kind: KnownPartyKind::Organization,
             uuid: 'abc',
-            id: null,
             name: 'Test Company',
+            id: null,
             contactPerson: null,
             email: null,
             telephone: null,

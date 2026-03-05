@@ -117,7 +117,7 @@ class KnownParty implements KnownPartyInterface
 
     public function getStreetName(): ?string
     {
-        return $this->postalAddress?->getStreetName();
+        return $this->postalAddress?->getStreet();
     }
 
     public function getBuildingNumber(): ?string
@@ -137,9 +137,7 @@ class KnownParty implements KnownPartyInterface
 
     public function getDisplayAddress(): ?string
     {
-        $value = $this->postalAddress?->getDisplayAddress();
-
-        return $value !== '' ? $value : null;
+        return $this->postalAddress?->getDisplayAddress();
     }
 
     public function hasIdentifications(): bool

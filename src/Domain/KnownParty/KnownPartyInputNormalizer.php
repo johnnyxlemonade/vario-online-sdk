@@ -107,12 +107,11 @@ final class KnownPartyInputNormalizer
 
     /**
      * @return array{
-     *     StreetName: string,
-     *     BuildingNumber?: string,
-     *     CityName: string,
-     *     PostalZone: string,
-     *     CountryIso: string,
-     *     Formated?: string
+     *     StreetName: string|null,
+     *     BuildingNumber: string|null,
+     *     CityName: string|null,
+     *     PostalZone: string|null,
+     *     CountryIso: string|null
      * }|null
      */
     private function normalizeAddress(?PostalAddress $address): ?array
@@ -121,24 +120,15 @@ final class KnownPartyInputNormalizer
             return null;
         }
 
-        $formatted = $address->getFormatted()
-            ?? $address->getDisplayAddress();
+        $a = $address->toArray();
 
         $data = [
-            'StreetName' => $address->getStreetName(),
-            'CityName' => $address->getCity(),
-            'PostalZone' => $address->getPostalCode(),
-            'CountryIso' => $address->getCountryIso(),
+            'StreetName' => $a['street'],
+            'CityName' => $a['city'],
+            'PostalZone' => $a['postalCode'],
+            'CountryIso' => $a['countryIso'],
+            'BuildingNumber' => $a['buildingNumber'],
         ];
-
-        $building = $address->getBuildingNumber();
-        if ($building !== null && $building !== '') {
-            $data['BuildingNumber'] = $building;
-        }
-
-        if ($formatted !== '') {
-            $data['Formated'] = $formatted;
-        }
 
         return $data;
     }

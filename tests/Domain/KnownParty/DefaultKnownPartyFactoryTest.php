@@ -18,8 +18,7 @@ final class DefaultKnownPartyFactoryTest extends TestCase
             street: 'Main 10',
             city: 'Prague',
             postalCode: '11000',
-            countryIso: 'CZ',
-            formatted: null
+            countryIso: 'CZ'
         );
 
         $identifications = new IdentificationCollection([]);

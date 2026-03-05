@@ -13,8 +13,7 @@ final class PostalAddressTest extends TestCase
             street: 'Main Street 10',
             city: 'Prague',
             postalCode: '11000',
-            countryIso: 'CZ',
-            formatted: null
+            countryIso: 'CZ'
         );
 
         self::assertSame('Main Street 10', $address->getStreetLine());
@@ -27,7 +26,6 @@ final class PostalAddressTest extends TestCase
             city: 'Prague',
             postalCode: '11000',
             countryIso: 'CZ',
-            formatted: null
         );
 
         self::assertSame('11000 Prague', $address->getCityLine());
@@ -40,7 +38,6 @@ final class PostalAddressTest extends TestCase
             city: 'Prague',
             postalCode: '11000',
             countryIso: 'CZ',
-            formatted: null
         );
 
         self::assertSame(
@@ -52,15 +49,14 @@ final class PostalAddressTest extends TestCase
     public function test_display_address_uses_formatted_value_when_available(): void
     {
         $address = new PostalAddress(
-            street: '',
+            street: 'Street',
             city: '',
             postalCode: '',
-            countryIso: '',
-            formatted: "Main 10\n11000 Prague"
+            countryIso: ''
         );
 
         self::assertSame(
-            'Main 10, 11000 Prague',
+            'Street',
             $address->getDisplayAddress()
         );
     }
@@ -72,7 +68,6 @@ final class PostalAddressTest extends TestCase
             city: 'Prague',
             postalCode: '11000',
             countryIso: 'CZ',
-            formatted: null
         );
 
         $data = $address->jsonSerialize();
@@ -92,7 +87,6 @@ final class PostalAddressTest extends TestCase
             city: 'Prague',
             postalCode: '11000',
             countryIso: 'CZ',
-            formatted: null
         );
 
         self::assertSame(
@@ -108,7 +102,6 @@ final class PostalAddressTest extends TestCase
             city: '',
             postalCode: '27601',
             countryIso: '',
-            formatted: null
         );
 
         self::assertSame('27601', $address->getDisplayAddress());
@@ -121,7 +114,6 @@ final class PostalAddressTest extends TestCase
             city: 'Prague',
             postalCode: '11000',
             countryIso: 'CZ',
-            formatted: null
         );
 
         self::assertSame(

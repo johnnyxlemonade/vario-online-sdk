@@ -25,55 +25,70 @@ use JsonSerializable;
 final class PostalAddress implements Stringable, JsonSerializable
 {
     public function __construct(
-        private readonly string $street,
-        private readonly string $city,
-        private readonly string $postalCode,
-        private readonly string $countryIso,
-        private readonly ?string $formatted = null,
+        private readonly ?string $street = null,
+        private readonly ?string $buildingNumber = null,
+        private readonly ?string $city = null,
+        private readonly ?string $postalCode = null,
+        private readonly ?string $countryIso = null
     ) {}
 
     /* =========================
      * Atomic values
      * ========================= */
-    public function getStreet(): string
+    public function getStreet(): ?string
     {
         return $this->street;
     }
 
-    public function getCity(): string
+    public function getBuildingNumber(): ?string
+    {
+        return $this->buildingNumber;
+    }
+
+    public function getCity(): ?string
     {
         return $this->city;
     }
 
-    public function getPostalCode(): string
+    public function getPostalCode(): ?string
     {
         return $this->postalCode;
     }
 
-    public function getCountryIso(): string
+    public function getCountryIso(): ?string
     {
         return $this->countryIso;
-    }
-
-    public function getFormatted(): ?string
-    {
-        return $this->formatted;
     }
 
     /* =========================
      * Derived lines
      * ========================= */
-
-    public function getStreetLine(): string
+    public function getStreetLine(): ?string
     {
-        return self::normalizeWhitespace($this->street);
+        $street = self::normalizeWhitespace($this->street);
+        $number = self::normalizeWhitespace($this->buildingNumber);
+
+        if ($street === null && $number === null) {
+            return null;
+        }
+
+        $line = trim(($street ?? '') . ' ' . ($number ?? ''));
+
+        return $line !== '' ? $line : null;
     }
 
-    public function getCityLine(): string
+    public function getCityLine(): ?string
     {
-        return self::normalizeWhitespace(
-            trim($this->postalCode . ' ' . $this->city)
-        );
+        $postal = self::normalizeWhitespace($this->postalCode);
+        $city = self::normalizeWhitespace($this->city);
+
+        if ($postal === null && $city === null) {
+            return null;
+        }
+
+        $line = trim(($postal ?? '') . ' ' . ($city ?? ''));
+
+        return $line !== '' ? $line : null;
     }
 
     /* =========================
@@ -83,61 +98,41 @@ final class PostalAddress implements Stringable, JsonSerializable
     /**
      * Full normalized address.
      */
-    public function getDisplayAddress(): string
+    public function getDisplayAddress(): ?string
     {
-        if ($this->formatted !== null && trim($this->formatted) !== '') {
-            return self::normalizeAddress($this->formatted);
-        }
-
         $parts = array_filter(
             [
                 $this->getStreetLine(),
                 $this->getCityLine(),
-                $this->countryIso,
+                $this->getCountryIso(),
             ],
-            static fn (string $v): bool => $v !== ''
+            static fn(?string $v): bool => $v !== null && $v !== ''
         );
+
+        if ($parts === []) {
+            return null;
+        }
 
         return implode(', ', $parts);
     }
 
     /**
-     * Extracts street name without building number.
-     */
-    public function getStreetName(): string
-    {
-        return $this->getStreetLine();
-    }
-
-    /**
-     * Extracts building number from street line if present.
-     */
-    public function getBuildingNumber(): ?string
-    {
-        if (preg_match('~(\d+[^\s]*)$~u', $this->street, $m) === 1) {
-            return $m[1];
-        }
-
-        return null;
-    }
-
-    /**
-     * Structured representation.
-     *
      * @return array{
-     *     street:string,
-     *     streetLine:string,
-     *     city:string,
-     *     cityLine:string,
-     *     postalCode:string,
-     *     countryIso:string,
-     *     display:string
+     *     street:string|null,
+     *     buildingNumber:string|null,
+     *     streetLine:string|null,
+     *     city:string|null,
+     *     cityLine:string|null,
+     *     postalCode:string|null,
+     *     countryIso:string|null,
+     *     display:string|null
      * }
      */
     public function toArray(): array
     {
         return [
             'street' => $this->street,
+            'buildingNumber' => $this->buildingNumber,
             'streetLine' => $this->getStreetLine(),
             'city' => $this->city,
             'cityLine' => $this->getCityLine(),
@@ -149,13 +144,20 @@ final class PostalAddress implements Stringable, JsonSerializable
 
     public function __toString(): string
     {
-        return $this->getDisplayAddress();
+        return $this->getDisplayAddress() ?? "";
     }
 
     /**
-     * JSON representation of address.
-     *
-     * @return array<string,string>
+     * @return array{
+     *     street:string|null,
+     *     buildingNumber:string|null,
+     *     streetLine:string|null,
+     *     city:string|null,
+     *     cityLine:string|null,
+     *     postalCode:string|null,
+     *     countryIso:string|null,
+     *     display:string|null
+     * }
      */
     public function jsonSerialize(): array
     {
@@ -165,19 +167,17 @@ final class PostalAddress implements Stringable, JsonSerializable
     /* =========================
      * Normalization
      * ========================= */
-
-    private static function normalizeAddress(string $value): string
+    private static function normalizeWhitespace(?string $value): ?string
     {
-        $value = preg_replace('/\R+/u', ', ', $value) ?? $value;
+        if ($value === null) {
+            return null;
+        }
 
-        return self::normalizeWhitespace($value);
-    }
-
-    private static function normalizeWhitespace(string $value): string
-    {
         $value = preg_replace('/[\t]+/u', ' ', $value) ?? $value;
         $value = preg_replace('/\s{2,}/u', ' ', $value) ?? $value;
 
-        return trim($value);
+        $value = trim($value);
+
+        return $value === '' ? null : $value;
     }
 }
