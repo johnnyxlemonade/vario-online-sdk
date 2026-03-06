@@ -39,10 +39,10 @@ final class ProductMapper
     }
 
     /**
-     * @param iterable<array<string,mixed>|DatasetRow> $rows
-     * @return iterable<Product>
+     * @param iterable<int, array<string,mixed>|DatasetRow> $rows
+     * @return \Generator<int, Product>
      */
-    public function iterate(iterable $rows): iterable
+    public function iterate(iterable $rows): \Generator
     {
         foreach ($rows as $row) {
 
@@ -52,6 +52,26 @@ final class ProductMapper
 
             yield $this->map($row);
         }
+    }
+
+    /**
+     * @param iterable<int, array<string,mixed>|DatasetRow> $rows
+     */
+    public function collect(iterable $rows): ProductCollection
+    {
+        return new ProductCollection(
+            ...$this->iterate($rows)
+        );
+    }
+
+    /**
+     * @param iterable<int, array<string,mixed>|DatasetRow> $rows
+     */
+    public function lazy(iterable $rows): LazyProductCollection
+    {
+        return new LazyProductCollection(
+            fn() => $this->iterate($rows)
+        );
     }
 
 }

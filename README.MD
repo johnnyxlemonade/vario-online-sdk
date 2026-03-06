@@ -163,77 +163,89 @@ Entities provide semantic helpers:
 No manual array parsing required.
 
 ------------------------------------------------------------------------
-## Domain Example --- Products
+## Domain Example — Products
 
 The SDK provides a typed **Product domain model** for working with
 catalogue data exposed through Vario `DatasetView` endpoints.
 
-Dataset rows are mapped into a normalized `Product` aggregate using a
-set of `ProductSectionMapper` implementations. Each mapper is
-responsible for mapping one section of the product (identity, pricing,
-inventory, etc.).
+Products are composed from individual **ProductSection** objects
+(identity, pricing, inventory, etc.) which are mapped from DatasetView
+rows using a configurable mapper pipeline.
 
-``` php
+```php
 use Lemonade\Vario\Domain\Product\ProductDatasetMapping;
 use Lemonade\Vario\Domain\Product\ProductMapper;
 use Lemonade\Vario\Domain\Product\Mapper\ProductIdentityMapper;
 use Lemonade\Vario\Domain\Product\Mapper\ProductPricingMapper;
 use Lemonade\Vario\Domain\Product\Mapping\ProductIdentityMapping;
 use Lemonade\Vario\Domain\Product\Mapping\ProductPricingMapping;
-use Lemonade\Vario\Domain\Product\ValueObject\ProductIdentity;
-use Lemonade\Vario\Domain\Product\ValueObject\ProductPricing;
-use Lemonade\Vario\ValueObject\DatasetViewQuery;
-use Lemonade\Vario\ValueObject\CustomDatasetView;
 
-$query = DatasetViewQuery::for(
-    new CustomDatasetView('Katalog/KatalogCenikAPI'),
-    pageLength: 50
-);
-
-$response = $vario->datasetView()->get($query);
-
-$mapping = new ProductDatasetMapping();
-
-$mapping->register(
-    new ProductIdentityMapper(
+$mapping = (new ProductDatasetMapping())
+    ->add(new ProductIdentityMapper(
         new ProductIdentityMapping(
             uuid: 'ID_Produktu',
             sku: 'Produkt',
             name: 'Nazev_produktu'
         )
-    )
-);
-
-$mapping->register(
-    new ProductPricingMapper(
+    ))
+    ->add(new ProductPricingMapper(
         new ProductPricingMapping(
             price: 'Cena_Cenik'
         )
-    )
-);
+    ));
 
 $mapper = new ProductMapper($mapping);
 
 foreach ($mapper->iterate($response['Data'] ?? []) as $product) {
+    echo $product->identity()?->getName();
+    echo $product->pricing()?->getPrice();
+}
+```
 
-    $identity = $product->get(ProductIdentity::class);
-    $pricing = $product->get(ProductPricing::class);
+### Processing Strategies
 
-    // convenience helpers for core sections
-    $identity = $product->getIdentity();
-    $pricing = $product->getPricing();
+The `ProductMapper` supports multiple result processing strategies
+depending on memory requirements and dataset size.
 
-    echo $identity?->getName();
-    echo $pricing?->getPrice();
+| Method | Result type | Description |
+|------|------|------|
+| `iterate()` | generator | streaming processing (lowest memory usage) |
+| `collect()` | `ProductCollection` | materialized collection |
+| `lazy()` | `LazyProductCollection` | lazy processing pipeline (re-iterable) |
+
+The `lazy()` strategy returns a `LazyProductCollection`, which builds a
+processing pipeline over the mapped products.
+
+Unlike a plain generator, the lazy collection **can be iterated multiple times**
+and supports pipeline operations such as `filter()` before materialization.
+
+Example:
+
+```php
+$products = $mapper
+    ->lazy($response['Data'] ?? [])
+    ->filter(fn($p) => $p->inventory()?->getStock() > 0);
+
+foreach ($products as $product) {
+    echo $product->identity()?->getName();
 }
 ```
 
 ### Custom Product Sections
-The product mapping pipeline is fully extensible.  
-You can register your own product sections by implementing
-`ProductSectionMapper`.
 
-```php
+The product mapping pipeline is **fully extensible**.
+
+Applications can introduce additional product sections by implementing
+`ProductSectionMapper`. This makes it possible to map fields that are
+specific to a particular Vario installation without modifying the SDK
+core.
+
+Each custom mapper extracts a subset of fields from the `DatasetRow` and
+converts them into a strongly‑typed `ProductSection` value object.
+
+Example custom mapper:
+
+``` php
 final class ProductSeoMapper extends AbstractProductSectionMapper
 {
     public function __construct(
@@ -255,8 +267,9 @@ final class ProductSeoMapper extends AbstractProductSectionMapper
 ```
 
 Register the mapper in `ProductDatasetMapping`:
-```php
-$mapping->register(
+
+``` php
+$mapping->add(
     new ProductSeoMapper(
         new ProductSeoMapping(
             title: 'SEO_Title',
@@ -266,34 +279,79 @@ $mapping->register(
 );
 ```
 
-Then access it like any other product section:
+Once registered, the section becomes part of the product mapping
+pipeline and can be accessed like any other product section:
 
-```php
+``` php
 $seo = $product->get(ProductSeo::class);
+```
+
+The `Product::get()` method retrieves the mapped section instance by its
+class type. If the mapping pipeline did not produce the requested
+section, the method returns `null`.
+
+### Full Example
+
+A complete working example demonstrating:
+
+- mapper configuration
+- streaming iteration
+- materialized collections
+- lazy processing pipelines
+- accessing all product sections
+
+is available in:
+
+```
+examples/datasetview-products.php
 ```
 
 ### Architecture
 
+The product mapping pipeline converts raw **DatasetView responses**
+into a typed Product domain model composed of independent sections.
+
+    DatasetView response
+        ↓
     DatasetRow
-       ↓
-    ProductSectionMapper (customizable)
-       ↓
+        ↓
+    ProductSectionMapper pipeline
+        ↓
     ProductSection (ValueObject)
-       ↓
+        ↓
     Product (aggregate)
+        ↓
+    iterate() / collect() / lazy()
+        ↓
+    ProductCollection / LazyProductCollection
 
-Each mapper converts a dataset row into a specific product section:
+Each mapper extracts a specific part of the dataset row and converts it
+into a strongly-typed `ProductSection` value object.
 
--   `ProductIdentityMapper`
--   `ProductPricingMapper`
--   `ProductInventoryMapper`
--   `ProductFlagsMapper`
--   `ProductDimensionsMapper`
--   `ProductAttributesMapper`
+Built-in section mappers include:
 
-This architecture allows the SDK to remain extensible, strongly typed,
-and compatible with PHPStan level max.
+- `ProductIdentityMapper`
+- `ProductPricingMapper`
+- `ProductInventoryMapper`
+- `ProductFlagsMapper`
+- `ProductDimensionsMapper`
+- `ProductAttributesMapper`
 
+The mapping pipeline is fully extensible.  
+Additional product sections can be introduced by implementing
+`ProductSectionMapper` and registering the mapper in
+`ProductDatasetMapping`.
+
+This architecture allows the SDK to remain:
+
+- **extensible**
+- **strongly typed**
+- independent from DatasetView column names
+- compatible with **PHPStan level max**
+
+The separation between mapping and processing also allows applications
+to efficiently handle very large product catalogues without loading the
+entire dataset into memory.
 ------------------------------------------------------------------------
 
 

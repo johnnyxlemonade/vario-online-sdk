@@ -311,6 +311,10 @@ final class VarioClient implements VarioClientInterface
     private function reauthenticate(): void
     {
         $this->logger->info('Vario API re-authentication triggered');
+        $this->logger->debug(
+            'Vario auth token cleared before re-authentication'
+        );
+        $this->tokenStorage->clear();
 
         try {
             ($this->reauthCallback)();

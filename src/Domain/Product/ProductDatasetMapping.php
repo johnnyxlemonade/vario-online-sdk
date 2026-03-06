@@ -23,7 +23,6 @@ use Lemonade\Vario\Domain\Product\ValueObject\ProductSection;
  * @license     MIT
  * @since       1.0
  */
-
 final class ProductDatasetMapping
 {
     /** @var ProductSectionMapper<ProductSection>[] */
@@ -32,9 +31,11 @@ final class ProductDatasetMapping
     /**
      * @param ProductSectionMapper<ProductSection> $mapper
      */
-    public function register(ProductSectionMapper $mapper): void
+    public function add(ProductSectionMapper $mapper): self
     {
         $this->components[] = $mapper;
+
+        return $this;
     }
 
     /** @return ProductSectionMapper<ProductSection>[] */

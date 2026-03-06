@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lemonade\Vario\Tests\Domain\Product;
 
 use Lemonade\Vario\Domain\Product\DatasetRow;
+use Lemonade\Vario\Domain\Product\Mapper\AbstractProductSectionMapper;
 use Lemonade\Vario\Domain\Product\Mapper\ProductAttributesMapper;
 use Lemonade\Vario\Domain\Product\Mapper\ProductFlagsMapper;
 use Lemonade\Vario\Domain\Product\Mapper\ProductIdentityMapper;
@@ -22,48 +23,45 @@ use Lemonade\Vario\Domain\Product\ValueObject\ProductFlags;
 use Lemonade\Vario\Domain\Product\ValueObject\ProductIdentity;
 use Lemonade\Vario\Domain\Product\ValueObject\ProductInventory;
 use Lemonade\Vario\Domain\Product\ValueObject\ProductPricing;
+use Lemonade\Vario\Domain\Product\ValueObject\ProductSection;
 use PHPUnit\Framework\TestCase;
 
 final class ProductMapperTest extends TestCase
 {
     public function testMapsProduct(): void
     {
-        $mapping = new ProductDatasetMapping();
-
-        $mapping->register(
-            new ProductIdentityMapper(
-                new ProductIdentityMapping(
-                    uuid: 'uuid',
-                    sku: 'sku',
-                    catalogNumber: null,
-                    name: 'name'
+        $mapping = (new ProductDatasetMapping())
+            ->add(
+                new ProductIdentityMapper(
+                    new ProductIdentityMapping(
+                        uuid: 'uuid',
+                        sku: 'sku',
+                        catalogNumber: null,
+                        name: 'name'
+                    )
                 )
             )
-        );
-
-        $mapping->register(
-            new ProductPricingMapper(
-                new ProductPricingMapping(
-                    price: 'price'
+            ->add(
+                new ProductPricingMapper(
+                    new ProductPricingMapping(
+                        price: 'price'
+                    )
                 )
             )
-        );
-
-        $mapping->register(
-            new ProductInventoryMapper(
-                new ProductInventoryMapping(
-                    stock: 'stock'
+            ->add(
+                new ProductInventoryMapper(
+                    new ProductInventoryMapping(
+                        stock: 'stock'
+                    )
                 )
             )
-        );
-
-        $mapping->register(
-            new ProductFlagsMapper(
-                new ProductFlagsMapping(
-                    sale: 'sale'
+            ->add(
+                new ProductFlagsMapper(
+                    new ProductFlagsMapping(
+                        sale: 'sale'
+                    )
                 )
-            )
-        );
+            );
 
         $row = new DatasetRow([
             'uuid' => 'abc-123',
@@ -78,24 +76,24 @@ final class ProductMapperTest extends TestCase
 
         $product = $mapper->map($row);
 
-        $identity = $product->get(ProductIdentity::class);
+        $identity = $product->identity();
         self::assertInstanceOf(ProductIdentity::class, $identity);
 
         self::assertSame('abc-123', $identity->getUuid());
         self::assertSame('SKU-1', $identity->getSku());
         self::assertSame('Test product', $identity->getName());
 
-        $pricing = $product->get(ProductPricing::class);
+        $pricing = $product->pricing();
         self::assertInstanceOf(ProductPricing::class, $pricing);
 
         self::assertSame(199.9, $pricing->getPrice());
 
-        $inventory = $product->get(ProductInventory::class);
+        $inventory = $product->inventory();
         self::assertInstanceOf(ProductInventory::class, $inventory);
 
         self::assertSame(10, $inventory->getStock());
 
-        $flags = $product->get(ProductFlags::class);
+        $flags = $product->flags();
         self::assertInstanceOf(ProductFlags::class, $flags);
 
         self::assertTrue($flags->isSale());
@@ -103,16 +101,15 @@ final class ProductMapperTest extends TestCase
 
     public function testMapsNullValues(): void
     {
-        $mapping = new ProductDatasetMapping();
-
-        $mapping->register(
-            new ProductIdentityMapper(
-                new ProductIdentityMapping(
-                    uuid: 'uuid',
-                    sku: 'sku'
+        $mapping = (new ProductDatasetMapping())
+            ->add(
+                new ProductIdentityMapper(
+                    new ProductIdentityMapping(
+                        uuid: 'uuid',
+                        sku: 'sku'
+                    )
                 )
-            )
-        );
+            );
 
         $row = new DatasetRow([
             'uuid' => 'abc-123',
@@ -123,7 +120,7 @@ final class ProductMapperTest extends TestCase
 
         $product = $mapper->map($row);
 
-        $identity = $product->get(ProductIdentity::class);
+        $identity = $product->identity();
         self::assertInstanceOf(ProductIdentity::class, $identity);
 
         self::assertSame('abc-123', $identity->getUuid());
@@ -132,22 +129,20 @@ final class ProductMapperTest extends TestCase
 
     public function testFiltersNonScalarAttributes(): void
     {
-        $mapping = new ProductDatasetMapping();
-
-        $mapping->register(
-            new ProductIdentityMapper(
-                new ProductIdentityMapping(uuid: 'uuid')
+        $mapping = (new ProductDatasetMapping())
+            ->add(
+                new ProductIdentityMapper(
+                    new ProductIdentityMapping(uuid: 'uuid')
+                )
             )
-        );
-
-        $mapping->register(
-            new ProductAttributesMapper(
-                new ProductAttributesMapping([
-                    'color' => 'color',
-                    'invalid' => 'invalid',
-                ])
-            )
-        );
+            ->add(
+                new ProductAttributesMapper(
+                    new ProductAttributesMapping([
+                        'color' => 'color',
+                        'invalid' => 'invalid',
+                    ])
+                )
+            );
 
         $row = new DatasetRow([
             'uuid' => '1',
@@ -159,10 +154,62 @@ final class ProductMapperTest extends TestCase
 
         $product = $mapper->map($row);
 
-        $attributes = $product->get(ProductAttributes::class);
+        $attributes = $product->attributes();
 
         self::assertInstanceOf(ProductAttributes::class, $attributes);
         self::assertSame('red', $attributes->get('color'));
         self::assertFalse($attributes->has('invalid'));
+    }
+
+    public function testSupportsCustomSectionMapper(): void
+    {
+        $mapping = (new ProductDatasetMapping())
+            ->add(
+                new ProductIdentityMapper(
+                    new ProductIdentityMapping(uuid: 'uuid')
+                )
+            )
+            ->add(
+                new class extends AbstractProductSectionMapper {
+                    public function map(DatasetRow $row): ?ProductSection
+                    {
+                        $value = $this->mapString($row, 'custom');
+
+                        if ($value === null) {
+                            return null;
+                        }
+
+                        return new class ($value) implements ProductSection {
+                            public function __construct(
+                                private readonly string $value
+                            ) {}
+
+                            public function getValue(): string
+                            {
+                                return $this->value;
+                            }
+
+                            public function toArray(): array
+                            {
+                                return ['value' => $this->value];
+                            }
+                        };
+                    }
+
+                }
+            );
+
+        $row = new DatasetRow([
+            'uuid' => '1',
+            'custom' => 'hello',
+        ]);
+
+        $mapper = new ProductMapper($mapping);
+
+        $product = $mapper->map($row);
+
+        $sections = $product->all();
+
+        self::assertCount(2, $sections);
     }
 }
