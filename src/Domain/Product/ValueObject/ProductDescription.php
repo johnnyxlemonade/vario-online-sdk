@@ -17,7 +17,7 @@ namespace Lemonade\Vario\Domain\Product\ValueObject;
  * @license     MIT
  * @since       1.0
  */
-final class ProductDescription
+final class ProductDescription implements ProductSection
 {
     public function __construct(
         private readonly ?string $shortDescription,

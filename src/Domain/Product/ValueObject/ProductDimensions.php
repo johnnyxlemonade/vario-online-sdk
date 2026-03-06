@@ -17,7 +17,7 @@ namespace Lemonade\Vario\Domain\Product\ValueObject;
  * @license     MIT
  * @since       1.0
  */
-final class ProductDimensions
+final class ProductDimensions implements ProductSection
 {
     private const KG_TO_GRAMS = 1000;
 

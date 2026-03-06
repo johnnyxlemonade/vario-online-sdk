@@ -1,11 +1,10 @@
 # Vario Online PHP SDK
 
-[![PHP
-Version](https://img.shields.io/badge/php-%5E8.1-blue.svg)](https://www.php.net/)
-[![Packagist
-Version](https://img.shields.io/packagist/v/lemonade/vario-online-sdk)](https://packagist.org/packages/lemonade/vario-online-sdk)
-[![PHPStan
-Level](https://img.shields.io/badge/PHPStan-level%20max-brightgreen.svg)](https://phpstan.org/)
+[![PHP Version](https://img.shields.io/packagist/php-v/lemonade/vario-online-sdk)](https://packagist.org/packages/lemonade/vario-online-sdk)
+[![Packagist Version](https://img.shields.io/packagist/v/lemonade/vario-online-sdk)](https://packagist.org/packages/lemonade/vario-online-sdk)
+[![Downloads](https://img.shields.io/packagist/dt/lemonade/vario-online-sdk)](https://packagist.org/packages/lemonade/vario-online-sdk)
+[![PHPStan Level](https://img.shields.io/badge/PHPStan-level%20max-brightgreen.svg)](https://phpstan.org/)
+[![Tests](https://github.com/johnnyxlemonade/vario-online-sdk/actions/workflows/phpunit.yml/badge.svg)](https://github.com/johnnyxlemonade/vario-online-sdk/actions/workflows/phpunit.yml)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
 Typed, PSR-compatible PHP SDK for integrating with **Vario Online API**.
@@ -135,7 +134,6 @@ $data = $vario->datasetView()->get($query);
 
 ------------------------------------------------------------------------
 
-
 ## Domain Example — Known Parties
 
 The SDK exposes typed domain entities instead of raw arrays.
@@ -165,21 +163,25 @@ Entities provide semantic helpers:
 No manual array parsing required.
 
 ------------------------------------------------------------------------
-
-------------------------------------------------------------------------
-## Domain Example — Products
+## Domain Example --- Products
 
 The SDK provides a typed **Product domain model** for working with
 catalogue data exposed through Vario `DatasetView` endpoints.
 
-Dataset rows are mapped into a normalized `Product` aggregate using
-the `ProductMapper`, acting as an anti-corruption layer between
-Vario DatasetView responses and the SDK domain model.
+Dataset rows are mapped into a normalized `Product` aggregate using a
+set of `ProductSectionMapper` implementations. Each mapper is
+responsible for mapping one section of the product (identity, pricing,
+inventory, etc.).
 
-```php
-use Lemonade\Vario\Domain\Product\DatasetRow;
+``` php
 use Lemonade\Vario\Domain\Product\ProductDatasetMapping;
 use Lemonade\Vario\Domain\Product\ProductMapper;
+use Lemonade\Vario\Domain\Product\Mapper\ProductIdentityMapper;
+use Lemonade\Vario\Domain\Product\Mapper\ProductPricingMapper;
+use Lemonade\Vario\Domain\Product\Mapping\ProductIdentityMapping;
+use Lemonade\Vario\Domain\Product\Mapping\ProductPricingMapping;
+use Lemonade\Vario\Domain\Product\ValueObject\ProductIdentity;
+use Lemonade\Vario\Domain\Product\ValueObject\ProductPricing;
 use Lemonade\Vario\ValueObject\DatasetViewQuery;
 use Lemonade\Vario\ValueObject\CustomDatasetView;
 
@@ -190,17 +192,107 @@ $query = DatasetViewQuery::for(
 
 $response = $vario->datasetView()->get($query);
 
-$mapper = new ProductMapper(new ProductDatasetMapping());
+$mapping = new ProductDatasetMapping();
 
-foreach ($response['Data'] ?? [] as $row) {
+$mapping->register(
+    new ProductIdentityMapper(
+        new ProductIdentityMapping(
+            uuid: 'ID_Produktu',
+            sku: 'Produkt',
+            name: 'Nazev_produktu'
+        )
+    )
+);
 
-    $product = $mapper->map(new DatasetRow($row));
+$mapping->register(
+    new ProductPricingMapper(
+        new ProductPricingMapping(
+            price: 'Cena_Cenik'
+        )
+    )
+);
 
-    echo $product->getIdentity()->getName();
-    echo $product->getPricing()?->getPrice();
+$mapper = new ProductMapper($mapping);
+
+foreach ($mapper->iterate($response['Data'] ?? []) as $product) {
+
+    $identity = $product->get(ProductIdentity::class);
+    $pricing = $product->get(ProductPricing::class);
+
+    // convenience helpers for core sections
+    $identity = $product->getIdentity();
+    $pricing = $product->getPricing();
+
+    echo $identity?->getName();
+    echo $pricing?->getPrice();
 }
 ```
 
+### Custom Product Sections
+The product mapping pipeline is fully extensible.  
+You can register your own product sections by implementing
+`ProductSectionMapper`.
+
+```php
+final class ProductSeoMapper extends AbstractProductSectionMapper
+{
+    public function __construct(
+        private readonly ProductSeoMapping $mapping
+    ) {}
+
+    public function map(DatasetRow $row): ?ProductSeo
+    {
+        $title = $this->mapString($row, $this->mapping->getTitle());
+        $description = $this->mapString($row, $this->mapping->getDescription());
+
+        if ($title === null && $description === null) {
+            return null;
+        }
+
+        return new ProductSeo($title, $description);
+    }
+}
+```
+
+Register the mapper in `ProductDatasetMapping`:
+```php
+$mapping->register(
+    new ProductSeoMapper(
+        new ProductSeoMapping(
+            title: 'SEO_Title',
+            description: 'SEO_Description'
+        )
+    )
+);
+```
+
+Then access it like any other product section:
+
+```php
+$seo = $product->get(ProductSeo::class);
+```
+
+### Architecture
+
+    DatasetRow
+       ↓
+    ProductSectionMapper (customizable)
+       ↓
+    ProductSection (ValueObject)
+       ↓
+    Product (aggregate)
+
+Each mapper converts a dataset row into a specific product section:
+
+-   `ProductIdentityMapper`
+-   `ProductPricingMapper`
+-   `ProductInventoryMapper`
+-   `ProductFlagsMapper`
+-   `ProductDimensionsMapper`
+-   `ProductAttributesMapper`
+
+This architecture allows the SDK to remain extensible, strongly typed,
+and compatible with PHPStan level max.
 
 ------------------------------------------------------------------------
 

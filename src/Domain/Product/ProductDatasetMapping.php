@@ -4,15 +4,8 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\Product;
 
-use Lemonade\Vario\Domain\Product\Mapping\ProductAttributesMapping;
-use Lemonade\Vario\Domain\Product\Mapping\ProductClassificationMapping;
-use Lemonade\Vario\Domain\Product\Mapping\ProductDescriptionMapping;
-use Lemonade\Vario\Domain\Product\Mapping\ProductDimensionsMapping;
-use Lemonade\Vario\Domain\Product\Mapping\ProductFlagsMapping;
-use Lemonade\Vario\Domain\Product\Mapping\ProductIdentifiersMapping;
-use Lemonade\Vario\Domain\Product\Mapping\ProductIdentityMapping;
-use Lemonade\Vario\Domain\Product\Mapping\ProductInventoryMapping;
-use Lemonade\Vario\Domain\Product\Mapping\ProductPricingMapping;
+use Lemonade\Vario\Domain\Product\Mapper\ProductSectionMapper;
+use Lemonade\Vario\Domain\Product\ValueObject\ProductSection;
 
 /**
  * Class ProductDatasetMapping
@@ -30,62 +23,23 @@ use Lemonade\Vario\Domain\Product\Mapping\ProductPricingMapping;
  * @license     MIT
  * @since       1.0
  */
+
 final class ProductDatasetMapping
 {
-    public function __construct(
-        private readonly ProductIdentityMapping $identity = new ProductIdentityMapping(),
-        private readonly ProductDescriptionMapping $description = new ProductDescriptionMapping(),
-        private readonly ProductFlagsMapping $flags = new ProductFlagsMapping(),
-        private readonly ProductDimensionsMapping $dimensions = new ProductDimensionsMapping(),
-        private readonly ProductPricingMapping $pricing = new ProductPricingMapping(),
-        private readonly ProductInventoryMapping $inventory = new ProductInventoryMapping(),
-        private readonly ProductIdentifiersMapping $identifiers = new ProductIdentifiersMapping(),
-        private readonly ProductClassificationMapping $classification = new ProductClassificationMapping(),
-        private readonly ProductAttributesMapping $attributes = new ProductAttributesMapping(),
-    ) {}
+    /** @var ProductSectionMapper<ProductSection>[] */
+    private array $components = [];
 
-    public function identity(): ProductIdentityMapping
+    /**
+     * @param ProductSectionMapper<ProductSection> $mapper
+     */
+    public function register(ProductSectionMapper $mapper): void
     {
-        return $this->identity;
+        $this->components[] = $mapper;
     }
 
-    public function description(): ProductDescriptionMapping
+    /** @return ProductSectionMapper<ProductSection>[] */
+    public function components(): array
     {
-        return $this->description;
-    }
-
-    public function flags(): ProductFlagsMapping
-    {
-        return $this->flags;
-    }
-
-    public function dimensions(): ProductDimensionsMapping
-    {
-        return $this->dimensions;
-    }
-
-    public function pricing(): ProductPricingMapping
-    {
-        return $this->pricing;
-    }
-
-    public function inventory(): ProductInventoryMapping
-    {
-        return $this->inventory;
-    }
-
-    public function identifiers(): ProductIdentifiersMapping
-    {
-        return $this->identifiers;
-    }
-
-    public function classification(): ProductClassificationMapping
-    {
-        return $this->classification;
-    }
-
-    public function attributes(): ProductAttributesMapping
-    {
-        return $this->attributes;
+        return $this->components;
     }
 }

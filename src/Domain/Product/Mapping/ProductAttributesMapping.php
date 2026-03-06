@@ -24,7 +24,7 @@ namespace Lemonade\Vario\Domain\Product\Mapping;
  * @license     MIT
  * @since       1.0
  */
-final class ProductAttributesMapping
+final class ProductAttributesMapping implements ProductSectionMapping
 {
     /**
      * @param array<string,string> $attributes attributeName => datasetColumn

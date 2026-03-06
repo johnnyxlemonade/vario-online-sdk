@@ -25,7 +25,7 @@ namespace Lemonade\Vario\Domain\Product\ValueObject;
  * @license     MIT
  * @since       1.0
  */
-final class ProductFlags
+final class ProductFlags implements ProductSection
 {
     /** @var array<string,ProductFlag> */
     private array $flags = [];

@@ -22,7 +22,7 @@ namespace Lemonade\Vario\Domain\Product\ValueObject;
  * @license     MIT
  * @since       1.0
  */
-final class ProductAttributes
+final class ProductAttributes implements ProductSection
 {
     /**
      * @param array<string, scalar|null> $attributes

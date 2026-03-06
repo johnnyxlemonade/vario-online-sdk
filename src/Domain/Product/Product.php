@@ -13,6 +13,7 @@ use Lemonade\Vario\Domain\Product\ValueObject\ProductIdentifiers;
 use Lemonade\Vario\Domain\Product\ValueObject\ProductIdentity;
 use Lemonade\Vario\Domain\Product\ValueObject\ProductInventory;
 use Lemonade\Vario\Domain\Product\ValueObject\ProductPricing;
+use Lemonade\Vario\Domain\Product\ValueObject\ProductSection;
 
 /**
  * Class Product
@@ -36,61 +37,89 @@ use Lemonade\Vario\Domain\Product\ValueObject\ProductPricing;
  */
 final class Product
 {
-    public function __construct(
-        private readonly ProductIdentity $identity,
-        private readonly ?ProductDescription $description,
-        private readonly ?ProductFlags $flags,
-        private readonly ?ProductDimensions $dimensions,
-        private readonly ?ProductPricing $pricing,
-        private readonly ?ProductInventory $inventory,
-        private readonly ?ProductIdentifiers $identifiers,
-        private readonly ?ProductClassification $classification,
-        private readonly ?ProductAttributes $attributes,
-    ) {}
+    /** @var array<class-string<ProductSection>, ProductSection> */
+    private array $sections = [];
 
-    public function getIdentity(): ProductIdentity
+    /**
+     * @param iterable<ProductSection> $sections
+     */
+    public function __construct(iterable $sections)
     {
-        return $this->identity;
+        foreach ($sections as $section) {
+            $this->sections[$section::class] = $section;
+        }
     }
 
-    public function getDescription(): ?ProductDescription
+    /**
+     * @template T of ProductSection
+     * @param class-string<T> $section
+     * @return T|null
+     */
+    public function get(string $section): ?ProductSection
     {
-        return $this->description;
+        $value = $this->sections[$section] ?? null;
+
+        /** @var T|null $value */
+        return $value;
     }
 
-    public function getFlags(): ?ProductFlags
+    /**
+     * @return array<class-string<ProductSection>, ProductSection>
+     */
+    public function all(): array
     {
-        return $this->flags;
+        return $this->sections;
     }
 
-    public function getDimensions(): ?ProductDimensions
+    public function has(string $section): bool
     {
-        return $this->dimensions;
+        return isset($this->sections[$section]);
     }
 
-    public function getPricing(): ?ProductPricing
+    // ----- Core typed helpers -----
+
+    public function identity(): ?ProductIdentity
     {
-        return $this->pricing;
+        return $this->get(ProductIdentity::class);
     }
 
-    public function getInventory(): ?ProductInventory
+    public function description(): ?ProductDescription
     {
-        return $this->inventory;
+        return $this->get(ProductDescription::class);
     }
 
-    public function getIdentifiers(): ?ProductIdentifiers
+    public function flags(): ?ProductFlags
     {
-        return $this->identifiers;
+        return $this->get(ProductFlags::class);
     }
 
-    public function getClassification(): ?ProductClassification
+    public function dimensions(): ?ProductDimensions
     {
-        return $this->classification;
+        return $this->get(ProductDimensions::class);
     }
 
-    public function getAttributes(): ?ProductAttributes
+    public function pricing(): ?ProductPricing
     {
-        return $this->attributes;
+        return $this->get(ProductPricing::class);
     }
 
+    public function inventory(): ?ProductInventory
+    {
+        return $this->get(ProductInventory::class);
+    }
+
+    public function identifiers(): ?ProductIdentifiers
+    {
+        return $this->get(ProductIdentifiers::class);
+    }
+
+    public function classification(): ?ProductClassification
+    {
+        return $this->get(ProductClassification::class);
+    }
+
+    public function attributes(): ?ProductAttributes
+    {
+        return $this->get(ProductAttributes::class);
+    }
 }

@@ -25,7 +25,7 @@ namespace Lemonade\Vario\Domain\Product\Mapping;
  * @license     MIT
  * @since       1.0
  */
-final class ProductFlagsMapping
+final class ProductFlagsMapping implements ProductSectionMapping
 {
     public function __construct(
         private readonly ?string $sale = 'Akce',

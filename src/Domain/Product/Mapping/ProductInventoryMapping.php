@@ -25,7 +25,7 @@ namespace Lemonade\Vario\Domain\Product\Mapping;
  * @license     MIT
  * @since       1.0
  */
-final class ProductInventoryMapping
+final class ProductInventoryMapping implements ProductSectionMapping
 {
     public function __construct(
         private readonly ?string $stock = 'Skladem_Celkem',

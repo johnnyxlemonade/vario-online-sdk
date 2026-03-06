@@ -24,7 +24,7 @@ namespace Lemonade\Vario\Domain\Product\Mapping;
  * @license     MIT
  * @since       1.0
  */
-final class ProductDimensionsMapping
+final class ProductDimensionsMapping implements ProductSectionMapping
 {
     public function __construct(
         private readonly ?string $width = 'Sirka',

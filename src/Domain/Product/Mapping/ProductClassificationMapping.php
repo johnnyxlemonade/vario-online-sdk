@@ -22,7 +22,7 @@ namespace Lemonade\Vario\Domain\Product\Mapping;
  * @license     MIT
  * @since       1.0
  */
-final class ProductClassificationMapping
+final class ProductClassificationMapping implements ProductSectionMapping
 {
     public function __construct(
         private readonly ?string $categoryId = 'KategorieId',

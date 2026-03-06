@@ -25,7 +25,7 @@ namespace Lemonade\Vario\Domain\Product\Mapping;
  * @license     MIT
  * @since       1.0
  */
-final class ProductIdentifiersMapping
+final class ProductIdentifiersMapping implements ProductSectionMapping
 {
     public function __construct(
         private readonly ?string $ean = 'EAN',
