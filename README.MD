@@ -67,18 +67,32 @@ The goal is to provide:
 -   PHPStan **level max** ready
 
 ## Architecture Overview
-The SDK follows a layered architecture separating domain models,
-transport logic and API modules.
+The SDK is composed of several layers separating application usage, 
+API modules, domain mapping and transport infrastructure.
 
 ```
 Application
+  │
+  ▼
+VarioApiFactory
+  │
+  ├─ VarioClientConfig
+  ├─ HttpAdapterInterface
+  └─ TokenStorageInterface
+  │
+  ▼
+Authenticator
+  │
+  ▼
+VarioClient
+  (auth + retry + request handling)
   │
   ▼
 VarioApi (Facade)
   │
   ▼
 API Modules
-  (KnownPartyApi, DatasetViewApi, ProductApi…)
+  (KnownPartyApi, DatasetViewApi, IncomingOrderApi…)
   │
   ▼
 Mapper / Normalizer Layer
@@ -88,16 +102,13 @@ Domain Models
   (KnownParty, Product, ValueObjects)
   │
   ▼
-VarioClient
-  (auth + retry + request handling)
-  │
-  ▼
 HttpAdapterInterface
   (PSR-18 boundary)
   │
   ▼
 HTTP Client
   (Guzzle / Symfony / custom)
+
 ```
 
 This architecture keeps the domain layer independent from the HTTP
