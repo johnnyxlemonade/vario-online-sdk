@@ -5,7 +5,13 @@ declare(strict_types=1);
 namespace Lemonade\Vario\Tests;
 
 use Lemonade\Vario\Api\AbstractApi;
+use Lemonade\Vario\Api\DatasetViewApi;
+use Lemonade\Vario\Api\IncomingOrderApi;
+use Lemonade\Vario\Api\KnownPartyApi;
+use Lemonade\Vario\Api\OutgoingInvoiceApi;
 use Lemonade\Vario\Client\VarioClientInterface;
+use Lemonade\Vario\Mapper\KnownParty\KnownPartyMapper;
+use Lemonade\Vario\Normalizer\KnownParty\KnownPartyInputNormalizer;
 use Lemonade\Vario\VarioApi;
 use PHPUnit\Framework\TestCase;
 
@@ -71,4 +77,69 @@ final class VarioApiTest extends TestCase
 
         self::assertSame($client, $vario->client());
     }
+
+    public function test_dataset_view_facade(): void
+    {
+        $client = $this->createMock(VarioClientInterface::class);
+        $api = new DatasetViewApi($client);
+
+        $vario = new VarioApi(
+            $client,
+            [
+                DatasetViewApi::class => fn() => $api,
+            ]
+        );
+
+        self::assertSame($api, $vario->datasetView());
+    }
+
+    public function test_incoming_orders_facade(): void
+    {
+        $client = $this->createMock(VarioClientInterface::class);
+        $api = new IncomingOrderApi($client);
+
+        $vario = new VarioApi(
+            $client,
+            [
+                IncomingOrderApi::class => fn() => $api,
+            ]
+        );
+
+        self::assertSame($api, $vario->incomingOrders());
+    }
+
+    public function test_known_parties_facade(): void
+    {
+        $client = $this->createMock(VarioClientInterface::class);
+        $api = new KnownPartyApi(
+            $client,
+            new KnownPartyMapper(),
+            new KnownPartyInputNormalizer(),
+        );
+
+        $vario = new VarioApi(
+            $client,
+            [
+                KnownPartyApi::class => fn() => $api,
+            ]
+        );
+
+        self::assertSame($api, $vario->knownParties());
+    }
+
+    public function test_outgoing_invoices_facade(): void
+    {
+        $client = $this->createMock(VarioClientInterface::class);
+        $api = new OutgoingInvoiceApi($client);
+
+        $vario = new VarioApi(
+            $client,
+            [
+                OutgoingInvoiceApi::class => fn() => $api,
+            ]
+        );
+
+        self::assertSame($api, $vario->outgoingInvoices());
+    }
+
 }
