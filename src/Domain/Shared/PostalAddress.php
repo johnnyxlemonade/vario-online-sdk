@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lemonade\Vario\Domain\KnownParty;
+namespace Lemonade\Vario\Domain\Shared;
 
 use JsonSerializable;
 use Stringable;
@@ -11,16 +11,31 @@ use Stringable;
  * Class PostalAddress
  *
  * Immutable value object representing a postal address
- * assigned to a KnownParty entity.
+ * associated with a domain entity.
  *
- * Normalizes Vario API address formatting into a stable
- * single-line representation suitable for UI and logging.
+ * The class normalizes address components returned by the
+ * Vario API into stable derived representations suitable for
+ * UI rendering, logging and serialization.
+ *
+ * In addition to atomic address fields (street, city, postal code),
+ * the object provides convenient derived helpers such as:
+ *
+ * - getStreetLine()
+ * - getCityLine()
+ * - getDisplayAddress()
+ *
+ * These helpers compose normalized single-line address formats
+ * commonly used in business applications.
+ *
+ * The value object implements Stringable and JsonSerializable,
+ * allowing it to be safely used in logs, debugging output and
+ * structured API responses.
  *
  * @package     Lemonade Framework
  * @subpackage  Lemonade\Vario\Domain
  * @category    Domain
  * @link        https://lemonadeframework.cz/
- * @author      Honza Mudrak <honzamudrak@gmail.com>
+ * @author      Honza Mudrák
  * @license     MIT
  * @since       1.0
  */

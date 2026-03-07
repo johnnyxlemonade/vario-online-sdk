@@ -2,36 +2,57 @@
 
 declare(strict_types=1);
 
-namespace Lemonade\Vario\Domain\KnownParty;
+namespace Lemonade\Vario\Mapper\KnownParty;
 
+use Lemonade\Vario\Domain\KnownParty\KnownParty;
+use Lemonade\Vario\Domain\KnownParty\KnownPartyKind;
+use Lemonade\Vario\Domain\Shared\Identification;
+use Lemonade\Vario\Domain\Shared\IdentificationCollection;
+use Lemonade\Vario\Domain\Shared\IdentificationScheme;
+use Lemonade\Vario\Domain\Shared\PostalAddress;
+use Lemonade\Vario\Mapper\Support\ScalarReadersTrait;
 use UnexpectedValueException;
 
 /**
  * Class KnownPartyMapper
  *
- * Maps raw Vario API payloads into domain KnownParty objects.
+ * Transport → Domain mapper converting raw Vario API payloads
+ * into strongly typed KnownParty domain objects.
  *
- * Acts as an anti-corruption layer between transport data
- * and the SDK domain model.
+ * The mapper acts as an anti-corruption layer between the external
+ * Vario API transport format and the internal SDK domain model.
+ * It is responsible for:
+ *
+ * - extracting known fields from the API payload
+ * - normalizing scalar values
+ * - constructing value objects (PostalAddress, Identification, etc.)
+ * - preserving unknown fields for forward compatibility
+ *
+ * Any fields not explicitly mapped are stored in the `$extra`
+ * payload of the KnownParty entity.
+ *
+ * The mapper is used internally by:
+ *
+ *     KnownPartyApi::query()
+ *
+ * to transform API responses into immutable domain models.
  *
  * @package     Lemonade Framework
- * @subpackage  Lemonade\Vario\Domain
+ * @subpackage  Lemonade\Vario\Mapper
  * @category    Domain
  * @link        https://lemonadeframework.cz/
- * @author      Honza Mudrak <honzamudrak@gmail.com>
+ * @author      Honza Mudrák
  * @license     MIT
  * @since       1.0
  */
 final class KnownPartyMapper
 {
-    public function __construct(
-        private KnownPartyFactoryInterface $factory,
-    ) {}
+    use ScalarReadersTrait;
 
     /**
      * @param array<string,mixed> $data
      */
-    public function map(array $data): KnownPartyInterface
+    public function map(array $data): KnownParty
     {
         /** ---------- Address ---------- */
         $addressRaw = $data['PostalAddress'] ?? null;
@@ -67,7 +88,7 @@ final class KnownPartyMapper
             'Identifications' => true,
         ]);
 
-        return $this->factory->create(
+        return new KnownParty(
             kind: $this->readKind($data),
             uuid: $this->readRequiredString($data, 'UUID'),
             id: $this->readString($data, 'ID'),
@@ -91,20 +112,13 @@ final class KnownPartyMapper
         }
 
         $street = $this->string($data['StreetName'] ?? null);
-        $buildingNumber = $this->nullableTrim(
-            $this->stringOrNull($data['BuildingNumber'] ?? null)
-        );
+        $buildingNumber = $this->stringOrNull($data['BuildingNumber'] ?? null);
 
         $city = $this->string($data['CityName'] ?? null);
         $postalCode = $this->string($data['PostalZone'] ?? null);
         $countryIso = $this->string($data['CountryIso'] ?? null);
 
-        if (
-            $street === '' &&
-            $buildingNumber === null &&
-            $city === '' &&
-            $postalCode === ''
-        ) {
+        if ($street === '' && $buildingNumber === null && $city === '' && $postalCode === '') {
             return null;
         }
 
@@ -125,8 +139,7 @@ final class KnownPartyMapper
         $mapped = [];
 
         foreach ($items as $item) {
-
-            $schemeValue = $this->intOrNull($item['Scheme'] ?? null);
+            $schemeValue = $this->stringOrNull($item['Scheme'] ?? null);
             $id = $this->stringOrNull($item['ID'] ?? null);
 
             if ($schemeValue === null || $id === null) {
@@ -142,25 +155,19 @@ final class KnownPartyMapper
             $mapped[] = new Identification(
                 scheme: $scheme,
                 id: $id,
-                originCountry: $this->nullableTrim(
-                    $this->stringOrNull($item['OriginCountry'] ?? null)
-                ),
+                originCountry: $this->stringOrNull($item['OriginCountry'] ?? null),
             );
         }
 
         return new IdentificationCollection($mapped);
     }
 
-    /* ================= Readers ================= */
-
     /**
      * @param array<string,mixed> $data
      */
     private function readString(array $data, string $key): ?string
     {
-        return $this->nullableTrim(
-            $this->stringOrNull($data[$key] ?? null)
-        );
+        return $this->stringOrNull($data[$key] ?? null);
     }
 
     /**
@@ -184,9 +191,9 @@ final class KnownPartyMapper
      */
     private function readKind(array $data): KnownPartyKind
     {
-        $kind = $this->intOrNull($data['Kind'] ?? null);
+        $kind = $this->stringOrNull($data['Kind'] ?? null);
 
-        return KnownPartyKind::tryFrom($kind ?? 0)
+        return KnownPartyKind::tryFrom($kind ?? 'Organization')
             ?? KnownPartyKind::Organization;
     }
 
@@ -206,47 +213,4 @@ final class KnownPartyMapper
         return $this->readString($data, 'ID');
     }
 
-    private function nullableTrim(?string $value): ?string
-    {
-        if ($value === null) {
-            return null;
-        }
-
-        $value = trim($value);
-
-        return $value === '' ? null : $value;
-    }
-
-    /* ================= Type narrowing helpers ================= */
-
-    private function stringOrNull(mixed $value): ?string
-    {
-        if ($value === null) {
-            return null;
-        }
-
-        if (is_scalar($value)) {
-            return trim((string) $value);
-        }
-
-        return null;
-    }
-
-    private function string(mixed $value): string
-    {
-        return $this->stringOrNull($value) ?? '';
-    }
-
-    private function intOrNull(mixed $value): ?int
-    {
-        if (is_int($value)) {
-            return $value;
-        }
-
-        if (is_numeric($value)) {
-            return (int) $value;
-        }
-
-        return null;
-    }
 }

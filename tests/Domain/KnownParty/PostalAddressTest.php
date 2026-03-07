@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Tests\Domain\KnownParty;
 
-use Lemonade\Vario\Domain\KnownParty\PostalAddress;
+use Lemonade\Vario\Domain\Shared\PostalAddress;
 use PHPUnit\Framework\TestCase;
 
 final class PostalAddressTest extends TestCase

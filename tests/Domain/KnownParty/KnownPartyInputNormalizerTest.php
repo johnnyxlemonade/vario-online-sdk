@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Tests\Domain\KnownParty;
 
-use Lemonade\Vario\Domain\KnownParty\Identification;
-use Lemonade\Vario\Domain\KnownParty\IdentificationScheme;
 use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
-use Lemonade\Vario\Domain\KnownParty\KnownPartyInputNormalizer;
-use Lemonade\Vario\Domain\KnownParty\PostalAddress;
+use Lemonade\Vario\Domain\Shared\Identification;
+use Lemonade\Vario\Domain\Shared\IdentificationScheme;
+use Lemonade\Vario\Domain\Shared\PostalAddress;
+use Lemonade\Vario\Normalizer\KnownParty\KnownPartyInputNormalizer;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @phpstan-import-type KnownPartyPayload from \Lemonade\Vario\Domain\KnownParty\KnownPartyInputNormalizer
+ * @phpstan-import-type KnownPartyPayload from \Lemonade\Vario\Normalizer\KnownParty\KnownPartyInputNormalizer
  */
 final class KnownPartyInputNormalizerTest extends TestCase
 {
@@ -97,7 +97,7 @@ final class KnownPartyInputNormalizerTest extends TestCase
         self::assertCount(1, $ids);
 
         self::assertSame(
-            IdentificationScheme::VAT->value,
+            IdentificationScheme::VAT->toApiValue(),
             $ids[0]['Scheme']
         );
 

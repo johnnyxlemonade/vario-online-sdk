@@ -4,10 +4,9 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Tests\Domain\KnownParty;
 
-use Lemonade\Vario\Domain\KnownParty\DefaultKnownPartyFactory;
-use Lemonade\Vario\Domain\KnownParty\IdentificationCollection;
-use Lemonade\Vario\Domain\KnownParty\IdentificationScheme;
-use Lemonade\Vario\Domain\KnownParty\KnownPartyMapper;
+use Lemonade\Vario\Domain\Shared\IdentificationCollection;
+use Lemonade\Vario\Domain\Shared\IdentificationScheme;
+use Lemonade\Vario\Mapper\KnownParty\KnownPartyMapper;
 use PHPUnit\Framework\TestCase;
 
 final class KnownPartyMapperTest extends TestCase
@@ -16,9 +15,7 @@ final class KnownPartyMapperTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->mapper = new KnownPartyMapper(
-            new DefaultKnownPartyFactory()
-        );
+        $this->mapper = new KnownPartyMapper();
     }
 
     public function test_maps_basic_known_party(): void

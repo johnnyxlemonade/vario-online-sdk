@@ -2,20 +2,42 @@
 
 declare(strict_types=1);
 
-namespace Lemonade\Vario\Domain\KnownParty;
+namespace Lemonade\Vario\Normalizer\KnownParty;
+
+use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
+use Lemonade\Vario\Domain\Shared\Identification;
+use Lemonade\Vario\Domain\Shared\PostalAddress;
 
 /**
  * Class KnownPartyInputNormalizer
  *
- * Converts KnownPartyInput domain objects into
- * Vario API request payloads.
+ * Domain → transport normalizer converting KnownPartyInput
+ * objects into Vario API request payloads.
  *
- * Acts as write-side anti-corruption layer.
+ * The normalizer acts as the write-side anti-corruption layer
+ * between the SDK domain model and the external Vario API format.
+ *
+ * Responsibilities:
+ *
+ * - converting domain value objects into API-compatible arrays
+ * - mapping enums to numeric API codes
+ * - serializing nested value objects (PostalAddress, Identification)
+ * - filtering null / empty values from payloads
+ * - ensuring compatibility with legacy Vario API requirements
+ *
+ * The resulting payload structure matches the format expected by:
+ *
+ *     KnownPartyApi::upsert()
+ *
+ * and can also be inspected safely via:
+ *
+ *     KnownPartyApi::previewUpsert()
+ *
  * @package     Lemonade Framework
- * @subpackage  Lemonade\Vario\Domain
+ * @subpackage  Lemonade\Vario\Normalizer
  * @category    Domain
  * @link        https://lemonadeframework.cz/
- * @author      Honza Mudrak <honzamudrak@gmail.com>
+ * @author      Honza Mudrák
  * @license     MIT
  * @since       1.0
  *
@@ -64,7 +86,7 @@ final class KnownPartyInputNormalizer
         $payload = [
             'UUID' => $input->getUuid(),
             'ID' => $input->getId(),
-            'Kind' => $input->getKind()?->value,
+            'Kind' => $input->getKind()?->toApiValue(),
             'Name' => $input->getName(),
         ];
 
@@ -149,7 +171,7 @@ final class KnownPartyInputNormalizer
 
         foreach ($identifications as $id) {
             $row = [
-                'Scheme' => $id->getScheme()->value,
+                'Scheme' => $id->getScheme()->toApiValue(),
                 'ID' => $id->getId(),
             ];
 

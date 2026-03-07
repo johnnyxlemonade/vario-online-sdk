@@ -34,7 +34,7 @@ final class IncomingOrderApi extends AbstractApi
     public function query(IncomingOrderQuery $query): array
     {
         $result = $this->sendJson(
-            HttpMethod::POST,
+            HttpMethod::QUERY,
             VarioEndpoint::IncomingOrder,
             $query->toArray()
         );

@@ -4,30 +4,38 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\KnownParty;
 
+use Lemonade\Vario\Domain\Shared\IdentificationCollection;
+use Lemonade\Vario\Domain\Shared\PostalAddress;
+
 /**
  * Class KnownParty
  *
- * Default domain representation of a Vario KnownParty entity.
+ * Immutable domain read model representing a business subject
+ * stored in the Vario contact register.
  *
- * KnownParty represents a generic business subject in Vario ERP
- * (customer, supplier, contact, etc.). This class acts as the
- * default immutable read model returned by the SDK.
+ * Instances of this class are created by the KnownPartyMapper
+ * when converting raw Vario API payloads into strongly-typed
+ * domain objects.
  *
- * The model intentionally exposes only stable core properties.
- * Any additional API fields are stored inside the `$extra` payload
- * to preserve forward compatibility with newer API versions.
+ * The model intentionally exposes only stable core properties
+ * such as UUID, name, contact information and postal address.
  *
- * The class is designed to be extendable by library users.
+ * Any additional fields returned by the API are preserved in the
+ * `$extra` payload to maintain forward compatibility with newer
+ * API versions or custom DatasetView configurations.
+ *
+ * KnownParty acts as the primary read model returned by
+ * `KnownPartyApi::query()`.
  *
  * @package     Lemonade Framework
  * @subpackage  Lemonade\Vario\Domain
  * @category    Domain
  * @link        https://lemonadeframework.cz/
- * @author      Honza Mudrak <honzamudrak@gmail.com>
+ * @author      Honza Mudrák
  * @license     MIT
  * @since       1.0
  */
-class KnownParty implements KnownPartyInterface
+final class KnownParty
 {
     /**
      * @param array<string,mixed> $extra Additional unmapped API fields.

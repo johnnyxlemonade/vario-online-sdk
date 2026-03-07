@@ -8,6 +8,34 @@ use Lemonade\Vario\Exception\ConfigurationException;
 use Psr\Log\LoggerInterface;
 use Psr\Log\NullLogger;
 
+/**
+ * Class VarioClientConfig
+ *
+ * Immutable configuration container for the Vario API client.
+ *
+ * This object encapsulates all parameters required to initialize
+ * the SDK including connection settings, authentication credentials
+ * and logging configuration.
+ *
+ * The configuration instance is typically passed to:
+ *
+ *     VarioApiFactory::create()
+ *
+ * which uses it to bootstrap the HTTP client, authentication
+ * subsystem and API modules.
+ *
+ * A helper factory `fromEnv()` is provided for loading configuration
+ * from environment variables, making the SDK easier to integrate
+ * into containerized or cloud-based deployments.
+ *
+ * @package     Lemonade Framework
+ * @subpackage  Lemonade\Vario
+ * @category    Configuration
+ * @link        https://lemonadeframework.cz/
+ * @author      Honza Mudrák
+ * @license     MIT
+ * @since       1.0
+ */
 final class VarioClientConfig
 {
     private LoggerInterface $logger;

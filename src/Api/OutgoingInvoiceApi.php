@@ -30,7 +30,7 @@ final class OutgoingInvoiceApi extends AbstractApi
     public function query(OutgoingInvoiceQuery $query): array
     {
         $result = $this->sendJson(
-            HttpMethod::POST,
+            HttpMethod::QUERY,
             VarioEndpoint::OutgoingInvoice,
             $query->toArray()
         );

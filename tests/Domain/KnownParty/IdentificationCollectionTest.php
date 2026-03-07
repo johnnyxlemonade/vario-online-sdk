@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Tests\Domain\KnownParty;
 
-use Lemonade\Vario\Domain\KnownParty\Identification;
-use Lemonade\Vario\Domain\KnownParty\IdentificationCollection;
-use Lemonade\Vario\Domain\KnownParty\IdentificationScheme;
+use Lemonade\Vario\Domain\Shared\Identification;
+use Lemonade\Vario\Domain\Shared\IdentificationCollection;
+use Lemonade\Vario\Domain\Shared\IdentificationScheme;
 use PHPUnit\Framework\TestCase;
 
 final class IdentificationCollectionTest extends TestCase

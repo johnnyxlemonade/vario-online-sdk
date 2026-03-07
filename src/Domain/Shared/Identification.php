@@ -2,19 +2,28 @@
 
 declare(strict_types=1);
 
-namespace Lemonade\Vario\Domain\KnownParty;
+namespace Lemonade\Vario\Domain\Shared;
 
 /**
  * Class Identification
  *
- * Immutable value object representing an identification assigned
- * to a KnownParty entity (VAT ID, company number, etc.).
+ * Immutable value object representing a business identification
+ * assigned to a domain entity (e.g. VAT ID, company number, GLN).
+ *
+ * Each identification consists of a scheme (type of identifier),
+ * the identifier value itself and an optional origin country.
+ *
+ * The scheme is represented by the IdentificationScheme enum,
+ * ensuring that only supported identification types can be used.
+ *
+ * This value object is typically used inside IdentificationCollection
+ * and attached to domain models such as KnownParty.
  *
  * @package     Lemonade Framework
  * @subpackage  Lemonade\Vario\Domain
  * @category    Domain
  * @link        https://lemonadeframework.cz/
- * @author      Honza Mudrak <honzamudrak@gmail.com>
+ * @author      Honza Mudrák
  * @license     MIT
  * @since       1.0
  */

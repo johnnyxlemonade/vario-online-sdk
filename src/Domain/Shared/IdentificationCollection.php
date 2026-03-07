@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Lemonade\Vario\Domain\KnownParty;
+namespace Lemonade\Vario\Domain\Shared;
 
 use ArrayIterator;
 use Countable;
@@ -12,13 +12,25 @@ use Traversable;
 /**
  * Class IdentificationCollection
  *
- * Immutable collection of Identification value objects.
+ * Immutable typed collection of Identification value objects.
+ *
+ * The collection provides convenient domain helpers for accessing
+ * commonly used business identifiers such as company number (IČO)
+ * and VAT ID (DIČ).
+ *
+ * Due to inconsistencies in real-world ERP data, some integrations
+ * store VAT identifiers under the UIN scheme. The helper methods
+ * therefore include fallback logic to correctly detect these values.
+ *
+ * The collection implements IteratorAggregate and Countable,
+ * allowing it to be safely iterated and counted like a native array
+ * while preserving strong typing.
  *
  * @package     Lemonade Framework
  * @subpackage  Lemonade\Vario\Domain
  * @category    Domain
  * @link        https://lemonadeframework.cz/
- * @author      Honza Mudrak <honzamudrak@gmail.com>
+ * @author      Honza Mudrák
  * @license     MIT
  * @since       1.0
  *

@@ -8,6 +8,33 @@ use Lemonade\Vario\Enum\HttpMethod;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
 
+/**
+ * Interface VarioClientInterface
+ *
+ * Transport abstraction used by the SDK to communicate with
+ * the Vario Online API.
+ *
+ * This interface defines the minimal contract required by
+ * API modules to send HTTP requests and receive decoded
+ * responses without depending on a specific HTTP client
+ * implementation.
+ *
+ * The concrete implementation is provided by VarioClient,
+ * which handles authentication, retry logic and request
+ * preparation on top of a PSR-compatible HTTP adapter.
+ *
+ * API modules interact only with this interface, ensuring
+ * that the transport layer can be replaced or mocked
+ * without affecting the higher-level domain logic.
+ *
+ * @package     Lemonade Framework
+ * @subpackage  Lemonade\Vario\Client
+ * @category    Transport
+ * @link        https://lemonadeframework.cz/
+ * @author      Honza Mudrák
+ * @license     MIT
+ * @since       1.0
+ */
 interface VarioClientInterface
 {
     /**

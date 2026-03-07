@@ -4,20 +4,33 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\KnownParty;
 
+use Lemonade\Vario\Domain\Shared\Identification;
+use Lemonade\Vario\Domain\Shared\PostalAddress;
+
 /**
  * Class KnownPartyInput
  *
- * Mutable input model used for creating or updating
- * KnownParty entities via the Vario API.
+ * Mutable write model used for creating or updating KnownParty
+ * entities via the Vario Online API.
  *
- * This object represents user intent rather than
- * a persisted domain state.
+ * This object represents user intent rather than a persisted
+ * domain state. It collects the data required for an upsert
+ * operation and is later transformed into an API payload by
+ * the KnownPartyInputNormalizer.
+ *
+ * KnownPartyInput is typically passed to:
+ *
+ *     KnownPartyApi::upsert()
+ *
+ * The class provides a fluent interface for incrementally
+ * building the input structure before it is normalized
+ * into the transport format expected by the Vario API.
  *
  * @package     Lemonade Framework
  * @subpackage  Lemonade\Vario\Domain
  * @category    Domain
  * @link        https://lemonadeframework.cz/
- * @author      Honza Mudrak <honzamudrak@gmail.com>
+ * @author      Honza Mudrák
  * @license     MIT
  * @since       1.0
  */

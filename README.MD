@@ -133,10 +133,13 @@ $data = $vario->datasetView()->get($query);
 ```
 
 ------------------------------------------------------------------------
-
 ## Domain Example — Known Parties
 
-The SDK exposes typed domain entities instead of raw arrays.
+The SDK exposes a typed **KnownParty domain model** representing
+business subjects stored in the Vario contact register.
+
+Instead of working with raw API payloads, integrations interact with
+strongly-typed objects and immutable value objects.
 
 ``` php
 use Lemonade\Vario\ValueObject\KnownPartyQuery;
@@ -152,16 +155,141 @@ foreach ($items as $party) {
 }
 ```
 
-Entities provide semantic helpers:
+### Domain helpers
 
-- `getDisplayAddress()`
-- `getCityLine()` / `getStreetLine()`
-- `getCompanyNumber()`
-- `getVatId()`
-- `getIdentificationsOrEmpty()`
+The `KnownParty` entity provides semantic helpers for commonly used
+data:
 
-No manual array parsing required.
+-   `getDisplayAddress()`
+-   `getCityLine()` / `getStreetLine()`
+-   `getCompanyNumber()`
+-   `getVatId()`
+-   `getIdentificationsOrEmpty()`
 
+This eliminates the need to manually parse API payload arrays.
+
+------------------------------------------------------------------------
+
+### Creating or Updating Known Parties
+
+The SDK provides a dedicated **write model** (`KnownPartyInput`) for
+creating or updating contacts.
+
+``` php
+use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
+use Lemonade\Vario\Domain\KnownParty\KnownPartyKind;
+use Lemonade\Vario\Domain\Shared\PostalAddress;
+use Lemonade\Vario\Domain\Shared\Identification;
+use Lemonade\Vario\Domain\Shared\IdentificationScheme;
+
+$input = (new KnownPartyInput('Test Company'))
+    ->withKind(KnownPartyKind::Organization)
+    ->withEmail('info@example.com')
+    ->withTelephone('+420123456789')
+    ->withAddress(new PostalAddress(
+        street: 'Main Street',
+        buildingNumber: '10',
+        city: 'Prague',
+        postalCode: '11000',
+        countryIso: 'CZ'
+    ))
+    ->addIdentification(new Identification(
+        scheme: IdentificationScheme::UIN,
+        id: '12345678',
+        originCountry: 'CZ'
+    ));
+```
+
+------------------------------------------------------------------------
+
+### Preview request payload
+
+Before sending a request to the API, the payload can be previewed. This
+is useful for debugging integrations or verifying request structure.
+
+``` php
+$preview = $vario->knownParties()->previewUpsert([$input]);
+
+print_r($preview);
+```
+
+Example payload:
+
+``` text
+[
+  [
+    "Name" => "Test Company",
+    "ElectronicMail" => "info@example.com",
+    "PostalAddress" => [
+        "StreetName" => "Main Street",
+        "BuildingNumber" => "10",
+        "CityName" => "Prague",
+        "PostalZone" => "11000",
+        "CountryIso" => "CZ"
+    ]
+  ]
+]
+```
+
+------------------------------------------------------------------------
+
+### Performing the upsert request
+
+``` php
+$result = $vario->knownParties()->upsert([$input]);
+
+foreach ($result as $r) {
+    echo $r->getUuid();
+}
+```
+
+The API returns confirmation objects:
+
+``` php
+KnownPartyUpsertResult
+```
+
+Each result contains:
+
+-   `UUID`
+-   `RecipientObjectID`
+
+These values identify the created or updated entity.
+
+------------------------------------------------------------------------
+
+### Architecture
+
+The KnownParty module separates **read models**, **write models** and
+**transport normalization**.
+
+    Domain
+     ├─ KnownParty
+     │   ├─ KnownParty
+     │   ├─ KnownPartyInput
+     │   ├─ KnownPartyKind
+     │   └─ KnownPartyUpsertResult
+     │
+     └─ Shared
+         ├─ PostalAddress
+         ├─ Identification
+         ├─ IdentificationCollection
+         └─ IdentificationScheme
+
+    Normalizer
+     └─ KnownParty
+         └─ KnownPartyInputNormalizer
+
+    Mapper
+     └─ KnownParty
+         └─ KnownPartyMapper
+
+This separation ensures:
+
+-   clean domain models
+-   transport‑independent business logic
+-   safe request serialization
+-   strict typing compatible with **PHPStan level max**
 ------------------------------------------------------------------------
 ## Domain Example — Products
 

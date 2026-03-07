@@ -11,25 +11,39 @@ use Lemonade\Vario\Api\OutgoingInvoiceApi;
 use Lemonade\Vario\Auth\Authenticator;
 use Lemonade\Vario\Auth\Storage\TokenStorageInterface;
 use Lemonade\Vario\Client\VarioClient;
-use Lemonade\Vario\Domain\KnownParty\DefaultKnownPartyFactory;
-use Lemonade\Vario\Domain\KnownParty\KnownPartyInputNormalizer;
-use Lemonade\Vario\Domain\KnownParty\KnownPartyMapper;
 use Lemonade\Vario\Http\Adapter\HttpAdapterInterface;
+use Lemonade\Vario\Mapper\KnownParty\KnownPartyMapper;
+use Lemonade\Vario\Normalizer\KnownParty\KnownPartyInputNormalizer;
 
 /**
  * Class VarioApiFactory
  *
- * Factory responsible for creating fully configured VarioApi instance.
+ * Bootstrap factory responsible for creating a fully configured
+ * VarioApi instance.
  *
- * The HTTP transport layer is not bundled with the SDK.
- * A HttpAdapterInterface implementation must be provided
- * (e.g. GuzzleHttpAdapter, SymfonyHttpAdapter, MockAdapter).
+ * The factory wires together all core SDK components including:
+ *
+ * - HTTP transport adapter (PSR-18 compatible)
+ * - authentication subsystem
+ * - token storage implementation
+ * - internal API modules
+ *
+ * The SDK itself does not ship with a built-in HTTP client.
+ * Instead, an implementation of HttpAdapterInterface must be
+ * provided (e.g. GuzzleHttpAdapter, SymfonyHttpAdapter).
+ *
+ * During initialization the factory performs a fail-fast
+ * authentication to ensure that the client is ready to execute
+ * API requests immediately after construction.
+ *
+ * API modules are registered as lazy factories and instantiated
+ * on first access by VarioApi.
  *
  * @package     Lemonade Framework
  * @subpackage  Lemonade\Vario
  * @category    Factory
  * @link        https://lemonadeframework.cz/
- * @author      Honza Mudrak <honzamudrak@gmail.com>
+ * @author      Honza Mudrák
  * @license     MIT
  * @since       1.0
  */
@@ -61,24 +75,18 @@ final class VarioApiFactory
         return new VarioApi(
             client: $client,
             factories: [
-
                 DatasetViewApi::class => fn() =>
-                new DatasetViewApi($client),
-
-                IncomingOrderApi::class => fn() =>
-                new IncomingOrderApi($client),
-
-                OutgoingInvoiceApi::class => fn() =>
-                new OutgoingInvoiceApi($client),
-
+                    new DatasetViewApi($client),
                 KnownPartyApi::class => fn() =>
-                new KnownPartyApi(
-                    $client,
-                    new KnownPartyMapper(
-                        new DefaultKnownPartyFactory()
+                    new KnownPartyApi(
+                        $client,
+                        new KnownPartyMapper(),
+                        new KnownPartyInputNormalizer(),
                     ),
-                    new KnownPartyInputNormalizer()
-                ),
+                IncomingOrderApi::class => fn() =>
+                    new IncomingOrderApi($client),
+                OutgoingInvoiceApi::class => fn() =>
+                    new OutgoingInvoiceApi($client),
             ]
         );
     }
