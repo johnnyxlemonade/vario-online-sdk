@@ -212,4 +212,71 @@ final class ProductMapperTest extends TestCase
 
         self::assertCount(2, $sections);
     }
+
+    public function testIterate(): void
+    {
+        $mapping = (new ProductDatasetMapping())
+            ->add(
+                new ProductIdentityMapper(
+                    new ProductIdentityMapping(uuid: 'uuid')
+                )
+            );
+
+        $rows = [
+            ['uuid' => '1'],
+            ['uuid' => '2'],
+        ];
+
+        $mapper = new ProductMapper($mapping);
+
+        $result = iterator_to_array($mapper->iterate($rows), false);
+
+        self::assertCount(2, $result);
+        self::assertSame('1', $result[0]->identity()?->getUuid());
+        self::assertSame('2', $result[1]->identity()?->getUuid());
+    }
+
+    public function testCollect(): void
+    {
+        $mapping = (new ProductDatasetMapping())
+            ->add(
+                new ProductIdentityMapper(
+                    new ProductIdentityMapping(uuid: 'uuid')
+                )
+            );
+
+        $rows = [
+            ['uuid' => '1'],
+            ['uuid' => '2'],
+        ];
+
+        $mapper = new ProductMapper($mapping);
+
+        $collection = $mapper->collect($rows);
+
+        self::assertSame(2, $collection->count());
+    }
+
+    public function testLazy(): void
+    {
+        $mapping = (new ProductDatasetMapping())
+            ->add(
+                new ProductIdentityMapper(
+                    new ProductIdentityMapping(uuid: 'uuid')
+                )
+            );
+
+        $rows = [
+            ['uuid' => '1'],
+            ['uuid' => '2'],
+        ];
+
+        $mapper = new ProductMapper($mapping);
+
+        $lazy = $mapper->lazy($rows);
+
+        $items = iterator_to_array($lazy);
+
+        self::assertCount(2, $items);
+    }
 }

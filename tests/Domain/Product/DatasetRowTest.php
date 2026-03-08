@@ -57,4 +57,94 @@ final class DatasetRowTest extends TestCase
 
         self::assertTrue($row->getBool('sale'));
     }
+
+    public function testGetNullableString(): void
+    {
+        $row = new DatasetRow([
+            'name' => 'Product',
+            'empty' => '',
+        ]);
+
+        self::assertSame('Product', $row->getNullableString('name'));
+        self::assertNull($row->getNullableString('empty'));
+        self::assertNull($row->getNullableString('missing'));
+    }
+
+    public function testGetNullableFloat(): void
+    {
+        $row = new DatasetRow([
+            'price' => '10.5',
+            'invalid' => 'abc',
+        ]);
+
+        self::assertSame(10.5, $row->getNullableFloat('price'));
+        self::assertNull($row->getNullableFloat('invalid'));
+        self::assertNull($row->getNullableFloat('missing'));
+    }
+
+    public function testHas(): void
+    {
+        $row = new DatasetRow([
+            'name' => 'Product',
+            'nullField' => null,
+        ]);
+
+        self::assertTrue($row->has('name'));
+        self::assertTrue($row->has('nullField'));
+        self::assertFalse($row->has('missing'));
+    }
+
+    public function testToArray(): void
+    {
+        $data = [
+            'name' => 'Product',
+            'price' => 100,
+        ];
+
+        $row = new DatasetRow($data);
+
+        self::assertSame($data, $row->toArray());
+    }
+
+    public function testNonScalarReturnsNull(): void
+    {
+        $row = new DatasetRow([
+            'array' => ['x'],
+            'object' => new \stdClass(),
+        ]);
+
+        self::assertNull($row->getString('array'));
+        self::assertNull($row->getInt('object'));
+        self::assertNull($row->getFloat('array'));
+    }
+
+    public function testEmptyStringNormalizesToNull(): void
+    {
+        $row = new DatasetRow([
+            'empty' => '',
+        ]);
+
+        self::assertNull($row->getString('empty'));
+        self::assertNull($row->getInt('empty'));
+        self::assertNull($row->getFloat('empty'));
+        self::assertNull($row->getBool('empty'));
+    }
+
+    public function testGetIntReturnsNullForNonNumericScalar(): void
+    {
+        $row = new DatasetRow([
+            'value' => 'abc',
+        ]);
+
+        self::assertNull($row->getInt('value'));
+    }
+
+    public function testGetIntReturnsNullForNonNumeric(): void
+    {
+        $row = new DatasetRow([
+            'invalid' => 'abc',
+        ]);
+
+        self::assertNull($row->getInt('invalid'));
+    }
 }

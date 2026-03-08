@@ -62,4 +62,11 @@ final class LazyProductCollectionTest extends TestCase
 
         self::assertSame(2, $materialized->count());
     }
+
+    public function testFirstReturnsNullForEmptyCollection(): void
+    {
+        $collection = new LazyProductCollection(fn() => []);
+
+        self::assertNull($collection->first());
+    }
 }

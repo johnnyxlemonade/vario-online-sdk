@@ -11,13 +11,26 @@ use Lemonade\Vario\ValueObject\DatasetViewQuery;
 /**
  * Class DatasetViewApi
  *
- * API modul pro práci s DatasetView ve Vario Online.
- * Umožňuje načítání dat pomocí stránkování a iteraci
- * nad kompletním DatasetView.
+ * API module providing access to DatasetView endpoints of the Vario Online API.
+ *
+ * DatasetViews are server-defined views used for retrieving structured
+ * tabular data (such as product catalogs, customers, orders, etc.).
+ * This API module exposes methods for fetching paginated results
+ * and for iterating over the entire dataset transparently.
+ *
+ * Responsibilities of this class include:
+ *
+ *  - executing DatasetView queries
+ *  - handling paginated responses
+ *  - providing a generator-based iterator for full dataset traversal
+ *
+ * The API returns raw transport data (`array<string,mixed>` rows).
+ * Domain mapping is intentionally not performed here and should be
+ * handled by higher-level mappers.
  *
  * @package     Lemonade Framework
  * @subpackage  Lemonade\Vario\Api
- * @category    Api
+ * @category    API
  * @link        https://lemonadeframework.cz/
  * @author      Honza Mudrak <honzamudrak@gmail.com>
  * @license     MIT

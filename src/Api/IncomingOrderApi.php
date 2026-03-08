@@ -11,16 +11,26 @@ use Lemonade\Vario\ValueObject\IncomingOrderQuery;
 /**
  * Class IncomingOrderApi
  *
- * API modul pro práci s příchozími objednávkami (IncomingOrder)
- * ve Vario Online.
+ * API module providing access to IncomingOrder endpoints
+ * of the Vario Online API.
  *
- * Umožňuje:
- *  - dotazování na existující objednávky,
- *  - vytváření a aktualizaci objednávek (upsert).
+ * Incoming orders represent purchase or sales orders processed
+ * within the Vario ERP system. This module exposes operations
+ * for querying existing orders and creating or updating them.
+ *
+ * Responsibilities of this class include:
+ *
+ *  - executing order queries using IncomingOrderQuery objects
+ *  - sending bulk upsert requests for incoming orders
+ *  - delegating transport communication to the VarioClient
+ *
+ * The API operates on raw transport payloads (`array<string,mixed>`).
+ * Mapping to domain models should be handled by higher-level
+ * application layers when needed.
  *
  * @package     Lemonade Framework
  * @subpackage  Lemonade\Vario\Api
- * @category    Api
+ * @category    API
  * @link        https://lemonadeframework.cz/
  * @author      Honza Mudrak <honzamudrak@gmail.com>
  * @license     MIT

@@ -77,7 +77,15 @@ class HybridRotatingFileHandler extends StreamHandler
             return false;
         }
 
-        return filesize($this->currentLogPath) >= $this->maxFileSizeBytes;
+        if (is_resource($this->stream)) {
+            fflush($this->stream);
+        }
+
+        clearstatcache(true, $this->currentLogPath);
+
+        $size = filesize($this->currentLogPath);
+
+        return $size !== false && $size >= $this->maxFileSizeBytes;
     }
 
     private function rotate(): void

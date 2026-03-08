@@ -91,6 +91,23 @@ final class KnownPartyMapperTest extends TestCase
         self::assertSame('Main 123', $address->getStreetLine());
     }
 
+    public function test_returns_null_address_when_all_address_fields_empty(): void
+    {
+        $payload = [
+            'UUID' => 'abc',
+            'PostalAddress' => [
+                'StreetName' => '',
+                'BuildingNumber' => '',
+                'CityName' => '',
+                'PostalZone' => '',
+            ],
+        ];
+
+        $party = $this->mapper->map($payload);
+
+        self::assertNull($party->getPostalAddress());
+    }
+
     public function test_returns_null_address_when_empty(): void
     {
         $payload = [

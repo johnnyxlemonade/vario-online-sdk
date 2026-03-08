@@ -24,9 +24,8 @@ handling and a fully replaceable HTTP layer.
 
 ## Why this SDK exists
 
-The official Vario Online API exposes data primarily through
-generic **DatasetView responses**, which return loosely structured
-arrays tied to backend column names.
+The official Vario Online API exposes data primarily as
+loosely structured **array responses** tied to backend fields.
 
 While flexible, this makes integrations harder to maintain because:
 

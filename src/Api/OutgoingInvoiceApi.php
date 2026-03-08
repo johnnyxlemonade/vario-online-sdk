@@ -11,8 +11,23 @@ use Lemonade\Vario\ValueObject\OutgoingInvoiceQuery;
 /**
  * Class OutgoingInvoiceApi
  *
- * API modul pro práci s vydanými doklady (OutgoingInvoice)
- * ve Vario Online.
+ * API module providing access to OutgoingInvoice endpoints
+ * of the Vario Online API.
+ *
+ * Outgoing invoices represent issued accounting documents
+ * within the Vario ERP system. This module exposes operations
+ * for querying existing invoices and performing bulk upsert
+ * operations.
+ *
+ * Responsibilities of this class include:
+ *
+ *  - executing invoice queries using OutgoingInvoiceQuery objects
+ *  - sending bulk upsert requests for outgoing invoices
+ *  - delegating HTTP transport to the underlying VarioClient
+ *
+ * The API operates on raw transport payloads (`array<string,mixed>`).
+ * Domain mapping is intentionally not performed here and should be
+ * handled by higher-level application layers if required.
  *
  * @package     Lemonade Framework
  * @subpackage  Lemonade\Vario\Api

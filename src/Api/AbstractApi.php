@@ -11,13 +11,28 @@ use Lemonade\Vario\Enum\VarioEndpoint;
 /**
  * Class AbstractApi
  *
- * Základní abstraktní třída pro všechny API moduly Vario.
- * Poskytuje společné závislosti a sdílenou logiku
- * pro odesílání JSON requestů.
+ * Base class for all Vario API modules.
+ *
+ * This class provides shared infrastructure used by higher-level
+ * API services such as DatasetViewApi, KnownPartyApi and others.
+ *
+ * Its main responsibility is delegating HTTP communication to the
+ * underlying VarioClient while keeping API modules focused purely
+ * on domain operations.
+ *
+ * Responsibilities of this class include:
+ *
+ *  - providing access to the underlying VarioClient transport
+ *  - sending JSON API requests
+ *  - sending query-based requests
+ *  - standardizing endpoint usage via VarioEndpoint enum
+ *
+ * API modules extending this class should only implement domain-level
+ * operations and response mapping logic.
  *
  * @package     Lemonade Framework
  * @subpackage  Lemonade\Vario\Api
- * @category    Abstract
+ * @category    API
  * @link        https://lemonadeframework.cz/
  * @author      Honza Mudrak <honzamudrak@gmail.com>
  * @license     MIT

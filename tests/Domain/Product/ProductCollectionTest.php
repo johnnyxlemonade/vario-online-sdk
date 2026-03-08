@@ -64,4 +64,41 @@ final class ProductCollectionTest extends TestCase
 
         self::assertSame($p2, $found);
     }
+
+    public function testIterator(): void
+    {
+        $p1 = new Product([]);
+        $p2 = new Product([]);
+
+        $collection = new ProductCollection($p1, $p2);
+
+        $iterator = $collection->getIterator();
+
+        self::assertInstanceOf(\ArrayIterator::class, $iterator);
+        self::assertSame([$p1, $p2], iterator_to_array($iterator, false));
+    }
+
+    public function testFindReturnsNull(): void
+    {
+        $p1 = new Product([]);
+        $p2 = new Product([]);
+
+        $collection = new ProductCollection($p1);
+
+        $found = $collection->find(fn(Product $p) => $p === $p2);
+
+        self::assertNull($found);
+    }
+
+    public function testToArray(): void
+    {
+        $p1 = new Product([]);
+        $p2 = new Product([]);
+
+        $collection = new ProductCollection($p1, $p2);
+
+        $array = $collection->toArray();
+
+        self::assertSame([$p1, $p2], $array);
+    }
 }

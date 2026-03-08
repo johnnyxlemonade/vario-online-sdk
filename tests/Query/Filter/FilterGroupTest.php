@@ -48,4 +48,5 @@ final class FilterGroupTest extends TestCase
 
         self::assertSame([[]], $result);
     }
+
 }

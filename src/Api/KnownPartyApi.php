@@ -17,7 +17,25 @@ use Lemonade\Vario\ValueObject\KnownPartyQuery;
 /**
  * Class KnownPartyApi
  *
- * API module for working with KnownParty entities in Vario Online.
+ * API module providing access to KnownParty endpoints of the
+ * Vario Online API.
+ *
+ * KnownParty represents a generic business entity within Vario ERP
+ * (customer, supplier, contact person, etc.). This module exposes
+ * operations for querying existing parties and performing bulk
+ * upsert operations.
+ *
+ * Responsibilities of this class include:
+ *
+ *  - executing KnownParty queries
+ *  - normalizing KnownPartyInput objects into transport payloads
+ *  - sending upsert requests to the API
+ *  - mapping API responses into KnownParty domain objects
+ *  - mapping upsert results into KnownPartyUpsertResult objects
+ *
+ * Transport communication is delegated to the underlying VarioClient,
+ * while domain mapping is handled by KnownPartyMapper and
+ * KnownPartyInputNormalizer.
  *
  * @package     Lemonade Framework
  * @subpackage  Lemonade\Vario\Api
