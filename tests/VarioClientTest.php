@@ -7,12 +7,17 @@ namespace Lemonade\Vario\Tests\Client;
 use GuzzleHttp\Psr7\HttpFactory;
 use GuzzleHttp\Psr7\Response;
 use Lemonade\Vario\Auth\Storage\InMemoryTokenStorage;
+use Lemonade\Vario\Auth\Token;
 use Lemonade\Vario\Client\VarioClient;
 use Lemonade\Vario\Enum\HttpMethod;
+use Lemonade\Vario\Exception\ApiException;
+use Lemonade\Vario\Exception\AuthenticationException;
 use Lemonade\Vario\Exception\ForbiddenException;
+use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\RequestInterface;
 use Psr\Log\NullLogger;
 
 final class VarioClientTest extends TestCase
@@ -153,7 +158,7 @@ final class VarioClientTest extends TestCase
             reauthCallback: fn() => null,
         );
 
-        $this->expectException(\Lemonade\Vario\Exception\ApiException::class);
+        $this->expectException(ApiException::class);
 
         $client->sendJson(HttpMethod::GET, '/test');
     }
@@ -166,7 +171,7 @@ final class VarioClientTest extends TestCase
             ->willReturn(new Response(200, [], '{"ok":true}'));
 
         $storage = new InMemoryTokenStorage();
-        $storage->store(new \Lemonade\Vario\Auth\Token('abc'));
+        $storage->store(new Token('abc'));
 
         $client = new VarioClient(
             httpClient: $http,
@@ -226,7 +231,7 @@ final class VarioClientTest extends TestCase
             },
         );
 
-        $this->expectException(\Lemonade\Vario\Exception\AuthenticationException::class);
+        $this->expectException(AuthenticationException::class);
 
         $client->sendJson(HttpMethod::GET, '/test');
     }
@@ -248,7 +253,7 @@ final class VarioClientTest extends TestCase
             reauthCallback: fn() => null,
         );
 
-        $this->expectException(\Lemonade\Vario\Exception\ApiException::class);
+        $this->expectException(ApiException::class);
 
         $client->sendJson(HttpMethod::GET, '/test');
     }
@@ -274,20 +279,22 @@ final class VarioClientTest extends TestCase
             reauthCallback: fn() => null,
         );
 
-        $this->expectException(\Lemonade\Vario\Exception\ApiException::class);
+        $this->expectException(ApiException::class);
 
         $client->sendJson(HttpMethod::GET, '/test');
     }
 
     public function test_send_json_writes_payload_to_body(): void
     {
+        /** @var ClientInterface&MockObject $http */
         $http = $this->createMock(ClientInterface::class);
 
+        /** @var RequestInterface|null $capturedRequest */
         $capturedRequest = null;
 
         $http->expects(self::once())
             ->method('sendRequest')
-            ->willReturnCallback(function ($request) use (&$capturedRequest) {
+            ->willReturnCallback(function (RequestInterface $request) use (&$capturedRequest) {
                 $capturedRequest = $request;
 
                 return new Response(
@@ -320,12 +327,14 @@ final class VarioClientTest extends TestCase
 
     public function test_prepare_request_removes_existing_authorization_header(): void
     {
+        /** @var ClientInterface&MockObject $http */
         $http = $this->createMock(ClientInterface::class);
 
+        /** @var RequestInterface|null $capturedRequest */
         $capturedRequest = null;
 
         $http->method('sendRequest')
-            ->willReturnCallback(function ($request) use (&$capturedRequest) {
+            ->willReturnCallback(function (RequestInterface $request) use (&$capturedRequest) {
                 $capturedRequest = $request;
 
                 return new Response(200, [], '{"ok":true}');
@@ -333,7 +342,7 @@ final class VarioClientTest extends TestCase
 
         $client = new VarioClient(
             httpClient: $http,
-            tokenStorage: new InMemoryTokenStorage(), // žádný token
+            tokenStorage: new InMemoryTokenStorage(),
             requestFactory: new HttpFactory(),
             logger: new NullLogger(),
             reauthCallback: fn() => null,
@@ -346,6 +355,8 @@ final class VarioClientTest extends TestCase
             ->withHeader('Authorization', 'Basic something');
 
         $client->send($request);
+
+        self::assertInstanceOf(RequestInterface::class, $capturedRequest);
 
         self::assertFalse(
             $capturedRequest->hasHeader('Authorization')

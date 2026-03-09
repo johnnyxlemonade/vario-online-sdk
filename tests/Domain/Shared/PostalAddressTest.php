@@ -135,9 +135,9 @@ final class PostalAddressTest extends TestCase
     {
         $address = new PostalAddress(
             street: "  Main\tStreet  ",
-            buildingNumber: "  10 ",
-            city: "  Prague ",
-            postalCode: " 11000 "
+            buildingNumber: '  10 ',
+            city: '  Prague ',
+            postalCode: ' 11000 '
         );
 
         self::assertSame('Main Street 10', $address->getStreetLine());

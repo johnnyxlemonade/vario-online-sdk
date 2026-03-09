@@ -76,7 +76,7 @@ final class ProductAttributesMapperTest extends TestCase
         $mapping = new ProductAttributesMapping([]);
 
         $row = new DatasetRow([
-            'color' => 'red'
+            'color' => 'red',
         ]);
 
         $mapper = new ProductAttributesMapper($mapping);

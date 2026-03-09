@@ -43,6 +43,7 @@ final class FileTokenStorage implements TokenStorageInterface
             return null;
         }
 
+        /** @var array<string,mixed> $data */
         $this->token = Token::fromArray($data);
 
         // Check if token is expired
