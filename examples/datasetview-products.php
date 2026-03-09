@@ -45,10 +45,9 @@ $productQuery = DatasetViewQuery::for(
     pageLength: 1
 );
 
-$response = $vario->datasetView()->get($productQuery);
+$result = $vario->datasetView()->fetch($productQuery);
 
-
-$productArray = $response['Data'] ?? [];
+$productArray = $result->getRows();
 
 /*
 |--------------------------------------------------------------------------
@@ -75,60 +74,197 @@ echo '<pre>';
 
 /*
 |--------------------------------------------------------------------------
-| Streaming (iterate)
+| DatasetView metadata
 |--------------------------------------------------------------------------
 |
-| Products are mapped lazily using a generator.
-| Only one product exists in memory at a time.
+| The fetch() method returns a typed DatasetViewResult object.
 |
-| This is the most memory-efficient approach and is recommended
-| when processing very large catalogues or API responses.
+| It provides convenient access to pagination metadata returned
+| by the Vario API such as total record count, number of pages
+| and the current page index.
+|
+| This information can be useful when debugging queries,
+| building synchronization jobs or implementing progress
+| indicators for large dataset imports.
+|
+*/
+
+echo "\n=== DatasetView metadata ===\n";
+
+print_r([
+    'records' => $result->getRecordCount(),
+    'pages' => $result->getPageCount(),
+    'pageIndex' => $result->getPageIndex(),
+    'pageLength' => $result->getPageLength(),
+]);
+
+/*
+|--------------------------------------------------------------------------
+| Streaming (array → mapper)
+|--------------------------------------------------------------------------
+|
+| Maps an array of DatasetView rows into Product domain objects.
+|
+| ProductMapper::iterate() uses a generator internally, meaning that
+| only one Product instance exists in memory at a time during iteration.
+|
+| This approach is efficient when the dataset has already been fetched
+| using DatasetViewApi::fetch() or DatasetViewApi::get().
 |
 */
 echo "\n=== Streaming (iterate) ===\n";
 
 foreach ($mapper->iterate($productArray) as $product) {
 
-    $price = $product->pricing()?->getPrice();
+    $identity = $product->identity();
+    $pricing = $product->pricing();
+    $inventory = $product->inventory();
+
+    $price = $pricing?->getPrice();
+
+    // Structured pricing (multiple price levels)
+    $prices = $product->prices();
+
+    $levels = [];
+
+    if ($prices !== null) {
+        foreach ($prices->getLevels() as $code => $level) {
+            $levels[$code] = [
+                'value' => $level->getPrice()->getValue(),
+                'vat' => $level->getPrice()->getVatPercentage(),
+                'currency' => $level->getPrice()->getCurrency()?->value,
+            ];
+        }
+    }
 
     print_r([
-        'name' => $product->identity()?->getName(),
-        'price' => $price?->getValue(),
-        'vatRate' => $price?->getVatPercentage(),
-        'currency' => $price?->getCurrency()?->value,
+        'identity' => [
+            'uuid' => $identity?->getUuid(),
+            'sku' => $identity?->getSku(),
+            'name' => $identity?->getName(),
+        ],
+
+        // Simple pricing
+        'simplePrice' => [
+            'value' => $price?->getValue(),
+            'vatRate' => $price?->getVatPercentage(),
+            'currency' => $price?->getCurrency()?->value,
+            'gross' => $price?->isGross(),
+        ],
+
+        // Structured pricing
+        'structuredPricing' => [
+            'basePrice' => $prices?->getBasePrice()?->getValue(),
+            'levels' => $levels,
+        ],
+
+        // Inventory example
+        'inventory' => [
+            'stock' => $inventory?->getStock(),
+            'deliveryTime' => $inventory?->getDeliveryTime(),
+        ],
     ]);
 }
 
 /*
 |--------------------------------------------------------------------------
-| Materialized collection (collect)
+| Streaming (API → mapper)
 |--------------------------------------------------------------------------
 |
-| All products are mapped into a ProductCollection instance.
+| Demonstrates full streaming directly from the Vario API.
+|
+| DatasetViewApi::iterate() loads DatasetView pages lazily,
+| while ProductMapper::iterate() converts each row into
+| a Product domain object.
+|
+| This allows processing very large catalogues without
+| loading the entire dataset into memory.
+|
+*/
+echo "\n=== Streaming (API → Mapper) ===\n";
+
+foreach ($mapper->iterate($vario->datasetView()->iterate($productQuery)) as $product) {
+
+    $identity = $product->identity();
+    $pricing = $product->pricing();
+    $inventory = $product->inventory();
+
+    $price = $pricing?->getPrice();
+    $prices = $product->prices();
+
+    $levels = [];
+
+    if ($prices !== null) {
+        foreach ($prices->getLevels() as $code => $level) {
+            $levels[$code] = [
+                'value' => $level->getPrice()->getValue(),
+                'vat' => $level->getPrice()->getVatPercentage(),
+                'currency' => $level->getPrice()->getCurrency()?->value,
+            ];
+        }
+    }
+
+    print_r([
+        'identity' => [
+            'uuid' => $identity?->getUuid(),
+            'sku' => $identity?->getSku(),
+            'name' => $identity?->getName(),
+        ],
+        'simplePrice' => [
+            'value' => $price?->getValue(),
+            'vatRate' => $price?->getVatPercentage(),
+            'currency' => $price?->getCurrency()?->value,
+            'gross' => $price?->isGross(),
+        ],
+        'structuredPricing' => [
+            'basePrice' => $prices?->getBasePrice()?->getValue(),
+            'levels' => $levels,
+        ],
+        'inventory' => [
+            'stock' => $inventory?->getStock(),
+            'deliveryTime' => $inventory?->getDeliveryTime(),
+        ],
+    ]);
+}
+
+/*
+|---------------------------------------------------------------------------
+| Materialized collection (collect)
+|---------------------------------------------------------------------------
+|
+| Converts all mapped products into a ProductCollection.
 |
 | This loads the entire dataset into memory but provides
-| convenient collection operations like count(), first(),
-| filter(), map() and iteration.
+| convenient collection helpers such as:
+|
+|   - count()
+|   - first()
+|   - iteration
+|
+| Useful when working with smaller datasets where full
+| in-memory access is required.
 |
 */
 echo "\n=== Materialized collection (collect) ===\n";
 
 $products = $mapper->collect($productArray);
-
 print_r([
     'count' => $products->count(),
     'first' => $products->first()?->identity()?->toArray(),
 ]);
 
 /*
-|--------------------------------------------------------------------------
+|---------------------------------------------------------------------------
 | Lazy pipeline (lazy)
-|--------------------------------------------------------------------------
+|---------------------------------------------------------------------------
 |
 | Creates a lazy processing pipeline over the mapped products.
 |
-| Operations like filter() are applied on-the-fly while iterating,
-| so the full dataset is never loaded into memory.
+| Operations such as filter() are applied during iteration,
+| meaning the full dataset is never loaded into memory.
+|
+| This allows efficient processing of large datasets
+| while still providing expressive filtering logic.
 |
 */
 echo "\n=== Lazy pipeline (lazy) ===\n";
@@ -151,15 +287,17 @@ foreach ($products as $product) {
 }
 
 /*
-|--------------------------------------------------------------------------
+|---------------------------------------------------------------------------
 | Lazy → Collection
-|--------------------------------------------------------------------------
+|---------------------------------------------------------------------------
 |
-| Executes the lazy pipeline and materializes the result
+| Executes the lazy pipeline and materializes the filtered result
 | into a ProductCollection.
 |
-| Useful when you want memory-efficient filtering first
-| and then work with a concrete collection.
+| This pattern is useful when you want to:
+|
+|   1) filter large datasets efficiently
+|   2) then work with the final result in memory
 |
 */
 echo "\n=== Lazy → Collection ===\n";
@@ -175,12 +313,18 @@ print_r([
 ]);
 
 /*
-|--------------------------------------------------------------------------
+|---------------------------------------------------------------------------
 | Full mapped product example
-|--------------------------------------------------------------------------
+|---------------------------------------------------------------------------
 |
-| Example showing how to access all available ProductSection
-| objects from the Product aggregate.
+| Demonstrates how to access all ProductSection objects
+| from the Product aggregate.
+|
+| Each section represents a normalized domain view
+| of the DatasetView row (identity, pricing, inventory, etc.).
+|
+| This example converts the entire Product object graph
+| into a serializable array structure.
 |
 */
 echo "\n=== Full mapped products ===\n";

@@ -7,6 +7,7 @@ namespace Lemonade\Vario\Api;
 use Lemonade\Vario\Enum\HttpMethod;
 use Lemonade\Vario\Enum\VarioEndpoint;
 use Lemonade\Vario\ValueObject\DatasetViewQuery;
+use Lemonade\Vario\ValueObject\DatasetViewResult;
 
 /**
  * Class DatasetViewApi
@@ -39,6 +40,8 @@ use Lemonade\Vario\ValueObject\DatasetViewQuery;
 final class DatasetViewApi extends AbstractApi
 {
     /**
+     * Raw DatasetView response.
+     *
      * @return array{
      *     Data?: list<array<string,mixed>>,
      *     Pager?: array<string,mixed>
@@ -60,7 +63,23 @@ final class DatasetViewApi extends AbstractApi
     }
 
     /**
-     * Iteruje nad celým DatasetView pomocí stránkování.
+     * Typed DatasetView response wrapper.
+     */
+    public function fetch(DatasetViewQuery $query): DatasetViewResult
+    {
+        $result = $this->get($query);
+
+        /** @var list<array<string,mixed>> $rows */
+        $rows = $result['Data'] ?? [];
+
+        /** @var array<string,mixed> $pager */
+        $pager = $result['Pager'] ?? [];
+
+        return new DatasetViewResult($rows, $pager);
+    }
+
+    /**
+     * Iterates over the entire DatasetView using pagination.
      *
      * @return \Generator<int, array<string,mixed>>
      */
@@ -68,6 +87,7 @@ final class DatasetViewApi extends AbstractApi
         DatasetViewQuery $baseQuery,
         int $pageLength = 100
     ): \Generator {
+
         $pageIndex = 0;
 
         do {
@@ -79,24 +99,15 @@ final class DatasetViewApi extends AbstractApi
                 filters: $baseQuery->getFilters()
             );
 
-            $result = $this->get($query);
+            $result = $this->fetch($query);
 
-            /** @var list<array<string,mixed>> $rows */
-            $rows = $result['Data'] ?? [];
-
-            /** @var array<string,mixed> $pager */
-            $pager = $result['Pager'] ?? [];
-
-            foreach ($rows as $row) {
+            foreach ($result->getRows() as $row) {
                 yield $row;
             }
 
             $pageIndex++;
 
-            // PHPStan level 9 safe narrowing
-            $pageCountValue = $pager['PageCount'] ?? 0;
-            /** @var int|string|float $pageCountValue */
-            $pageCount = (int) $pageCountValue;
+            $pageCount = $result->getPageCount();
 
         } while ($pageIndex < $pageCount);
     }

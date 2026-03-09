@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\Product;
 
+use Lemonade\Vario\Domain\Product\Pricing\ProductPrices;
 use Lemonade\Vario\Domain\Product\ValueObject\ProductAttributes;
 use Lemonade\Vario\Domain\Product\ValueObject\ProductClassification;
 use Lemonade\Vario\Domain\Product\ValueObject\ProductDescription;
@@ -121,5 +122,10 @@ final class Product
     public function attributes(): ?ProductAttributes
     {
         return $this->get(ProductAttributes::class);
+    }
+
+    public function prices(): ?ProductPrices
+    {
+        return $this->get(ProductPrices::class);
     }
 }
