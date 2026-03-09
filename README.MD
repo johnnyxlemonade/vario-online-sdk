@@ -3,7 +3,7 @@
 [![PHP Version](https://img.shields.io/packagist/php-v/lemonade/vario-online-sdk)](https://packagist.org/packages/lemonade/vario-online-sdk)
 [![Packagist Version](https://img.shields.io/packagist/v/lemonade/vario-online-sdk)](https://packagist.org/packages/lemonade/vario-online-sdk)
 [![Downloads](https://img.shields.io/packagist/dt/lemonade/vario-online-sdk)](https://packagist.org/packages/lemonade/vario-online-sdk)
-[![PHPStan Level](https://img.shields.io/badge/PHPStan-level%20max-brightgreen.svg)](https://phpstan.org/)
+[![PHPStan](https://img.shields.io/badge/PHPStan-level%2010-brightgreen.svg)](https://phpstan.org/)
 [![Tests](https://github.com/johnnyxlemonade/vario-online-sdk/actions/workflows/phpunit.yml/badge.svg)](https://github.com/johnnyxlemonade/vario-online-sdk/actions/workflows/phpunit.yml)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
@@ -51,19 +51,19 @@ The goal is to provide:
 
 ## Features
 
--   Typed API facade (`VarioApi`)
--   Domain-driven read models (KnownParty, Product)
--   Immutable value objects
--   DatasetView → Domain mapping layer
--   Automatic authentication & token refresh
--   PSR‑18 HTTP client support
--   PSR‑3 logging support
--   Structured request/response logging with duration metrics
--   Replaceable HTTP adapter (no vendor lock‑in)
--   Configurable token storage (memory, session, custom)
--   Lazy‑loaded API modules
--   Unified exception model
--   PHPStan **level max** ready
+- **Typed API facade** (`VarioApi`)
+- **Domain-driven read models** (KnownParty, Product)
+- Immutable value objects
+- **DatasetView → Domain mapping layer**
+- **Automatic authentication & token refresh**
+- **PSR-18 HTTP client support**
+- PSR-3 logging support
+- Structured request/response logging with duration metrics
+- **Replaceable HTTP adapter** (no vendor lock-in)
+- Configurable token storage (memory, session, custom)
+- Lazy-loaded API modules
+- Unified exception model
+- **PHPStan level 10 compliant**
 
 ## Architecture Overview
 The SDK is composed of several layers separating application usage, 
