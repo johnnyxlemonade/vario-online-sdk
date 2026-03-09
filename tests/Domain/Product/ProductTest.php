@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Tests\Domain\Product;
 
+use Lemonade\Vario\Domain\Common\VatRate;
+use Lemonade\Vario\Domain\Product\Pricing\Price;
 use Lemonade\Vario\Domain\Product\Product;
 use Lemonade\Vario\Domain\Product\ValueObject\ProductAttributes;
 use Lemonade\Vario\Domain\Product\ValueObject\ProductClassification;
@@ -78,7 +80,14 @@ final class ProductTest extends TestCase
 
     public function testPricingHelper(): void
     {
-        $pricing = new ProductPricing(100.0, '21', true);
+        $price = new Price(
+            value: 100.0,
+            includesVat: true,
+            vatRate: VatRate::STANDARD
+        );
+
+        $pricing = new ProductPricing($price);
+
         $product = new Product([$pricing]);
 
         self::assertSame($pricing, $product->pricing());

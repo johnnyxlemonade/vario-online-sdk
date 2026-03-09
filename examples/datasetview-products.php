@@ -19,6 +19,7 @@ use Lemonade\Vario\Domain\Product\Mapper\ProductFlagsMapper;
 use Lemonade\Vario\Domain\Product\Mapper\ProductIdentifiersMapper;
 use Lemonade\Vario\Domain\Product\Mapper\ProductIdentityMapper;
 use Lemonade\Vario\Domain\Product\Mapper\ProductInventoryMapper;
+use Lemonade\Vario\Domain\Product\Mapper\ProductPricesMapper;
 use Lemonade\Vario\Domain\Product\Mapper\ProductPricingMapper;
 use Lemonade\Vario\Domain\Product\Mapping\ProductAttributesMapping;
 use Lemonade\Vario\Domain\Product\Mapping\ProductClassificationMapping;
@@ -28,6 +29,7 @@ use Lemonade\Vario\Domain\Product\Mapping\ProductFlagsMapping;
 use Lemonade\Vario\Domain\Product\Mapping\ProductIdentifiersMapping;
 use Lemonade\Vario\Domain\Product\Mapping\ProductIdentityMapping;
 use Lemonade\Vario\Domain\Product\Mapping\ProductInventoryMapping;
+use Lemonade\Vario\Domain\Product\Mapping\ProductPricesMapping;
 use Lemonade\Vario\Domain\Product\Mapping\ProductPricingMapping;
 use Lemonade\Vario\Domain\Product\Product;
 use Lemonade\Vario\Domain\Product\ProductDatasetMapping;
@@ -45,6 +47,7 @@ $productQuery = DatasetViewQuery::for(
 
 $response = $vario->datasetView()->get($productQuery);
 
+
 $productArray = $response['Data'] ?? [];
 
 /*
@@ -61,6 +64,7 @@ $mapping
     ->add(new ProductFlagsMapper(new ProductFlagsMapping()))
     ->add(new ProductDimensionsMapper(new ProductDimensionsMapping()))
     ->add(new ProductPricingMapper(new ProductPricingMapping()))
+    ->add(new ProductPricesMapper(new ProductPricesMapping()))
     ->add(new ProductInventoryMapper(new ProductInventoryMapping()))
     ->add(new ProductClassificationMapper(new ProductClassificationMapping()))
     ->add(new ProductAttributesMapper(new ProductAttributesMapping()));
@@ -84,9 +88,14 @@ echo '<pre>';
 echo "\n=== Streaming (iterate) ===\n";
 
 foreach ($mapper->iterate($productArray) as $product) {
+
+    $price = $product->pricing()?->getPrice();
+
     print_r([
         'name' => $product->identity()?->getName(),
-        'price' => $product->pricing()?->getPrice(),
+        'price' => $price?->getValue(),
+        'vatRate' => $price?->getVatPercentage(),
+        'currency' => $price?->getCurrency()?->value,
     ]);
 }
 
@@ -131,9 +140,13 @@ $products = $mapper
     );
 
 foreach ($products as $product) {
+    $price = $product->pricing()?->getPrice();
+
     print_r([
         'name' => $product->identity()?->getName(),
         'stock' => $product->inventory()?->getStock(),
+        'price' => $price?->getValue(),
+        'vatRate' => $price?->getVatPercentage(),
     ]);
 }
 

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Tests\Domain\Product\ValueObject;
 
+use Lemonade\Vario\Domain\Common\VatRate;
+use Lemonade\Vario\Domain\Product\Pricing\Price;
 use Lemonade\Vario\Domain\Product\ValueObject\ProductPricing;
 use PHPUnit\Framework\TestCase;
 
@@ -11,42 +13,51 @@ final class ProductPricingTest extends TestCase
 {
     public function testGetters(): void
     {
-        $pricing = new ProductPricing(
-            price: 199.9,
-            vatRate: '21',
-            priceIncludesVat: true
+        $price = new Price(
+            value: 199.9,
+            includesVat: true,
+            vatRate: VatRate::STANDARD
         );
 
-        self::assertSame(199.9, $pricing->getPrice());
-        self::assertSame('21', $pricing->getVatRate());
-        self::assertTrue($pricing->isPriceIncludesVat());
+        $pricing = new ProductPricing($price);
+
+        self::assertTrue($pricing->hasPrice());
+
+        $result = $pricing->getPrice();
+
+        self::assertInstanceOf(Price::class, $result);
+        self::assertSame($price, $result);
+
+        self::assertSame(199.9, $result->getValue());
+        self::assertTrue($result->isVatIncluded());
+        self::assertSame(21.0, $result->getVatPercentage());
     }
 
     public function testNullValues(): void
     {
-        $pricing = new ProductPricing(
-            price: null,
-            vatRate: null,
-            priceIncludesVat: null
-        );
+        $pricing = new ProductPricing(null);
 
         self::assertNull($pricing->getPrice());
-        self::assertNull($pricing->getVatRate());
-        self::assertNull($pricing->isPriceIncludesVat());
+        self::assertFalse($pricing->hasPrice());
     }
 
     public function testToArray(): void
     {
-        $pricing = new ProductPricing(
-            price: 100.0,
-            vatRate: '21',
-            priceIncludesVat: false
+        $price = new Price(
+            value: 100.0,
+            includesVat: false,
+            vatRate: VatRate::STANDARD
         );
 
+        $pricing = new ProductPricing($price);
+
         self::assertSame([
-            'price' => 100.0,
-            'vatRate' => '21',
-            'priceIncludesVat' => false,
+            'price' => [
+                'value' => 100.0,
+                'includesVat' => false,
+                'vatRate' => 21.0,
+                'currency' => null,
+            ],
         ], $pricing->toArray());
     }
 }

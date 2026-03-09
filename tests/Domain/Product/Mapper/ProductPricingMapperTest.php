@@ -22,7 +22,7 @@ final class ProductPricingMapperTest extends TestCase
 
         $row = new DatasetRow([
             'price' => 199.9,
-            'vat' => '21',
+            'vat' => 'Základní',
             'includesVat' => 1,
         ]);
 
@@ -31,9 +31,14 @@ final class ProductPricingMapperTest extends TestCase
         $result = $mapper->map($row);
 
         self::assertInstanceOf(ProductPricing::class, $result);
-        self::assertSame(199.9, $result->getPrice());
-        self::assertSame('21', $result->getVatRate());
-        self::assertTrue($result->isPriceIncludesVat());
+
+        $price = $result->getPrice();
+
+        self::assertNotNull($price);
+        self::assertSame(199.9, $price->getValue());
+        self::assertTrue($price->isVatIncluded());
+        self::assertNotNull($price->getVatRate());
+        self::assertSame(21.0, $price->getVatPercentage());
     }
 
     public function testReturnsNullWhenAllFieldsMissing(): void
@@ -68,8 +73,12 @@ final class ProductPricingMapperTest extends TestCase
         $result = $mapper->map($row);
 
         self::assertInstanceOf(ProductPricing::class, $result);
-        self::assertSame(100.0, $result->getPrice());
-        self::assertNull($result->getVatRate());
-        self::assertNull($result->isPriceIncludesVat());
+
+        $price = $result->getPrice();
+
+        self::assertNotNull($price);
+        self::assertSame(100.0, $price->getValue());
+        self::assertFalse($price->isVatIncluded());
+        self::assertNull($price->getVatRate());
     }
 }

@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\Product\Mapper;
 
+use Lemonade\Vario\Domain\Common\Currency;
+use Lemonade\Vario\Domain\Common\VatRate;
 use Lemonade\Vario\Domain\Product\DatasetRow;
 use Lemonade\Vario\Domain\Product\Mapping\ProductPricingMapping;
+use Lemonade\Vario\Domain\Product\Pricing\Price;
 use Lemonade\Vario\Domain\Product\ValueObject\ProductPricing;
 
 /**
@@ -45,17 +48,28 @@ final class ProductPricingMapper extends AbstractProductSectionMapper
     public function map(DatasetRow $row): ?ProductPricing
     {
         $price = $this->mapFloat($row, $this->mapping->getPrice());
-        $vatRate = $this->mapString($row, $this->mapping->getVatRate());
+        $vatRateRaw = $this->mapString($row, $this->mapping->getVatRate());
         $includesVat = $this->mapBool($row, $this->mapping->getPriceIncludesVat());
 
-        if ($price === null && $vatRate === null && $includesVat === null) {
+        if ($price === null && $vatRateRaw === null && $includesVat === null) {
             return null;
         }
 
+        $vatRate = VatRate::tryFromNullable($vatRateRaw);
+
+        $priceObject = null;
+
+        if ($price !== null) {
+            $priceObject = new Price(
+                value: $price,
+                includesVat: $includesVat ?? false,
+                vatRate: $vatRate,
+                currency: Currency::CZK
+            );
+        }
+
         return new ProductPricing(
-            price: $price,
-            vatRate: $vatRate,
-            priceIncludesVat: $includesVat,
+            price: $priceObject
         );
     }
 }

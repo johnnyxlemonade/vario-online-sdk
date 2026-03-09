@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Lemonade\Vario\Domain\Product\ValueObject;
+namespace Lemonade\Vario\Domain\Product\Pricing;
 
-use Lemonade\Vario\Domain\Product\Pricing\Price;
-
-/*
- * Class ProductPricing
+/**
+ * Class PriceLevel
  *
- * Product price information.
+ * Represents a single price level assigned to a product.
+ *
+ * Each price level corresponds to a pricing list
+ * identified by its code.
  *
  * @package     Lemonade Framework
  * @subpackage  Lemonade\Vario\Domain\Product
@@ -19,25 +20,27 @@ use Lemonade\Vario\Domain\Product\Pricing\Price;
  * @license     MIT
  * @since       1.0
  */
-final class ProductPricing implements ProductSection
+final class PriceLevel
 {
     public function __construct(
-        private readonly ?Price $price
+        private readonly string $code,
+        private readonly Price $price
     ) {}
 
-    public function getPrice(): ?Price
+    public function getCode(): string
+    {
+        return $this->code;
+    }
+
+    public function getPrice(): Price
     {
         return $this->price;
     }
 
-    public function hasPrice(): bool
-    {
-        return $this->price !== null;
-    }
-
     /**
      * @return array{
-     *     price: ?array{
+     *     code: string,
+     *     price: array{
      *         value: float,
      *         includesVat: bool,
      *         vatRate: ?float,
@@ -48,7 +51,8 @@ final class ProductPricing implements ProductSection
     public function toArray(): array
     {
         return [
-            'price' => $this->price?->toArray(),
+            'code' => $this->code,
+            'price' => $this->price->toArray(),
         ];
     }
 }

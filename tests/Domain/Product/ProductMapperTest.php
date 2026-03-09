@@ -16,6 +16,7 @@ use Lemonade\Vario\Domain\Product\Mapping\ProductFlagsMapping;
 use Lemonade\Vario\Domain\Product\Mapping\ProductIdentityMapping;
 use Lemonade\Vario\Domain\Product\Mapping\ProductInventoryMapping;
 use Lemonade\Vario\Domain\Product\Mapping\ProductPricingMapping;
+use Lemonade\Vario\Domain\Product\Pricing\Price;
 use Lemonade\Vario\Domain\Product\ProductDatasetMapping;
 use Lemonade\Vario\Domain\Product\ProductMapper;
 use Lemonade\Vario\Domain\Product\ValueObject\ProductAttributes;
@@ -86,7 +87,10 @@ final class ProductMapperTest extends TestCase
         $pricing = $product->pricing();
         self::assertInstanceOf(ProductPricing::class, $pricing);
 
-        self::assertSame(199.9, $pricing->getPrice());
+        $price = $pricing->getPrice();
+        self::assertInstanceOf(Price::class, $price);
+
+        self::assertSame(199.9, $price->getValue());
 
         $inventory = $product->inventory();
         self::assertInstanceOf(ProductInventory::class, $inventory);
