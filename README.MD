@@ -116,6 +116,24 @@ client without modifying application logic.
 
 ---
 
+## Strategic Design Decisions (ADR)
+
+The development of this SDK was guided by specific architectural principles to ensure enterprise-grade stability and developer experience:
+
+### 1. Zero-Mixed Policy (PHPStan Level 10)
+Unlike most SDKs that rely on `array<mixed>` and "hope for the best", this library enforces **Level 10 static analysis** with `strict-rules` and `bleedingEdge`. Every API response is mapped through strict **Array Shapes**. This shifts 90% of potential integration bugs from *runtime* to the *static analysis* phase. If the code passes `composer stan`, the data structure is guaranteed.
+
+### 2. Memory-First Streaming & Lazy Pipelines
+Vario datasets often contain tens of thousands of records. Most integrations fail here due to `Memory Exhausted` errors. This SDK implements **Streaming Generators** (`iterate()`) and **Lazy Pipelines** as first-class citizens. You can process a 100k+ product catalog on a server with minimal RAM, as only one domain record exists in memory at any given time during iteration.
+
+### 3. Domain-Oriented Mapping Layer
+The Vario API schema is volatile and often varies between installations. This SDK solves this by introducing a **Mapping Layer**. Your application logic stays coupled to stable, immutable **Domain Models** (`Product`, `KnownParty`, `Inventory`), while the SDK handles the translation from Vario's backend fields. Changing a column name in Vario requires only a 1-line change in the mapper, not a rewrite of your business logic.
+
+### 4. Transport Agnostic (PSR-18)
+By strictly following **PSR-18** and **PSR-17**, the SDK eliminates vendor lock-in. Whether your project uses Guzzle, Symfony HttpClient, or a custom wrapper, the SDK remains stable. This boundary ensures that transport-level concerns (like SSL issues or proxy settings) never leak into your domain mapping logic.
+
+---
+
 ## Requirements
 
 -   PHP 8.1+
