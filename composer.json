@@ -1,16 +1,18 @@
 {
   "name": "lemonade/vario-online-sdk",
-  "description": "Typed PHP SDK for Vario Online API with immutable queries, dataset views and pluggable HTTP transport.",
+  "description": "PHP SDK for the Vario Online API providing typed dataset queries, domain models and PSR-18 HTTP integration for Vario ERP systems.",
   "type": "library",
   "license": "MIT",
   "keywords": [
     "vario",
+    "vario-api",
     "vario-online",
+    "vario-erp",
     "erp",
-    "sdk",
-    "api",
-    "psr-18",
-    "php-sdk"
+    "erp-integration",
+    "php-sdk",
+    "api-client",
+    "psr-18"
   ],
   "homepage": "https://github.com/johnnyxlemonade/vario-online-sdk",
   "support": {

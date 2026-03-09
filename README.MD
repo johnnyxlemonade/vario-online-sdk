@@ -1,51 +1,72 @@
-# Vario Online PHP SDK
+# Vario Online API PHP SDK (Community Vario ERP Integration Library)
 
-[![PHP Version](https://img.shields.io/packagist/php-v/lemonade/vario-online-sdk)](https://packagist.org/packages/lemonade/vario-online-sdk)
-[![Packagist Version](https://img.shields.io/packagist/v/lemonade/vario-online-sdk)](https://packagist.org/packages/lemonade/vario-online-sdk)
+[![PHP
+Version](https://img.shields.io/packagist/php-v/lemonade/vario-online-sdk)](https://packagist.org/packages/lemonade/vario-online-sdk)
+[![Packagist
+Version](https://img.shields.io/packagist/v/lemonade/vario-online-sdk)](https://packagist.org/packages/lemonade/vario-online-sdk)
 [![Downloads](https://img.shields.io/packagist/dt/lemonade/vario-online-sdk)](https://packagist.org/packages/lemonade/vario-online-sdk)
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%2010-brightgreen.svg)](https://phpstan.org/)
 [![Tests](https://github.com/johnnyxlemonade/vario-online-sdk/actions/workflows/phpunit.yml/badge.svg)](https://github.com/johnnyxlemonade/vario-online-sdk/actions/workflows/phpunit.yml)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-Typed, PSR-compatible PHP SDK for integrating with **Vario Online API**.
+A strongly‑typed **PHP SDK for the Vario Online API**, designed for
+building custom integrations with **Vario ERP systems**.
 
-This library provides a modern, strongly‑typed integration layer for
-systems using **Vario ERP**.
+This project is an **independent community‑maintained client library**
+for developers who want to integrate PHP applications with the **Vario
+ERP platform**. It is **not officially affiliated with Vario Software**.
 
-More information about Vario ERP:  
-[https://vario.cz/](https://vario.cz/)
+The SDK provides a modern domain‑oriented abstraction layer over the
+Vario Online API including dataset queries, authentication handling,
+domain mapping and transport‑agnostic HTTP communication.
 
-The SDK exposes a stable **domain-oriented API**, not just a transport
-wrapper. It provides clean abstractions over Vario endpoints, dataset
-views and paged queries, including automatic authentication, retry
-handling and a fully replaceable HTTP layer.
+More information about Vario ERP:\
+https://vario.cz/
+
+---
+## Typical Use Cases
+
+This SDK is commonly used for:
+
+-   integrating **Vario ERP with e‑commerce platforms**
+-   synchronizing **products, customers and orders**
+-   building **data pipelines from Vario datasets**
+-   exporting ERP data into BI or analytics systems
+-   creating **custom ERP dashboards or integrations**
+-   automating ERP workflows
 
 ---
 
 ## Why this SDK exists
 
-The official Vario Online API exposes data primarily as
-loosely structured **array responses** tied to backend fields.
+The official **Vario Online API** exposes data primarily as loosely
+structured array responses tied directly to backend fields.
 
-While flexible, this makes integrations harder to maintain because:
+While flexible, this creates several challenges:
 
-- dataset column names may vary between installations
-- responses require manual array parsing
-- business logic becomes tightly coupled to API payload structure
+-   dataset column names may differ between installations
+-   integrations require manual array parsing
+-   business logic becomes tightly coupled to API payload structure
 
-This SDK introduces a **domain-oriented layer** on top of the API.
+This SDK introduces a **domain‑oriented integration layer**.
 
-Instead of working with raw arrays, developers interact with
-**typed domain models** such as `KnownParty` or `Product`, backed by
-immutable value objects and a configurable mapping layer.
+Instead of working with raw arrays, developers interact with **typed
+domain models** such as:
 
-The goal is to provide:
+-   `KnownParty`
+-   `Product`
+-   `Inventory`
 
-- a **stable integration surface**
-- strong typing and IDE support
-- separation between API payloads and application logic
-- a maintainable foundation for ERP integrations
+These models are backed by immutable value objects and a configurable
+mapping layer that isolates application logic from the underlying API
+schema.
 
+Goals of the SDK:
+
+-   stable integration surface
+-   strong typing and IDE support
+-   separation between API payloads and application logic
+-   maintainable ERP integrations
 
 ---
 
@@ -65,6 +86,21 @@ The goal is to provide:
 - Unified exception model
 - **PHPStan level 10 compliant**
 
+---
+## Supported Vario API Areas
+
+The SDK provides abstractions for several Vario Online API modules:
+
+-   DatasetView API
+-   KnownParty API
+-   Product catalog datasets
+-   Incoming orders
+-   Outgoing invoices
+
+Additional integrations can be built through the generic DatasetView
+layer.
+
+---
 ## Architecture Overview
 The SDK is composed of several layers separating application usage, 
 API modules, domain mapping and transport infrastructure.
@@ -231,6 +267,12 @@ Run tests:
 ``` bash
 composer test
 ```
+
+---
+## Disclaimer
+
+This project is an independent open‑source initiative and is not
+affiliated with or endorsed by Vario Software.
 
 ---
 
