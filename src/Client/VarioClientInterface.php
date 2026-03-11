@@ -58,7 +58,7 @@ interface VarioClientInterface
      * Send query request and decode response.
      *
      * @param array<string,mixed> $query
-     * @return array<string,mixed>
+     * @return array<string,mixed>|list<mixed>
      */
     public function sendQuery(
         HttpMethod $method,

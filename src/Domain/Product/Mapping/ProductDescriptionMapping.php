@@ -25,8 +25,8 @@ namespace Lemonade\Vario\Domain\Product\Mapping;
 final class ProductDescriptionMapping implements ProductSectionMapping
 {
     public function __construct(
-        private readonly ?string $shortDescription = 'Anotace',
-        private readonly ?string $description = 'Text',
+        private readonly ?string $shortDescription = 'ShortDescription',
+        private readonly ?string $description = 'Description',
     ) {}
 
     public function getShortDescription(): ?string

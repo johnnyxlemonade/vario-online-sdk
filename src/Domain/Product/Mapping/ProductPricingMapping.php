@@ -28,9 +28,9 @@ namespace Lemonade\Vario\Domain\Product\Mapping;
 final class ProductPricingMapping implements ProductSectionMapping
 {
     public function __construct(
-        private readonly ?string $price = 'Cena_Cenik',
-        private readonly ?string $vatRate = 'Sazba_DPH',
-        private readonly ?string $priceIncludesVat = 'Ceny_vcetne_DPH',
+        private readonly ?string $price = 'Price',
+        private readonly ?string $vatRate = 'VatRate',
+        private readonly ?string $priceIncludesVat = 'PricesIncludeVat',
     ) {}
 
     public function getPrice(): ?string

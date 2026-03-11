@@ -93,4 +93,83 @@ final class ProductPricesMapperTest extends TestCase
         self::assertNull($price->getVatRate());
         self::assertNull($price->getCurrency());
     }
+
+    public function testReturnsNullWhenBasePriceColumnNotConfigured(): void
+    {
+        $mapping = new ProductPricesMapping(
+            basePrice: null
+        );
+
+        $row = new DatasetRow([
+            'price' => 100,
+        ]);
+
+        $mapper = new ProductPricesMapper($mapping);
+
+        $result = $mapper->map($row);
+
+        self::assertNull($result);
+    }
+
+    public function testMapsPriceWithoutVatColumn(): void
+    {
+        $mapping = new ProductPricesMapping(
+            basePrice: 'price',
+            vatRate: null
+        );
+
+        $row = new DatasetRow([
+            'price' => 100.0,
+        ]);
+
+        $mapper = new ProductPricesMapper($mapping);
+
+        $result = $mapper->map($row);
+
+        self::assertInstanceOf(ProductPrices::class, $result);
+
+        $price = $result->getBasePrice();
+
+        self::assertNull($price?->getVatRate());
+    }
+
+    public function testMapsPriceWithoutIncludesVatColumn(): void
+    {
+        $mapping = new ProductPricesMapping(
+            basePrice: 'price',
+            priceIncludesVat: null
+        );
+
+        $row = new DatasetRow([
+            'price' => 100.0,
+        ]);
+
+        $mapper = new ProductPricesMapper($mapping);
+
+        $result = $mapper->map($row);
+
+        $price = $result?->getBasePrice();
+
+        self::assertFalse($price?->isVatIncluded());
+    }
+
+    public function testMapsPriceWithoutCurrencyColumn(): void
+    {
+        $mapping = new ProductPricesMapping(
+            basePrice: 'price',
+            currency: null
+        );
+
+        $row = new DatasetRow([
+            'price' => 100.0,
+        ]);
+
+        $mapper = new ProductPricesMapper($mapping);
+
+        $result = $mapper->map($row);
+
+        $price = $result?->getBasePrice();
+
+        self::assertNull($price?->getCurrency());
+    }
 }

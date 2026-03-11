@@ -18,7 +18,7 @@ use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Http\Message\StreamInterface;
 use Psr\Log\LoggerInterface;
 
-final class AuthenticatorBranchesTest extends TestCase
+final class AuthenticatorTest extends TestCase
 {
     private function createConfig(LoggerInterface $logger): VarioClientConfig
     {
@@ -39,14 +39,20 @@ final class AuthenticatorBranchesTest extends TestCase
         $storage = $this->createMock(TokenStorageInterface::class);
         $logger = $this->createMock(LoggerInterface::class);
 
-        $storage->method('get')->willReturn(new Token('existing'));
+        $config = $this->createConfig($logger);
+
+        $token = new Token(
+            value: 'existing',
+            expiresAtUtc: null,
+            configHash: Token::buildConfigHash($config)
+        );
+
+        $storage->method('get')->willReturn($token);
 
         $logger
             ->expects(self::once())
             ->method('debug')
             ->with('Vario authentication skipped: valid token already present');
-
-        $config = $this->createConfig($logger);
 
         $auth = new Authenticator(
             $http,
@@ -100,6 +106,68 @@ final class AuthenticatorBranchesTest extends TestCase
 
         $this->expectException(AuthenticationException::class);
         $this->expectExceptionMessage('Authentication failed: Missing token in response');
+
+        $auth->authenticate();
+    }
+
+    public function test_token_is_cleared_when_config_hash_differs(): void
+    {
+        $http = $this->createMock(ClientInterface::class);
+        $requestFactory = $this->createMock(RequestFactoryInterface::class);
+        $streamFactory = $this->createMock(StreamFactoryInterface::class);
+        $storage = $this->createMock(TokenStorageInterface::class);
+        $logger = $this->createMock(LoggerInterface::class);
+
+        $config = $this->createConfig($logger);
+
+        // token with WRONG hash
+        $token = new Token(
+            value: 'existing',
+            expiresAtUtc: null,
+            configHash: 'different_hash'
+        );
+
+        $storage->method('get')->willReturn($token);
+
+        $storage
+            ->expects(self::once())
+            ->method('clear');
+
+        $logger
+            ->expects(self::once())
+            ->method('debug')
+            ->with('Stored token invalid for current configuration, clearing');
+
+        $request = $this->createMock(RequestInterface::class);
+        $request->method('withHeader')->willReturnSelf();
+        $request->method('withBody')->willReturnSelf();
+
+        $requestFactory
+            ->method('createRequest')
+            ->willReturn($request);
+
+        $stream = $this->createMock(StreamInterface::class);
+        $streamFactory->method('createStream')->willReturn($stream);
+
+        $body = $this->createMock(StreamInterface::class);
+        $body->method('__toString')->willReturn('new-token');
+
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('getBody')->willReturn($body);
+
+        $http->method('sendRequest')->willReturn($response);
+
+        $storage
+            ->expects(self::once())
+            ->method('store');
+
+        $auth = new Authenticator(
+            $http,
+            $requestFactory,
+            $streamFactory,
+            $storage,
+            $config
+        );
 
         $auth->authenticate();
     }

@@ -108,4 +108,32 @@ final class TokenTest extends TestCase
         self::assertSame('abc', $array['value']);
         self::assertSame('2030-01-01T00:00:00Z', $array['expiresAtUtc']);
     }
+
+    public function test_from_array_with_config_hash(): void
+    {
+        $token = Token::fromArray([
+            'value' => 'abc',
+            'configHash' => 'hash123',
+        ]);
+
+        self::assertInstanceOf(Token::class, $token);
+        self::assertSame('hash123', $token->getConfigHash());
+    }
+
+    public function test_to_array_contains_config_hash(): void
+    {
+        $expires = new \DateTimeImmutable('2030-01-01T00:00:00Z');
+
+        $token = new Token(
+            value: 'abc',
+            expiresAtUtc: $expires,
+            configHash: 'hash123'
+        );
+
+        $array = $token->toArray();
+
+        self::assertSame('abc', $array['value']);
+        self::assertSame('2030-01-01T00:00:00Z', $array['expiresAtUtc']);
+        self::assertSame('hash123', $array['configHash']);
+    }
 }

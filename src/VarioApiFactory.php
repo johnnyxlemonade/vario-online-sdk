@@ -62,9 +62,10 @@ final class VarioApiFactory
         );
 
         $client = new VarioClient(
-            httpClient: $httpAdapter->client(),
+            httpClient: $httpAdapter->httpClient(),
             tokenStorage: $tokenStorage,
             requestFactory: $httpAdapter->requestFactory(),
+            streamFactory: $httpAdapter->streamFactory(),
             logger: $config->getLogger(),
             reauthCallback: $authenticator->authenticate(...),
         );
@@ -100,7 +101,7 @@ final class VarioApiFactory
         TokenStorageInterface $tokenStorage
     ): Authenticator {
         return new Authenticator(
-            httpClient: $httpAdapter->client(),
+            httpClient: $httpAdapter->httpClient(),
             requestFactory: $httpAdapter->requestFactory(),
             streamFactory: $httpAdapter->streamFactory(),
             storage: $tokenStorage,

@@ -98,4 +98,16 @@ final class ProductPricesTest extends TestCase
             ],
         ], $array);
     }
+
+    public function testToArrayWithoutBasePrice(): void
+    {
+        $levels = new PriceCollection();
+
+        $productPrices = new ProductPrices($levels);
+
+        $array = $productPrices->toArray();
+
+        self::assertNull($array['basePrice']);
+        self::assertSame([], $array['levels']);
+    }
 }

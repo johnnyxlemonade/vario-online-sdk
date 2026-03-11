@@ -28,10 +28,10 @@ namespace Lemonade\Vario\Domain\Product\Mapping;
 final class ProductInventoryMapping implements ProductSectionMapping
 {
     public function __construct(
-        private readonly ?string $stock = 'Skladem_Celkem',
-        private readonly ?string $deliveryTime = 'Doba_dodani',
-        private readonly ?string $unit = 'Jednotky',
-        private readonly ?string $warrantyMonths = 'Zaruka',
+        private readonly ?string $stock = 'StockTotal',
+        private readonly ?string $deliveryTime = 'DeliveryTime',
+        private readonly ?string $unit = 'Units',
+        private readonly ?string $warrantyMonths = 'Warranty',
     ) {}
 
     public function getStock(): ?string

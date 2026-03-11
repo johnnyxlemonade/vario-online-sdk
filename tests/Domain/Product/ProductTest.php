@@ -6,6 +6,8 @@ namespace Lemonade\Vario\Tests\Domain\Product;
 
 use Lemonade\Vario\Domain\Common\VatRate;
 use Lemonade\Vario\Domain\Product\Pricing\Price;
+use Lemonade\Vario\Domain\Product\Pricing\PriceCollection;
+use Lemonade\Vario\Domain\Product\Pricing\ProductPrices;
 use Lemonade\Vario\Domain\Product\Product;
 use Lemonade\Vario\Domain\Product\ValueObject\ProductAttributes;
 use Lemonade\Vario\Domain\Product\ValueObject\ProductClassification;
@@ -124,4 +126,14 @@ final class ProductTest extends TestCase
 
         self::assertSame($attributes, $product->attributes());
     }
+
+    public function testPricesHelper(): void
+    {
+        $prices = new ProductPrices(new PriceCollection());
+
+        $product = new Product([$prices]);
+
+        self::assertSame($prices, $product->prices());
+    }
+
 }

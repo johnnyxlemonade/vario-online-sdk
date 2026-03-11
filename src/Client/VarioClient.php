@@ -15,6 +15,7 @@ use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
 use Psr\Http\Message\RequestInterface;
 use Psr\Http\Message\ResponseInterface;
+use Psr\Http\Message\StreamFactoryInterface;
 use Psr\Log\LoggerInterface;
 
 /**
@@ -59,10 +60,10 @@ final class VarioClient implements VarioClientInterface
         private readonly ClientInterface $httpClient,
         private readonly TokenStorageInterface $tokenStorage,
         private readonly RequestFactoryInterface $requestFactory,
+        private readonly StreamFactoryInterface $streamFactory,
         private readonly LoggerInterface $logger,
         callable $reauthCallback
     ) {
-        // normalize callable → Closure (PHP 8.1 safe storage)
         $this->reauthCallback = Closure::fromCallable($reauthCallback);
     }
 
@@ -75,60 +76,77 @@ final class VarioClient implements VarioClientInterface
     }
 
     /**
-     * @param array<string,mixed>|list<mixed>|null $payload
-     * @return array<string,mixed>|list<mixed>
+     * @param array<string, mixed>|list<mixed>|null $payload
+     * @return array<string, mixed>|list<mixed>
      */
     public function sendJson(
         HttpMethod $method,
         string $uri,
         ?array $payload = null
     ): array {
-        return $this->sendAndDecode(
-            $method,
-            $uri,
-            static function (RequestInterface $request) use ($payload): RequestInterface {
-                $request = $request->withHeader(
-                    'Content-Type',
-                    'application/json'
-                );
+        $request = $this->createRequest($method, $uri);
 
-                if ($payload !== null) {
-                    $request->getBody()->write(
-                        json_encode($payload, JSON_THROW_ON_ERROR)
-                    );
-                }
+        if ($payload !== null) {
+            $request = $this->withJsonBody($request, $payload);
+        }
 
-                return $request;
-            }
+        return $this->decodeJsonResponse(
+            $this->send($request)
         );
     }
 
     /**
-     * @param array<string,mixed> $query
-     * @return array<string,mixed>
+     * @param array<string, mixed> $query
      */
     public function sendQuery(
         HttpMethod $method,
         string $uri,
         array $query
     ): array {
-        /** @var array<string,mixed> $result */
-        $result = $this->sendAndDecode(
-            $method,
-            $uri,
-            static function (RequestInterface $request) use ($query): RequestInterface {
-                $uri = $request->getUri()
-                    ->withQuery(http_build_query($query, '', '&', PHP_QUERY_RFC3986));
+        $request = $this->createRequest($method, $uri);
+        $request = $this->withQuery($request, $query);
 
-                return $request->withUri($uri);
-            }
+        return $this->decodeJsonResponse(
+            $this->send($request)
         );
+    }
 
-        return $result;
+    private function createRequest(HttpMethod $method, string $uri): RequestInterface
+    {
+        return $this->requestFactory->createRequest($method->value, $uri);
     }
 
     /**
-     * @return array<string,mixed>|list<mixed>
+     * @param array<string, mixed>|list<mixed> $payload
+     */
+    private function withJsonBody(
+        RequestInterface $request,
+        array $payload
+    ): RequestInterface {
+        $json = json_encode($payload, JSON_THROW_ON_ERROR);
+        $stream = $this->streamFactory->createStream($json);
+
+        return $request
+            ->withHeader('Content-Type', 'application/json')
+            ->withBody($stream);
+    }
+
+    /**
+     * @param array<string, mixed> $query
+     */
+    private function withQuery(
+        RequestInterface $request,
+        array $query
+    ): RequestInterface {
+        $uri = $request->getUri()->withQuery(
+            http_build_query($query, '', '&', PHP_QUERY_RFC3986)
+        );
+
+        return $request->withUri($uri);
+    }
+
+    /**
+     * @return array<string, mixed>|list<mixed>
      */
     private function decodeJsonResponse(ResponseInterface $response): array
     {
@@ -138,71 +156,38 @@ final class VarioClient implements VarioClientInterface
             return [];
         }
 
-        $result = json_decode(
-            $body,
-            true,
-            512,
-            JSON_THROW_ON_ERROR
-        );
+        $decoded = json_decode($body, true, 512, JSON_THROW_ON_ERROR);
 
-        if (!is_array($result)) {
+        if (!is_array($decoded)) {
             throw new ApiException(sprintf(
-                'Invalid JSON response from Vario API (%s). Expected JSON object or array.',
+                'Invalid JSON response from Vario API (%d). Expected JSON object or array.',
                 $response->getStatusCode()
             ));
         }
 
-        /** @var array<string,mixed>|list<mixed> $result */
-        return $result;
-    }
-
-    /**
-     * @param callable(RequestInterface): RequestInterface $requestBuilder
-     * @return array<string,mixed>|list<mixed>
-     */
-    private function sendAndDecode(
-        HttpMethod $method,
-        string $uri,
-        callable $requestBuilder
-    ): array {
-        $request = $this->requestFactory
-            ->createRequest($method->value, $uri);
-
-        $request = $requestBuilder($request);
-
-        $response = $this->send($request);
-
-        return $this->decodeJsonResponse($response);
+        /** @var array<string, mixed>|list<mixed> $decoded */
+        return $decoded;
     }
 
     private function sendWithRetry(
         RequestInterface $request,
         bool $allowRetry
     ): ResponseInterface {
+        $preparedRequest = $this->prepareRequest($request);
+        $this->rewindRequestBody($preparedRequest);
 
-        $request = $this->prepareRequest($request);
-
-        $uri = $request->getUri();
-
-        $this->logger->debug('Vario API request', [
-            'method' => $request->getMethod(),
-            'uri' => $uri->getPath(),
-            'query' => $uri->getQuery(),
-            'authorized' => $request->hasHeader('Authorization'),
-            'content_length' => $request->getBody()->getSize(),
-        ]);
+        $this->logRequest($preparedRequest);
 
         $start = microtime(true);
 
         try {
-            $response = $this->httpClient->sendRequest($request);
+            $response = $this->httpClient->sendRequest($preparedRequest);
         } catch (ClientExceptionInterface $e) {
-
-            $duration = (microtime(true) - $start) * 1000;
+            $durationMs = $this->calculateDurationMs($start);
 
             $this->logger->error('Vario API HTTP request failed', [
-                'uri' => (string) $request->getUri(),
-                'duration_ms' => round($duration, 2),
+                'uri' => (string) $preparedRequest->getUri(),
+                'duration_ms' => $durationMs,
                 'exception' => $e,
             ]);
 
@@ -212,41 +197,87 @@ final class VarioClient implements VarioClientInterface
             );
         }
 
-        $duration = (microtime(true) - $start) * 1000;
+        $durationMs = $this->calculateDurationMs($start);
 
-        $status = $response->getStatusCode();
+        $this->logResponse($preparedRequest, $response, $durationMs);
+
+        return $this->handleResponse($preparedRequest, $response, $allowRetry);
+    }
+
+    private function prepareRequest(RequestInterface $request): RequestInterface
+    {
+        $preparedRequest = $request->withHeader(
+            'X-Requested-With',
+            'XMLHttpRequest'
+        );
+
+        if ($preparedRequest->hasHeader('Authorization')) {
+            $preparedRequest = $preparedRequest->withoutHeader('Authorization');
+        }
+
+        $token = $this->tokenStorage->get();
+
+        if ($token === null) {
+            return $preparedRequest;
+        }
+
+        return $preparedRequest->withHeader(
+            'Authorization',
+            'Bearer ' . $token->value
+        );
+    }
+
+    private function rewindRequestBody(RequestInterface $request): void
+    {
+        $body = $request->getBody();
+
+        if ($body->isSeekable()) {
+            $body->rewind();
+        }
+    }
+
+    private function logRequest(RequestInterface $request): void
+    {
+        $uri = $request->getUri();
+
+        $this->logger->debug('Vario API request', [
+            'method' => $request->getMethod(),
+            'uri' => $uri->getPath(),
+            'query' => $uri->getQuery(),
+            'authorized' => $request->hasHeader('Authorization'),
+            'content_length' => $request->getBody()->getSize() ?? 0,
+        ]);
+    }
+
+    private function logResponse(
+        RequestInterface $request,
+        ResponseInterface $response,
+        float $durationMs
+    ): void {
         $uri = $request->getUri();
 
         $this->logger->debug('Vario API response', [
-            'status' => $status,
+            'status' => $response->getStatusCode(),
             'uri' => $uri->getPath(),
             'query' => $uri->getQuery(),
-            'content_length' => $response->getBody()->getSize(),
-            'duration_ms' => round($duration, 2),
+            'content_length' => $response->getBody()->getSize() ?? 0,
+            'duration_ms' => $durationMs,
         ]);
+    }
 
-        // 401 handling
+    private function handleResponse(
+        RequestInterface $request,
+        ResponseInterface $response,
+        bool $allowRetry
+    ): ResponseInterface {
+        $status = $response->getStatusCode();
+
         if ($status === 401) {
-
-            $this->logger->warning('Vario API unauthorized (401)', [
-                'uri' => (string) $request->getUri(),
-                'retry' => $allowRetry,
-            ]);
-
-            if ($allowRetry) {
-                $this->reauthenticate();
-                return $this->sendWithRetry($request, false);
-            }
-
-            throw new AuthenticationException(
-                'Authentication failed after retry. Check login credentials or company number.'
-            );
+            return $this->handleUnauthorizedResponse($request, $allowRetry);
         }
 
-        // permission problem
         if ($status === 403) {
             $body = (string) $response->getBody();
-
 
             $this->logger->warning('Vario API forbidden', [
                 'uri' => (string) $request->getUri(),
@@ -262,7 +293,6 @@ final class VarioClient implements VarioClientInterface
             );
         }
 
-        // generic API error
         if ($status >= 400) {
             $body = (string) $response->getBody();
 
@@ -285,41 +315,36 @@ final class VarioClient implements VarioClientInterface
         return $response;
     }
 
-    private function prepareRequest(RequestInterface $request): RequestInterface
-    {
-        $request = $request->withHeader(
-            'X-Requested-With',
-            'XMLHttpRequest'
-        );
+    private function handleUnauthorizedResponse(
+        RequestInterface $request,
+        bool $allowRetry
+    ): ResponseInterface {
+        $this->logger->warning('Vario API unauthorized (401)', [
+            'uri' => (string) $request->getUri(),
+            'retry' => $allowRetry,
+        ]);
 
-        if ($request->hasHeader('Authorization')) {
-            $request = $request->withoutHeader('Authorization');
+        if (!$allowRetry) {
+            throw new AuthenticationException(
+                'Authentication failed after retry. Check login credentials or company number.'
+            );
         }
 
-        $token = $this->tokenStorage->get();
+        $this->reauthenticate();
 
-        if ($token === null) {
-            return $request;
-        }
-
-        return $request->withHeader(
-            'Authorization',
-            'Bearer ' . $token->value
-        );
+        return $this->sendWithRetry($request, false);
     }
 
     private function reauthenticate(): void
     {
         $this->logger->info('Vario API re-authentication triggered');
-        $this->logger->debug(
-            'Vario auth token cleared before re-authentication'
-        );
+        $this->logger->debug('Vario auth token cleared before re-authentication');
+
         $this->tokenStorage->clear();
 
         try {
             ($this->reauthCallback)();
         } catch (\Throwable $e) {
-
             $this->logger->error('Vario API re-authentication failed', [
                 'exception' => $e,
             ]);
@@ -329,5 +354,10 @@ final class VarioClient implements VarioClientInterface
                 previous: $e
             );
         }
+    }
+
+    private function calculateDurationMs(float $start): float
+    {
+        return round((microtime(true) - $start) * 1000, 2);
     }
 }

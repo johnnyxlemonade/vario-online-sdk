@@ -26,7 +26,7 @@ final class VarioApiFactoryTest extends TestCase
         );
 
         $adapter = new class implements HttpAdapterInterface {
-            public function client(): ClientInterface
+            public function httpClient(): ClientInterface
             {
                 return new \GuzzleHttp\Client();
             }

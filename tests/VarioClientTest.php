@@ -27,21 +27,9 @@ final class VarioClientTest extends TestCase
         $http = $this->createMock(ClientInterface::class);
 
         $http->method('sendRequest')
-            ->willReturn(
-                new Response(
-                    200,
-                    [],
-                    '{"ok":true}'
-                )
-            );
+            ->willReturn(new Response(200, [], '{"ok":true}'));
 
-        $client = new VarioClient(
-            httpClient: $http,
-            tokenStorage: new InMemoryTokenStorage(),
-            requestFactory: new HttpFactory(),
-            logger: new NullLogger(),
-            reauthCallback: fn() => null,
-        );
+        $client = $this->createClient($http);
 
         $result = $client->sendJson(HttpMethod::GET, '/test');
 
@@ -61,10 +49,13 @@ final class VarioClientTest extends TestCase
 
         $reauthCalled = false;
 
+        $factory = new HttpFactory();
+
         $client = new VarioClient(
             httpClient: $http,
             tokenStorage: new InMemoryTokenStorage(),
-            requestFactory: new HttpFactory(),
+            requestFactory: $factory,
+            streamFactory: $factory,
             logger: new NullLogger(),
             reauthCallback: function () use (&$reauthCalled) {
                 $reauthCalled = true;
@@ -82,17 +73,9 @@ final class VarioClientTest extends TestCase
         $http = $this->createMock(ClientInterface::class);
 
         $http->method('sendRequest')
-            ->willReturn(
-                new Response(403, [], 'forbidden')
-            );
+            ->willReturn(new Response(403, [], 'forbidden'));
 
-        $client = new VarioClient(
-            httpClient: $http,
-            tokenStorage: new InMemoryTokenStorage(),
-            requestFactory: new HttpFactory(),
-            logger: new NullLogger(),
-            reauthCallback: fn() => null,
-        );
+        $client = $this->createClient($http);
 
         $this->expectException(ForbiddenException::class);
 
@@ -106,13 +89,7 @@ final class VarioClientTest extends TestCase
         $http->method('sendRequest')
             ->willReturn(new Response(200, [], '{"ok":true}'));
 
-        $client = new VarioClient(
-            httpClient: $http,
-            tokenStorage: new InMemoryTokenStorage(),
-            requestFactory: new HttpFactory(),
-            logger: new NullLogger(),
-            reauthCallback: fn() => null,
-        );
+        $client = $this->createClient($http);
 
         $result = $client->sendQuery(
             HttpMethod::GET,
@@ -130,13 +107,7 @@ final class VarioClientTest extends TestCase
         $http->method('sendRequest')
             ->willReturn(new Response(200));
 
-        $client = new VarioClient(
-            httpClient: $http,
-            tokenStorage: new InMemoryTokenStorage(),
-            requestFactory: new HttpFactory(),
-            logger: new NullLogger(),
-            reauthCallback: fn() => null,
-        );
+        $client = $this->createClient($http);
 
         $result = $client->sendJson(HttpMethod::GET, '/test');
 
@@ -150,13 +121,7 @@ final class VarioClientTest extends TestCase
         $http->method('sendRequest')
             ->willReturn(new Response(500, [], 'error'));
 
-        $client = new VarioClient(
-            httpClient: $http,
-            tokenStorage: new InMemoryTokenStorage(),
-            requestFactory: new HttpFactory(),
-            logger: new NullLogger(),
-            reauthCallback: fn() => null,
-        );
+        $client = $this->createClient($http);
 
         $this->expectException(ApiException::class);
 
@@ -173,10 +138,13 @@ final class VarioClientTest extends TestCase
         $storage = new InMemoryTokenStorage();
         $storage->store(new Token('abc'));
 
+        $factory = new HttpFactory();
+
         $client = new VarioClient(
             httpClient: $http,
             tokenStorage: $storage,
-            requestFactory: new HttpFactory(),
+            requestFactory: $factory,
+            streamFactory: $factory,
             logger: new NullLogger(),
             reauthCallback: fn() => null,
         );
@@ -195,10 +163,13 @@ final class VarioClientTest extends TestCase
 
         $reauthCalled = false;
 
+        $factory = new HttpFactory();
+
         $client = new VarioClient(
             httpClient: $http,
             tokenStorage: new InMemoryTokenStorage(),
-            requestFactory: new HttpFactory(),
+            requestFactory: $factory,
+            streamFactory: $factory,
             logger: new NullLogger(),
             reauthCallback: function () use (&$reauthCalled) {
                 $reauthCalled = true;
@@ -208,7 +179,6 @@ final class VarioClientTest extends TestCase
         try {
             $client->sendJson(HttpMethod::GET, '/test');
         } catch (\Throwable) {
-            // ignore
         }
 
         self::assertTrue($reauthCalled);
@@ -221,10 +191,13 @@ final class VarioClientTest extends TestCase
         $http->method('sendRequest')
             ->willReturn(new Response(401));
 
+        $factory = new HttpFactory();
+
         $client = new VarioClient(
             httpClient: $http,
             tokenStorage: new InMemoryTokenStorage(),
-            requestFactory: new HttpFactory(),
+            requestFactory: $factory,
+            streamFactory: $factory,
             logger: new NullLogger(),
             reauthCallback: function () {
                 throw new \RuntimeException('auth failed');
@@ -245,13 +218,7 @@ final class VarioClientTest extends TestCase
                 new class ('HTTP error') extends \RuntimeException implements ClientExceptionInterface {}
             );
 
-        $client = new VarioClient(
-            httpClient: $http,
-            tokenStorage: new InMemoryTokenStorage(),
-            requestFactory: new HttpFactory(),
-            logger: new NullLogger(),
-            reauthCallback: fn() => null,
-        );
+        $client = $this->createClient($http);
 
         $this->expectException(ApiException::class);
 
@@ -263,21 +230,9 @@ final class VarioClientTest extends TestCase
         $http = $this->createMock(ClientInterface::class);
 
         $http->method('sendRequest')
-            ->willReturn(
-                new Response(
-                    200,
-                    [],
-                    'true'   // valid JSON, ale není array
-                )
-            );
+            ->willReturn(new Response(200, [], 'true'));
 
-        $client = new VarioClient(
-            httpClient: $http,
-            tokenStorage: new InMemoryTokenStorage(),
-            requestFactory: new HttpFactory(),
-            logger: new NullLogger(),
-            reauthCallback: fn() => null,
-        );
+        $client = $this->createClient($http);
 
         $this->expectException(ApiException::class);
 
@@ -296,21 +251,10 @@ final class VarioClientTest extends TestCase
             ->method('sendRequest')
             ->willReturnCallback(function (RequestInterface $request) use (&$capturedRequest) {
                 $capturedRequest = $request;
-
-                return new Response(
-                    200,
-                    [],
-                    '{"ok":true}'
-                );
+                return new Response(200, [], '{"ok":true}');
             });
 
-        $client = new VarioClient(
-            httpClient: $http,
-            tokenStorage: new InMemoryTokenStorage(),
-            requestFactory: new HttpFactory(),
-            logger: new NullLogger(),
-            reauthCallback: fn() => null,
-        );
+        $client = $this->createClient($http);
 
         $client->sendJson(
             HttpMethod::POST,
@@ -319,10 +263,7 @@ final class VarioClientTest extends TestCase
         );
 
         self::assertNotNull($capturedRequest);
-
-        $body = (string) $capturedRequest->getBody();
-
-        self::assertSame('{"a":1}', $body);
+        self::assertSame('{"a":1}', (string) $capturedRequest->getBody());
     }
 
     public function test_prepare_request_removes_existing_authorization_header(): void
@@ -336,17 +277,10 @@ final class VarioClientTest extends TestCase
         $http->method('sendRequest')
             ->willReturnCallback(function (RequestInterface $request) use (&$capturedRequest) {
                 $capturedRequest = $request;
-
                 return new Response(200, [], '{"ok":true}');
             });
 
-        $client = new VarioClient(
-            httpClient: $http,
-            tokenStorage: new InMemoryTokenStorage(),
-            requestFactory: new HttpFactory(),
-            logger: new NullLogger(),
-            reauthCallback: fn() => null,
-        );
+        $client = $this->createClient($http);
 
         $factory = new HttpFactory();
 
@@ -357,9 +291,137 @@ final class VarioClientTest extends TestCase
         $client->send($request);
 
         self::assertInstanceOf(RequestInterface::class, $capturedRequest);
+        self::assertFalse($capturedRequest->hasHeader('Authorization'));
+    }
 
-        self::assertFalse(
-            $capturedRequest->hasHeader('Authorization')
+    public function test_retry_keeps_request_body(): void
+    {
+        /** @var ClientInterface&MockObject $http */
+        $http = $this->createMock(ClientInterface::class);
+
+        $calls = [];
+
+        $http->expects(self::exactly(2))
+            ->method('sendRequest')
+            ->willReturnCallback(function (RequestInterface $request) use (&$calls) {
+
+                $calls[] = (string) $request->getBody();
+
+                if (count($calls) === 1) {
+                    return new Response(401);
+                }
+
+                return new Response(200, [], '{"ok":true}');
+            });
+
+        $factory = new HttpFactory();
+
+        $client = new VarioClient(
+            httpClient: $http,
+            tokenStorage: new InMemoryTokenStorage(),
+            requestFactory: $factory,
+            streamFactory: $factory,
+            logger: new NullLogger(),
+            reauthCallback: fn() => null,
+        );
+
+        $client->sendJson(
+            HttpMethod::POST,
+            '/test',
+            ['a' => 1]
+        );
+
+        self::assertCount(2, $calls);
+        self::assertSame('{"a":1}', $calls[0]);
+        self::assertSame('{"a":1}', $calls[1]);
+    }
+
+    public function test_authorization_header_contains_bearer_token(): void
+    {
+        /** @var ClientInterface&MockObject $http */
+        $http = $this->createMock(ClientInterface::class);
+
+        $capturedRequest = null;
+
+        $http->method('sendRequest')
+            ->willReturnCallback(function (RequestInterface $request) use (&$capturedRequest) {
+                $capturedRequest = $request;
+
+                return new Response(200, [], '{"ok":true}');
+            });
+
+        $storage = new InMemoryTokenStorage();
+        $storage->store(new Token('abc123'));
+
+        $factory = new HttpFactory();
+
+        $client = new VarioClient(
+            httpClient: $http,
+            tokenStorage: $storage,
+            requestFactory: $factory,
+            streamFactory: $factory,
+            logger: new NullLogger(),
+            reauthCallback: fn() => null,
+        );
+
+        $client->sendJson(HttpMethod::GET, '/test');
+
+        self::assertInstanceOf(RequestInterface::class, $capturedRequest);
+
+        self::assertSame(
+            'Bearer abc123',
+            $capturedRequest->getHeaderLine('Authorization')
+        );
+    }
+
+    public function test_query_parameters_are_serialized_correctly(): void
+    {
+        /** @var ClientInterface&MockObject $http */
+        $http = $this->createMock(ClientInterface::class);
+
+        $capturedRequest = null;
+
+        $http->method('sendRequest')
+            ->willReturnCallback(function (RequestInterface $request) use (&$capturedRequest) {
+                $capturedRequest = $request;
+
+                return new Response(200, [], '{"ok":true}');
+            });
+
+        $client = $this->createClient($http);
+
+        $client->sendQuery(
+            HttpMethod::GET,
+            '/test',
+            [
+                'page' => 1,
+                'foo' => 'bar',
+            ]
+        );
+
+        self::assertInstanceOf(RequestInterface::class, $capturedRequest);
+
+        $query = $capturedRequest->getUri()->getQuery();
+
+        parse_str($query, $params);
+
+        self::assertSame([
+            'page' => '1',
+            'foo' => 'bar',
+        ], $params);
+    }
+
+    private function createClient(ClientInterface $http): VarioClient
+    {
+        $factory = new HttpFactory();
+
+        return new VarioClient(
+            httpClient: $http,
+            tokenStorage: new InMemoryTokenStorage(),
+            requestFactory: $factory,
+            streamFactory: $factory,
+            logger: new NullLogger(),
+            reauthCallback: fn() => null,
         );
     }
 }

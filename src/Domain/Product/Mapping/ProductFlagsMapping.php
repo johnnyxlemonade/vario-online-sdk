@@ -28,12 +28,12 @@ namespace Lemonade\Vario\Domain\Product\Mapping;
 final class ProductFlagsMapping implements ProductSectionMapping
 {
     public function __construct(
-        private readonly ?string $sale = 'Akce',
-        private readonly ?string $new = 'Novinka',
-        private readonly ?string $discount = 'Sleva',
-        private readonly ?string $clearance = 'Vyprodej',
-        private readonly ?string $recommended = 'Doporucujeme',
-        private readonly ?string $preparing = 'Pripravujeme',
+        private readonly ?string $sale = 'Sale',
+        private readonly ?string $new = 'New',
+        private readonly ?string $discount = 'OnSale',
+        private readonly ?string $clearance = 'Clearance',
+        private readonly ?string $recommended = 'Recomended',
+        private readonly ?string $preparing = 'Preparing',
     ) {}
 
     public function isSale(): ?string

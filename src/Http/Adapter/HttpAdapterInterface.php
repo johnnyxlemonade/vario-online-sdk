@@ -41,7 +41,7 @@ use Psr\Http\Message\StreamFactoryInterface;
  */
 interface HttpAdapterInterface
 {
-    public function client(): ClientInterface;
+    public function httpClient(): ClientInterface;
     public function requestFactory(): RequestFactoryInterface;
     public function streamFactory(): StreamFactoryInterface;
 }

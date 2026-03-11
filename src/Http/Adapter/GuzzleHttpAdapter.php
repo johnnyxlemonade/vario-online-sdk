@@ -62,7 +62,7 @@ final class GuzzleHttpAdapter implements HttpAdapterInterface
         $this->factory = new HttpFactory();
     }
 
-    public function client(): ClientInterface
+    public function httpClient(): ClientInterface
     {
         return $this->client;
     }

@@ -27,10 +27,10 @@ namespace Lemonade\Vario\Domain\Product\Mapping;
 final class ProductDimensionsMapping implements ProductSectionMapping
 {
     public function __construct(
-        private readonly ?string $width = 'Sirka',
-        private readonly ?string $height = 'Vyska',
-        private readonly ?string $depth = 'Hloubka',
-        private readonly ?string $weightKg = 'Hmotnost_kg',
+        private readonly ?string $width = 'Width',
+        private readonly ?string $height = 'Height',
+        private readonly ?string $depth = 'Depth',
+        private readonly ?string $weightKg = 'WeightKg',
     ) {}
 
     public function getWidth(): ?string

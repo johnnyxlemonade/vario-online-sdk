@@ -52,8 +52,27 @@ final class Authenticator
 
     public function authenticate(): void
     {
-        if ($this->storage->get() !== null) {
-            $this->config->getLogger()->debug('Vario authentication skipped: valid token already present');
+        $token = $this->storage->get();
+
+        if ($token !== null) {
+
+            if (
+                $token->isExpired()
+                || !$this->isTokenValidForConfig($token)
+            ) {
+                $this->config->getLogger()->debug(
+                    'Stored token invalid for current configuration, clearing'
+                );
+
+                $this->storage->clear();
+                $token = null;
+            }
+        }
+
+        if ($token !== null) {
+            $this->config->getLogger()->debug(
+                'Vario authentication skipped: valid token already present'
+            );
             return;
         }
 
@@ -70,13 +89,19 @@ final class Authenticator
             );
         }
 
-        $token = trim((string) $response->getBody());
+        $tokenValue = trim((string) $response->getBody());
 
-        if ($token === '') {
+        if ($tokenValue === '') {
             throw new AuthenticationException('Authentication failed: Missing token in response');
         }
 
-        $this->storage->store(new Token($token));
+        $this->storage->store(
+            new Token(
+                value: $tokenValue,
+                expiresAtUtc: null,
+                configHash: Token::buildConfigHash($this->config)
+            )
+        );
 
         $this->config->getLogger()->info('Vario authentication successful');
     }
@@ -97,5 +122,10 @@ final class Authenticator
         );
 
         return $request->withBody($body);
+    }
+
+    private function isTokenValidForConfig(Token $token): bool
+    {
+        return $token->getConfigHash() === Token::buildConfigHash($this->config);
     }
 }

@@ -62,7 +62,7 @@ abstract class AbstractApi
 
     /**
      * @param array<string,mixed> $query
-     * @return array<string,mixed>
+     * @return array<string,mixed>|list<mixed>
      */
     protected function sendQuery(
         HttpMethod $method,

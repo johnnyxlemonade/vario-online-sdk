@@ -29,10 +29,10 @@ namespace Lemonade\Vario\Domain\Product\Mapping;
 final class ProductIdentityMapping implements ProductSectionMapping
 {
     public function __construct(
-        private readonly ?string $uuid = 'ID_Produktu',
-        private readonly ?string $sku = 'Produkt',
-        private readonly ?string $catalogNumber = 'Katalogove_Cislo',
-        private readonly ?string $name = 'Nazev_produktu',
+        private readonly ?string $uuid = 'ProductRG',
+        private readonly ?string $sku = 'ProductID',
+        private readonly ?string $catalogNumber = 'CatalogNumber',
+        private readonly ?string $name = 'ProductName',
     ) {}
 
     public function getUuid(): ?string

@@ -37,7 +37,7 @@ final class CustomHttpAdapterTest extends TestCase
                 $this->factory = new HttpFactory();
             }
 
-            public function client(): ClientInterface
+            public function httpClient(): ClientInterface
             {
                 return new class implements ClientInterface {
                     public function sendRequest(RequestInterface $request): ResponseInterface

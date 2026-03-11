@@ -24,7 +24,7 @@ final class GuzzleHttpAdapterTest extends TestCase
 
         $adapter = new GuzzleHttpAdapter($config);
 
-        self::assertInstanceOf(ClientInterface::class, $adapter->client());
+        self::assertInstanceOf(ClientInterface::class, $adapter->httpClient());
         self::assertInstanceOf(RequestFactoryInterface::class, $adapter->requestFactory());
         self::assertInstanceOf(StreamFactoryInterface::class, $adapter->streamFactory());
     }
@@ -58,8 +58,8 @@ final class GuzzleHttpAdapterTest extends TestCase
         $adapter = new GuzzleHttpAdapter($config);
 
         self::assertSame(
-            $adapter->client(),
-            $adapter->client()
+            $adapter->httpClient(),
+            $adapter->httpClient()
         );
     }
 }
