@@ -85,9 +85,10 @@ final class DatasetViewApi extends AbstractApi
      */
     public function iterate(
         DatasetViewQuery $baseQuery,
-        int $pageLength = 100
+        ?int $pageLength = null
     ): \Generator {
 
+        $pageLength ??= $baseQuery->getPageLength();
         $pageIndex = 0;
 
         do {
@@ -106,7 +107,6 @@ final class DatasetViewApi extends AbstractApi
             }
 
             $pageIndex++;
-
             $pageCount = $result->getPageCount();
 
         } while ($pageIndex < $pageCount);
