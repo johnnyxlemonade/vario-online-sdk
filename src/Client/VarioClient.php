@@ -6,10 +6,12 @@ namespace Lemonade\Vario\Client;
 
 use Closure;
 use Lemonade\Vario\Auth\Storage\TokenStorageInterface;
+use Lemonade\Vario\Client\Http\RequestAuthenticator;
+use Lemonade\Vario\Client\Http\RequestLogger;
+use Lemonade\Vario\Client\Http\ResponseHandler;
 use Lemonade\Vario\Enum\HttpMethod;
 use Lemonade\Vario\Exception\ApiException;
 use Lemonade\Vario\Exception\AuthenticationException;
-use Lemonade\Vario\Exception\ForbiddenException;
 use Psr\Http\Client\ClientExceptionInterface;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\RequestFactoryInterface;
@@ -26,13 +28,20 @@ use Psr\Log\LoggerInterface;
  * This client acts as the transport layer for the SDK and is used internally
  * by higher level API modules (DatasetViewApi, KnownPartyApi, etc.).
  *
- * Responsibilities of this class include:
+ * The client orchestrates the full lifecycle of an HTTP request:
  *
- *  - building and sending PSR-7 HTTP requests
- *  - attaching authentication tokens to outgoing requests
- *  - automatic retry after token expiration (401 responses)
+ *  - building PSR-7 HTTP requests
+ *  - authenticating requests via RequestAuthenticator
+ *  - sending requests using a PSR-18 HTTP client
  *  - structured logging of requests and responses
- *  - decoding JSON responses returned by the API
+ *  - delegating HTTP response handling to ResponseHandler
+ *  - automatic retry when authentication expires (401 responses)
+ *
+ * Responsibilities are intentionally split across dedicated components:
+ *
+ *  - RequestAuthenticator → attaches the Authorization header
+ *  - RequestLogger        → logs outgoing requests and incoming responses
+ *  - ResponseHandler      → interprets HTTP status codes and raises exceptions
  *
  * The implementation is fully based on PSR standards:
  *
@@ -41,7 +50,7 @@ use Psr\Log\LoggerInterface;
  *  - PSR-18 HTTP client
  *  - PSR-3  logging
  *
- * This class intentionally stays transport-focused and does not contain
+ * This class intentionally remains transport-focused and does not contain
  * any domain logic. Domain mapping is handled by higher-level API layers.
  *
  * @package     Lemonade Framework
@@ -62,6 +71,9 @@ final class VarioClient implements VarioClientInterface
         private readonly RequestFactoryInterface $requestFactory,
         private readonly StreamFactoryInterface $streamFactory,
         private readonly LoggerInterface $logger,
+        private readonly RequestAuthenticator $requestAuthenticator,
+        private readonly RequestLogger $requestLogger,
+        private readonly ResponseHandler $responseHandler,
         callable $reauthCallback
     ) {
         $this->reauthCallback = Closure::fromCallable($reauthCallback);
@@ -84,6 +96,7 @@ final class VarioClient implements VarioClientInterface
         string $uri,
         ?array $payload = null
     ): array {
+
         $request = $this->createRequest($method, $uri);
 
         if ($payload !== null) {
@@ -103,6 +116,7 @@ final class VarioClient implements VarioClientInterface
         string $uri,
         array $query
     ): array {
+
         $request = $this->createRequest($method, $uri);
         $request = $this->withQuery($request, $query);
 
@@ -123,6 +137,7 @@ final class VarioClient implements VarioClientInterface
         RequestInterface $request,
         array $payload
     ): RequestInterface {
+
         $json = json_encode($payload, JSON_THROW_ON_ERROR);
         $stream = $this->streamFactory->createStream($json);
 
@@ -138,6 +153,7 @@ final class VarioClient implements VarioClientInterface
         RequestInterface $request,
         array $query
     ): RequestInterface {
+
         $uri = $request->getUri()->withQuery(
             http_build_query($query, '', '&', PHP_QUERY_RFC3986)
         );
@@ -173,16 +189,26 @@ final class VarioClient implements VarioClientInterface
         RequestInterface $request,
         bool $allowRetry
     ): ResponseInterface {
-        $preparedRequest = $this->prepareRequest($request);
+
+        $preparedRequest = $this->requestAuthenticator->authenticate(
+            $request,
+            $this->tokenStorage
+        );
+
         $this->rewindRequestBody($preparedRequest);
 
-        $this->logRequest($preparedRequest);
+        $this->requestLogger->logRequest(
+            $this->logger,
+            $preparedRequest
+        );
 
         $start = microtime(true);
 
         try {
             $response = $this->httpClient->sendRequest($preparedRequest);
+
         } catch (ClientExceptionInterface $e) {
+
             $durationMs = $this->calculateDurationMs($start);
 
             $this->logger->error('Vario API HTTP request failed', [
@@ -199,31 +225,18 @@ final class VarioClient implements VarioClientInterface
 
         $durationMs = $this->calculateDurationMs($start);
 
-        $this->logResponse($preparedRequest, $response, $durationMs);
-
-        return $this->handleResponse($preparedRequest, $response, $allowRetry);
-    }
-
-    private function prepareRequest(RequestInterface $request): RequestInterface
-    {
-        $preparedRequest = $request->withHeader(
-            'X-Requested-With',
-            'XMLHttpRequest'
+        $this->requestLogger->logResponse(
+            $this->logger,
+            $preparedRequest,
+            $response,
+            $durationMs
         );
 
-        if ($preparedRequest->hasHeader('Authorization')) {
-            $preparedRequest = $preparedRequest->withoutHeader('Authorization');
-        }
-
-        $token = $this->tokenStorage->get();
-
-        if ($token === null) {
-            return $preparedRequest;
-        }
-
-        return $preparedRequest->withHeader(
-            'Authorization',
-            'Bearer ' . $token->value
+        return $this->responseHandler->handle(
+            $preparedRequest,
+            $response,
+            fn(): ResponseInterface =>
+            $this->handleUnauthorizedResponse($preparedRequest, $allowRetry)
         );
     }
 
@@ -234,85 +247,6 @@ final class VarioClient implements VarioClientInterface
         if ($body->isSeekable()) {
             $body->rewind();
         }
-    }
-
-    private function logRequest(RequestInterface $request): void
-    {
-        $uri = $request->getUri();
-
-        $this->logger->debug('Vario API request', [
-            'method' => $request->getMethod(),
-            'uri' => $uri->getPath(),
-            'query' => $uri->getQuery(),
-            'authorized' => $request->hasHeader('Authorization'),
-            'content_length' => $request->getBody()->getSize() ?? 0,
-        ]);
-    }
-
-    private function logResponse(
-        RequestInterface $request,
-        ResponseInterface $response,
-        float $durationMs
-    ): void {
-        $uri = $request->getUri();
-
-        $this->logger->debug('Vario API response', [
-            'status' => $response->getStatusCode(),
-            'uri' => $uri->getPath(),
-            'query' => $uri->getQuery(),
-            'content_length' => $response->getBody()->getSize() ?? 0,
-            'duration_ms' => $durationMs,
-        ]);
-    }
-
-    private function handleResponse(
-        RequestInterface $request,
-        ResponseInterface $response,
-        bool $allowRetry
-    ): ResponseInterface {
-        $status = $response->getStatusCode();
-
-        if ($status === 401) {
-            return $this->handleUnauthorizedResponse($request, $allowRetry);
-        }
-
-        if ($status === 403) {
-            $body = (string) $response->getBody();
-
-            $this->logger->warning('Vario API forbidden', [
-                'uri' => (string) $request->getUri(),
-            ]);
-
-            throw new ForbiddenException(
-                sprintf(
-                    "Vario API forbidden\nURI: %s",
-                    (string) $request->getUri()
-                ),
-                403,
-                $body
-            );
-        }
-
-        if ($status >= 400) {
-            $body = (string) $response->getBody();
-
-            $this->logger->error('Vario API error', [
-                'status' => $status,
-                'uri' => (string) $request->getUri(),
-            ]);
-
-            throw new ApiException(
-                sprintf(
-                    "Vario API error\nStatus: %d\nURI: %s",
-                    $status,
-                    (string) $request->getUri()
-                ),
-                $status,
-                $body
-            );
-        }
-
-        return $response;
     }
 
     private function handleUnauthorizedResponse(

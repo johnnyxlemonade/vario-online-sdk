@@ -10,6 +10,9 @@ use Lemonade\Vario\Api\KnownPartyApi;
 use Lemonade\Vario\Api\OutgoingInvoiceApi;
 use Lemonade\Vario\Auth\Authenticator;
 use Lemonade\Vario\Auth\Storage\TokenStorageInterface;
+use Lemonade\Vario\Client\Http\RequestAuthenticator;
+use Lemonade\Vario\Client\Http\RequestLogger;
+use Lemonade\Vario\Client\Http\ResponseHandler;
 use Lemonade\Vario\Client\VarioClient;
 use Lemonade\Vario\Http\Adapter\HttpAdapterInterface;
 use Lemonade\Vario\Mapper\KnownParty\KnownPartyMapper;
@@ -61,12 +64,17 @@ final class VarioApiFactory
             $tokenStorage
         );
 
+        $logger = $config->getLogger();
+
         $client = new VarioClient(
             httpClient: $httpAdapter->httpClient(),
             tokenStorage: $tokenStorage,
             requestFactory: $httpAdapter->requestFactory(),
             streamFactory: $httpAdapter->streamFactory(),
-            logger: $config->getLogger(),
+            logger: $logger,
+            requestAuthenticator: new RequestAuthenticator(),
+            requestLogger: new RequestLogger(),
+            responseHandler: new ResponseHandler($logger),
             reauthCallback: $authenticator->authenticate(...),
         );
 

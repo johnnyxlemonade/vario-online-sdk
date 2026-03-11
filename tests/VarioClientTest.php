@@ -8,6 +8,9 @@ use GuzzleHttp\Psr7\HttpFactory;
 use GuzzleHttp\Psr7\Response;
 use Lemonade\Vario\Auth\Storage\InMemoryTokenStorage;
 use Lemonade\Vario\Auth\Token;
+use Lemonade\Vario\Client\Http\RequestAuthenticator;
+use Lemonade\Vario\Client\Http\RequestLogger;
+use Lemonade\Vario\Client\Http\ResponseHandler;
 use Lemonade\Vario\Client\VarioClient;
 use Lemonade\Vario\Enum\HttpMethod;
 use Lemonade\Vario\Exception\ApiException;
@@ -49,17 +52,11 @@ final class VarioClientTest extends TestCase
 
         $reauthCalled = false;
 
-        $factory = new HttpFactory();
-
-        $client = new VarioClient(
-            httpClient: $http,
-            tokenStorage: new InMemoryTokenStorage(),
-            requestFactory: $factory,
-            streamFactory: $factory,
-            logger: new NullLogger(),
-            reauthCallback: function () use (&$reauthCalled) {
+        $client = $this->createClient(
+            $http,
+            function () use (&$reauthCalled) {
                 $reauthCalled = true;
-            },
+            }
         );
 
         $result = $client->sendJson(HttpMethod::GET, '/test');
@@ -138,16 +135,7 @@ final class VarioClientTest extends TestCase
         $storage = new InMemoryTokenStorage();
         $storage->store(new Token('abc'));
 
-        $factory = new HttpFactory();
-
-        $client = new VarioClient(
-            httpClient: $http,
-            tokenStorage: $storage,
-            requestFactory: $factory,
-            streamFactory: $factory,
-            logger: new NullLogger(),
-            reauthCallback: fn() => null,
-        );
+        $client = $this->createClient($http, null, $storage);
 
         $result = $client->sendJson(HttpMethod::GET, '/test');
 
@@ -163,17 +151,11 @@ final class VarioClientTest extends TestCase
 
         $reauthCalled = false;
 
-        $factory = new HttpFactory();
-
-        $client = new VarioClient(
-            httpClient: $http,
-            tokenStorage: new InMemoryTokenStorage(),
-            requestFactory: $factory,
-            streamFactory: $factory,
-            logger: new NullLogger(),
-            reauthCallback: function () use (&$reauthCalled) {
+        $client = $this->createClient(
+            $http,
+            function () use (&$reauthCalled) {
                 $reauthCalled = true;
-            },
+            }
         );
 
         try {
@@ -191,17 +173,11 @@ final class VarioClientTest extends TestCase
         $http->method('sendRequest')
             ->willReturn(new Response(401));
 
-        $factory = new HttpFactory();
-
-        $client = new VarioClient(
-            httpClient: $http,
-            tokenStorage: new InMemoryTokenStorage(),
-            requestFactory: $factory,
-            streamFactory: $factory,
-            logger: new NullLogger(),
-            reauthCallback: function () {
+        $client = $this->createClient(
+            $http,
+            function () {
                 throw new \RuntimeException('auth failed');
-            },
+            }
         );
 
         $this->expectException(AuthenticationException::class);
@@ -314,16 +290,7 @@ final class VarioClientTest extends TestCase
                 return new Response(200, [], '{"ok":true}');
             });
 
-        $factory = new HttpFactory();
-
-        $client = new VarioClient(
-            httpClient: $http,
-            tokenStorage: new InMemoryTokenStorage(),
-            requestFactory: $factory,
-            streamFactory: $factory,
-            logger: new NullLogger(),
-            reauthCallback: fn() => null,
-        );
+        $client = $this->createClient($http);
 
         $client->sendJson(
             HttpMethod::POST,
@@ -353,16 +320,7 @@ final class VarioClientTest extends TestCase
         $storage = new InMemoryTokenStorage();
         $storage->store(new Token('abc123'));
 
-        $factory = new HttpFactory();
-
-        $client = new VarioClient(
-            httpClient: $http,
-            tokenStorage: $storage,
-            requestFactory: $factory,
-            streamFactory: $factory,
-            logger: new NullLogger(),
-            reauthCallback: fn() => null,
-        );
+        $client = $this->createClient($http, null, $storage);
 
         $client->sendJson(HttpMethod::GET, '/test');
 
@@ -411,17 +369,24 @@ final class VarioClientTest extends TestCase
         ], $params);
     }
 
-    private function createClient(ClientInterface $http): VarioClient
-    {
+    private function createClient(
+        ClientInterface $http,
+        ?callable $reauthCallback = null,
+        ?InMemoryTokenStorage $storage = null
+    ): VarioClient {
         $factory = new HttpFactory();
+        $logger = new NullLogger();
 
         return new VarioClient(
             httpClient: $http,
-            tokenStorage: new InMemoryTokenStorage(),
+            tokenStorage: $storage ?? new InMemoryTokenStorage(),
             requestFactory: $factory,
             streamFactory: $factory,
-            logger: new NullLogger(),
-            reauthCallback: fn() => null,
+            logger: $logger,
+            requestAuthenticator: new RequestAuthenticator(),
+            requestLogger: new RequestLogger(),
+            responseHandler: new ResponseHandler($logger),
+            reauthCallback: $reauthCallback ?? fn() => null,
         );
     }
 }
