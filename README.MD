@@ -20,8 +20,12 @@ The SDK provides a modern domain‑oriented abstraction layer over the
 Vario Online API including dataset queries, authentication handling,
 domain mapping and transport‑agnostic HTTP communication.
 
+It is designed for building **stable ERP integrations** where API
+payload structures may vary between installations.
+
 More information about Vario ERP:\
 https://vario.cz/
+
 
 ---
 ## Typical Use Cases
@@ -76,11 +80,11 @@ Goals of the SDK:
 - **Domain-driven read models** (KnownParty, Product)
 - Immutable value objects
 - **DatasetView → Domain mapping layer**
+- **Streaming dataset processing** (`iterate()`, lazy pipelines)
 - **Automatic authentication & token refresh**
-- **PSR-18 HTTP client support**
+- **PSR-18 transport layer** (replaceable HTTP client, no vendor lock-in)
 - PSR-3 logging support
 - Structured request/response logging with duration metrics
-- **Replaceable HTTP adapter** (no vendor lock-in)
 - Configurable token storage (memory, session, custom)
 - Lazy-loaded API modules
 - Unified exception model
@@ -102,8 +106,17 @@ layer.
 
 ---
 ## Architecture Overview
-The SDK is composed of several layers separating application usage, 
-API modules, domain mapping and transport infrastructure.
+
+The SDK is designed as a **layered architecture** that separates application usage, API modules, domain mapping, and transport infrastructure.
+
+Each layer has a clearly defined responsibility, which allows the SDK to remain stable even when the underlying API or HTTP client implementation changes.
+
+The main architectural goals are:
+
+- keep **application code independent from transport details**
+- provide **typed domain models instead of raw API arrays**
+- isolate **API schema volatility behind a mapping layer**
+- allow **replaceable HTTP clients through PSR-18**
 
 ```
 Application
@@ -112,43 +125,86 @@ Application
 VarioApiFactory
   │
   ├─ VarioClientConfig
-  ├─ HttpAdapterInterface
-  └─ TokenStorageInterface
-  │
-  ▼
-Authenticator
-  │
-  ▼
-VarioClient
-  (auth + retry + request handling)
+  ├─ TokenStorageInterface
+  └─ PSR-18 Client Discovery
   │
   ▼
 VarioApi (Facade)
   │
   ▼
 API Modules
-  (KnownPartyApi, DatasetViewApi, IncomingOrderApi…)
+  │
+  ├─ Dataset APIs (Queries)
+  │     ▼
+  │   Mapper / Normalizer Layer
+  │     ▼
+  │   Domain Read Models (Product, KnownParty…)
+  │
+  └─ Endpoint APIs (Actions)
+        ▼
+      Domain Entities / Responses
   │
   ▼
-Mapper / Normalizer Layer
+VarioClient (Transport Orchestrator)
+  │
+  ├─ RequestAuthenticator
+  ├─ RequestLogger
+  └─ ResponseHandler
   │
   ▼
-Domain Models
-  (KnownParty, Product, ValueObjects)
+PSR-18 HTTP Client Interface
   │
   ▼
-HttpAdapterInterface
-  (PSR-18 boundary)
-  │
-  ▼
-HTTP Client
-  (Guzzle / Symfony / custom)
+External HTTP Client
+(Guzzle / Symfony HttpClient / Nyholm PSR-7 / Laminas Diactoros / custom)
 
 ```
+The diagram illustrates the logical architecture layers of the SDK rather than the exact runtime request flow.
 
-This architecture keeps the domain layer independent from the HTTP
-transport and allows integrations to replace the underlying HTTP
-client without modifying application logic.
+Applications interact with the SDK through the `VarioApi` facade created by the `VarioApiFactory`.
+The factory assembles the complete client stack including configuration,
+token storage and HTTP transport.
+
+### API Modules
+
+The SDK exposes functionality through **API modules**, each responsible for a specific area of the Vario API.
+
+Two integration styles are supported:
+
+**Dataset APIs (Queries)**  
+These APIs retrieve data from Vario datasets. The responses are normalized and mapped into **domain read models**.  
+This layer isolates application logic from dataset column naming and schema changes.
+
+**Endpoint APIs (Actions)**
+These APIs interact with specific Vario endpoints such as order creation,
+entity updates or other write operations.
+They typically return domain entities or response objects directly without passing through the dataset mapping layer.
+
+### Mapping Layer
+
+For dataset-based integrations the SDK introduces a **mapping and normalization layer**.
+
+This layer transforms raw DatasetView rows into stable domain models such as:
+
+- `Product`
+- `KnownParty`
+- `Inventory`
+
+By separating mapping logic from application code, changes in the Vario dataset schema usually require modifying only the mapper configuration rather than the business logic.
+
+### Transport Layer
+
+The actual communication with the Vario API is orchestrated by `VarioClient`.
+
+The client coordinates:
+
+- authentication and token refresh
+- request logging
+- response handling and error conversion
+
+The transport boundary follows the **PSR-18 HTTP Client standard**, allowing developers to use any compatible HTTP client implementation such as Guzzle or Symfony HttpClient.
+
+This design ensures that **transport concerns never leak into domain logic**, keeping integrations maintainable and testable.
 
 ---
 
@@ -167,6 +223,60 @@ The Vario API schema is volatile and often varies between installations. This SD
 
 ### 4. Transport Agnostic (PSR-18)
 By strictly following **PSR-18** and **PSR-17**, the SDK eliminates vendor lock-in. Whether your project uses Guzzle, Symfony HttpClient, or a custom wrapper, the SDK remains stable. This boundary ensures that transport-level concerns (like SSL issues or proxy settings) never leak into your domain mapping logic.
+
+---
+
+## Roadmap
+
+The SDK will continue evolving with improvements focused on
+extensibility, performance and maintainability.
+
+### Middleware Pipeline
+
+Introduce a **request/response middleware pipeline** to reduce
+responsibilities currently handled inside `VarioClient`.
+
+Planned processing flow:
+
+```
+Request
+  ↓
+AuthenticationMiddleware
+  ↓
+LoggingMiddleware
+  ↓
+RetryMiddleware
+  ↓
+HTTP Client
+  ↓
+ResponseMiddleware
+  ↓
+Result
+```
+
+Benefits:
+
+- smaller and simpler `VarioClient`
+- clearer separation of transport concerns
+- easier testing
+- support for custom middleware
+
+### Dataset Streaming Improvements
+
+Enhancements to large dataset processing:
+
+- improved lazy pipelines
+- configurable page prefetching
+- better memory diagnostics
+
+### Additional Domain Modules
+
+Future domain abstractions may include:
+
+- inventory
+- warehouse operations
+- sales documents
+- customer pricing
 
 ---
 
@@ -218,6 +328,8 @@ $config = new VarioClientConfig(
     companyNumber: 'COMPANY'
 );
 
+// Example uses Guzzle as the HTTP transport.
+// Any PSR-18 compatible HTTP client can be used instead.
 $vario = VarioApiFactory::create(
     config: $config,
     httpAdapter: new GuzzleHttpAdapter($config),
@@ -229,8 +341,28 @@ $query = DatasetViewQuery::for(
     pageLength: 100
 );
 
-$data = $vario->datasetView()->get($query);
+// Stream dataset rows directly from the Vario API:
+foreach ($vario->datasetView()->iterate($query) as $row) {
+    print_r($row);
+}
 ```
+### Mapping dataset rows to domain models
+
+The mapping layer converts raw dataset rows into strongly typed domain objects.
+
+```php
+foreach ($mapper->iterate($vario->datasetView()->iterate($productQuery)) as $product) {
+
+    $identity = $product->identity();
+    $price = $product->pricing()?->getPrice();
+
+    echo $identity?->getSku() . ' | ';
+    echo $identity?->getName() . ' | ';
+    echo $price?->getValue() . PHP_EOL;
+}
+```
+
+Full examples are available in the `examples/` directory.
 
 ---
 ## Documentation
