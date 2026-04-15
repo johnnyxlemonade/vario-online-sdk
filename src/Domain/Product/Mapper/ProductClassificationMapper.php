@@ -43,8 +43,14 @@ final class ProductClassificationMapper extends AbstractProductSectionMapper
         $categoryId = $this->mapString($row, $this->mapping->getCategoryId());
         $categoryName = $this->mapString($row, $this->mapping->getCategoryName());
         $brand = $this->mapString($row, $this->mapping->getBrand());
+        $priceLevelCode = $this->mapString($row, $this->mapping->getPriceLevelCode());
 
-        if ($categoryId === null && $categoryName === null && $brand === null) {
+        if (
+            $categoryId === null &&
+            $categoryName === null &&
+            $brand === null &&
+            $priceLevelCode === null
+        ) {
             return null;
         }
 
@@ -52,6 +58,7 @@ final class ProductClassificationMapper extends AbstractProductSectionMapper
             categoryId: $categoryId,
             categoryName: $categoryName,
             brand: $brand,
+            priceLevelCode: $priceLevelCode,
         );
     }
 }

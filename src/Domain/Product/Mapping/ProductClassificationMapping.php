@@ -28,6 +28,7 @@ final class ProductClassificationMapping implements ProductSectionMapping
         private readonly ?string $categoryId = 'KategorieId',
         private readonly ?string $categoryName = 'Kategorie',
         private readonly ?string $brand = 'Znacka',
+        private readonly ?string $priceLevelCode = 'DiscountCategory',
     ) {}
 
     public function getCategoryId(): ?string
@@ -43,5 +44,10 @@ final class ProductClassificationMapping implements ProductSectionMapping
     public function getBrand(): ?string
     {
         return $this->brand;
+    }
+
+    public function getPriceLevelCode(): ?string
+    {
+        return $this->priceLevelCode;
     }
 }

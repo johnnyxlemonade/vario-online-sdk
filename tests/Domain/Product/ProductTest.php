@@ -97,7 +97,7 @@ final class ProductTest extends TestCase
 
     public function testInventoryHelper(): void
     {
-        $inventory = new ProductInventory(10, 3, 'pcs', 24);
+        $inventory = new ProductInventory(10, 3, 'pcs', 24, 'PALET 1');
         $product = new Product([$inventory]);
 
         self::assertSame($inventory, $product->inventory());
@@ -113,7 +113,7 @@ final class ProductTest extends TestCase
 
     public function testClassificationHelper(): void
     {
-        $classification = new ProductClassification('cat-1', 'Category', 'Brand');
+        $classification = new ProductClassification('cat-1', 'Category', 'Brand', 'AAA');
         $product = new Product([$classification]);
 
         self::assertSame($classification, $product->classification());

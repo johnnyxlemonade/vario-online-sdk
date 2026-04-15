@@ -29,6 +29,7 @@ final class ProductClassification implements ProductSection
         private readonly ?string $categoryId,
         private readonly ?string $categoryName,
         private readonly ?string $brand,
+        private readonly ?string $priceLevelCode,
     ) {}
 
     public function getCategoryId(): ?string
@@ -46,11 +47,17 @@ final class ProductClassification implements ProductSection
         return $this->brand;
     }
 
+    public function getPriceLevelCode(): ?string
+    {
+        return $this->priceLevelCode;
+    }
+
     /**
      * @return array{
      *     categoryId: ?string,
      *     categoryName: ?string,
-     *     brand: ?string
+     *     brand: ?string,
+     *     priceLevelCode: ?string
      * }
      */
     public function toArray(): array
@@ -59,6 +66,7 @@ final class ProductClassification implements ProductSection
             'categoryId' => $this->categoryId,
             'categoryName' => $this->categoryName,
             'brand' => $this->brand,
+            'priceLevelCode' => $this->priceLevelCode,
         ];
     }
 }

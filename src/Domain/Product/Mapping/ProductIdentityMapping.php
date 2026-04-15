@@ -29,8 +29,8 @@ namespace Lemonade\Vario\Domain\Product\Mapping;
 final class ProductIdentityMapping implements ProductSectionMapping
 {
     public function __construct(
-        private readonly ?string $uuid = 'ProductRG',
-        private readonly ?string $sku = 'ProductID',
+        private readonly ?string $uuid = 'ProductGuid',
+        private readonly ?string $sku = 'ProductId',
         private readonly ?string $catalogNumber = 'CatalogNumber',
         private readonly ?string $name = 'ProductName',
     ) {}

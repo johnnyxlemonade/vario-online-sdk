@@ -24,6 +24,7 @@ final class ProductInventory implements ProductSection
         private readonly ?int $deliveryTime,
         private readonly ?string $unit,
         private readonly ?int $warrantyMonths,
+        private readonly ?string $packaging
     ) {}
 
     public function getStock(): ?int
@@ -46,12 +47,18 @@ final class ProductInventory implements ProductSection
         return $this->warrantyMonths;
     }
 
+    public function getPackaging(): ?string
+    {
+        return $this->packaging;
+    }
+
     /**
      * @return array{
      *     stock: ?int,
      *     deliveryTime: ?int,
      *     unit: ?string,
-     *     warrantyMonths: ?int
+     *     warrantyMonths: ?int,
+     *     packaging: ?string,
      * }
      */
     public function toArray(): array
@@ -61,6 +68,7 @@ final class ProductInventory implements ProductSection
             'deliveryTime' => $this->deliveryTime,
             'unit' => $this->unit,
             'warrantyMonths' => $this->warrantyMonths,
+            'packaging' => $this->packaging,
         ];
     }
 }

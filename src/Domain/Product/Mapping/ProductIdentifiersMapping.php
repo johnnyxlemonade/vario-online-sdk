@@ -30,7 +30,7 @@ final class ProductIdentifiersMapping implements ProductSectionMapping
     public function __construct(
         private readonly ?string $ean = 'EAN',
         private readonly ?string $mpn = 'MPN',
-        private readonly ?string $supplierCode = 'KodDodavatele',
+        private readonly ?string $supplierCode = 'Manufacturer',
     ) {}
 
     public function getEan(): ?string

@@ -32,6 +32,7 @@ final class ProductInventoryMapping implements ProductSectionMapping
         private readonly ?string $deliveryTime = 'DeliveryTime',
         private readonly ?string $unit = 'Units',
         private readonly ?string $warrantyMonths = 'Warranty',
+        private readonly ?string $packaging = 'Packaging',
     ) {}
 
     public function getStock(): ?string
@@ -49,5 +50,10 @@ final class ProductInventoryMapping implements ProductSectionMapping
     public function getWarrantyMonths(): ?string
     {
         return $this->warrantyMonths;
+    }
+
+    public function getPackaging(): ?string
+    {
+        return $this->packaging;
     }
 }

@@ -48,8 +48,15 @@ final class ProductInventoryMapper extends AbstractProductSectionMapper
         $deliveryTime = $this->mapInt($row, $this->mapping->getDeliveryTime());
         $unit = $this->mapString($row, $this->mapping->getUnit());
         $warrantyMonths = $this->mapInt($row, $this->mapping->getWarrantyMonths());
+        $packaging = $this->mapString($row, $this->mapping->getPackaging());
 
-        if ($stock === null && $deliveryTime === null && $unit === null && $warrantyMonths === null) {
+        if (
+            $stock === null &&
+            $deliveryTime === null &&
+            $unit === null &&
+            $warrantyMonths === null &&
+            $packaging === null
+        ) {
             return null;
         }
 
@@ -58,6 +65,7 @@ final class ProductInventoryMapper extends AbstractProductSectionMapper
             deliveryTime: $deliveryTime,
             unit: $unit,
             warrantyMonths: $warrantyMonths,
+            packaging: $packaging,
         );
     }
 }

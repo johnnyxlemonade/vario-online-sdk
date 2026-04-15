@@ -14,12 +14,14 @@ final class ProductClassificationTest extends TestCase
         $classification = new ProductClassification(
             categoryId: 'cat-1',
             categoryName: 'Electronics',
-            brand: 'Acme'
+            brand: 'Acme',
+            priceLevelCode: 'AAA'
         );
 
         self::assertSame('cat-1', $classification->getCategoryId());
         self::assertSame('Electronics', $classification->getCategoryName());
         self::assertSame('Acme', $classification->getBrand());
+        self::assertSame('AAA', $classification->getPriceLevelCode());
     }
 
     public function testNullValues(): void
@@ -27,12 +29,14 @@ final class ProductClassificationTest extends TestCase
         $classification = new ProductClassification(
             categoryId: null,
             categoryName: null,
-            brand: null
+            brand: null,
+            priceLevelCode: null,
         );
 
         self::assertNull($classification->getCategoryId());
         self::assertNull($classification->getCategoryName());
         self::assertNull($classification->getBrand());
+        self::assertNull($classification->getPriceLevelCode());
     }
 
     public function testToArray(): void
@@ -40,13 +44,15 @@ final class ProductClassificationTest extends TestCase
         $classification = new ProductClassification(
             categoryId: 'cat-1',
             categoryName: 'Electronics',
-            brand: 'Acme'
+            brand: 'Acme',
+            priceLevelCode: 'AAA',
         );
 
         self::assertSame([
             'categoryId' => 'cat-1',
             'categoryName' => 'Electronics',
             'brand' => 'Acme',
+            'priceLevelCode' => 'AAA',
         ], $classification->toArray());
     }
 }

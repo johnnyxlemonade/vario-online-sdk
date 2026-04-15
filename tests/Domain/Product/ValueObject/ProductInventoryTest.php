@@ -15,13 +15,15 @@ final class ProductInventoryTest extends TestCase
             stock: 10,
             deliveryTime: 3,
             unit: 'pcs',
-            warrantyMonths: 24
+            warrantyMonths: 24,
+            packaging: 'pallete 1'
         );
 
         self::assertSame(10, $inventory->getStock());
         self::assertSame(3, $inventory->getDeliveryTime());
         self::assertSame('pcs', $inventory->getUnit());
         self::assertSame(24, $inventory->getWarrantyMonths());
+        self::assertSame('pallete 1', $inventory->getPackaging());
     }
 
     public function testNullValues(): void
@@ -30,13 +32,15 @@ final class ProductInventoryTest extends TestCase
             stock: null,
             deliveryTime: null,
             unit: null,
-            warrantyMonths: null
+            warrantyMonths: null,
+            packaging: null
         );
 
         self::assertNull($inventory->getStock());
         self::assertNull($inventory->getDeliveryTime());
         self::assertNull($inventory->getUnit());
         self::assertNull($inventory->getWarrantyMonths());
+        self::assertNull($inventory->getPackaging());
     }
 
     public function testToArray(): void
@@ -45,7 +49,8 @@ final class ProductInventoryTest extends TestCase
             stock: 10,
             deliveryTime: 3,
             unit: 'pcs',
-            warrantyMonths: 24
+            warrantyMonths: 24,
+            packaging: 'pallete 1'
         );
 
         self::assertSame([
@@ -53,6 +58,7 @@ final class ProductInventoryTest extends TestCase
             'deliveryTime' => 3,
             'unit' => 'pcs',
             'warrantyMonths' => 24,
+            'packaging' => 'pallete 1',
         ], $inventory->toArray());
     }
 }
