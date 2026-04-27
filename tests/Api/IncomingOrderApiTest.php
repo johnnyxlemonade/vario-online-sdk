@@ -4,19 +4,38 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Tests\Api;
 
+use DateTimeImmutable;
 use Lemonade\Vario\Api\IncomingOrderApi;
 use Lemonade\Vario\Client\VarioClientInterface;
+use Lemonade\Vario\Domain\Common\Currency;
+use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderPaymentMeansCode;
+use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderTaxCalculationMethod;
+use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderTaxScheme;
+use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderUnitOfMeasureScheme;
+use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrder;
+use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderDescription;
+use Lemonade\Vario\Domain\IncomingOrder\Result\IncomingOrderUpsertResult;
+use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderMonetaryTotal;
+use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderQuantity;
+use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderTaxExchangeRate;
+use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderTaxSubTotal;
+use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderTaxTotal;
+use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderInput;
+use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineInput;
+use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
+use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
 use Lemonade\Vario\Enum\HttpMethod;
 use Lemonade\Vario\Enum\VarioEndpoint;
+use Lemonade\Vario\Mapper\IncomingOrder\IncomingOrderMapper;
+use Lemonade\Vario\Normalizer\IncomingOrder\IncomingOrderInputNormalizer;
 use Lemonade\Vario\ValueObject\IncomingOrderQuery;
 use PHPUnit\Framework\TestCase;
 
 final class IncomingOrderApiTest extends TestCase
 {
-    public function test_query_calls_client(): void
+    public function test_query_calls_client_and_maps_result(): void
     {
         $client = $this->createMock(VarioClientInterface::class);
-
         $query = new IncomingOrderQuery();
 
         $client
@@ -28,25 +47,73 @@ final class IncomingOrderApiTest extends TestCase
                 $query->toArray()
             )
             ->willReturn([
-                ['id' => 1],
-                ['id' => 2],
+                [
+                    'UUID' => 'e4daf94d-fd98-4f7d-a7c6-93cd21dee5f8',
+                    'IssueDate' => '2024-04-02T00:00:00+02:00',
+                    'Currency' => 'CZK',
+                    'BuyerCustomerParty' => [
+                        'Name' => 'Buyer s.r.o.',
+                    ],
+                    'SellerSupplierParty' => [
+                        'Name' => 'Seller s.r.o.',
+                    ],
+                    'DocumentLine' => [],
+                    'MonetaryTotal' => [
+                        'PayableAmount' => 121.0,
+                        'PayableRoundingAmount' => 0.0,
+                        'TaxExclusiveAmount' => 100.0,
+                        'TaxInclusiveAmount' => 121.0,
+                    ],
+                    'TaxExchangeRate' => [
+                        'TaxCurrency' => 'CZK',
+                        'ReferenceCurrencyRate' => 1.0,
+                        'TaxCurrencyRate' => 1.0,
+                    ],
+                    'TaxTotal' => [
+                        'TaxAmount' => 21.0,
+                        'TaxSubTotal' => [],
+                    ],
+                ],
             ]);
 
-        $api = new IncomingOrderApi($client);
+        $api = new IncomingOrderApi(
+            $client,
+            new IncomingOrderMapper(),
+            new IncomingOrderInputNormalizer(),
+        );
 
         $result = $api->query($query);
 
-        self::assertCount(2, $result);
-        self::assertSame(1, $result[0]['id']);
+        self::assertCount(1, $result);
+        self::assertInstanceOf(IncomingOrder::class, $result[0]);
+        self::assertSame(
+            'e4daf94d-fd98-4f7d-a7c6-93cd21dee5f8',
+            $result[0]->getUuid()
+        );
+        self::assertSame('CZK', $result[0]->getCurrency()?->value);
     }
 
-    public function test_upsert_calls_client(): void
+    public function test_upsert_calls_client_with_normalized_payload(): void
     {
         $client = $this->createMock(VarioClientInterface::class);
 
-        $orders = [
-            ['id' => 10],
-            ['id' => 11],
+        $api = new IncomingOrderApi(
+            $client,
+            new IncomingOrderMapper(),
+            new IncomingOrderInputNormalizer(),
+        );
+
+        $order = $this->createIncomingOrderInput();
+        $expectedPayload = $api->previewUpsert([$order]);
+
+        $response = [
+            [
+                'IssuerObjectID' => '1001',
+                'RecipientObjectID' => 'ESHOP-1001',
+                'IssueDate' => '2024-04-02T00:00:00+02:00',
+                'ReceiveDate' => '2024-04-02T00:00:00+02:00',
+                'UUID' => 'e4daf94d-fd98-4f7d-a7c6-93cd21dee5f8',
+            ],
         ];
 
         $client
@@ -55,14 +122,89 @@ final class IncomingOrderApiTest extends TestCase
             ->with(
                 HttpMethod::PUT,
                 VarioEndpoint::IncomingOrder->value,
-                $orders
+                $expectedPayload
             )
-            ->willReturn($orders);
+            ->willReturn($response);
 
-        $api = new IncomingOrderApi($client);
+        $result = $api->upsert([$order]);
 
-        $result = $api->upsert($orders);
+        self::assertCount(1, $result);
+        self::assertInstanceOf(IncomingOrderUpsertResult::class, $result[0]);
 
-        self::assertSame($orders, $result);
+        self::assertSame([
+            'uuid' => 'e4daf94d-fd98-4f7d-a7c6-93cd21dee5f8',
+            'issuerObjectId' => '1001',
+            'recipientObjectId' => 'ESHOP-1001',
+            'issueDate' => '2024-04-02T00:00:00+02:00',
+            'receiveDate' => '2024-04-02T00:00:00+02:00',
+        ], $result[0]->toArray());
+    }
+
+    private function createIncomingOrderInput(): IncomingOrderInput
+    {
+        $buyer = new KnownPartyInput('Buyer s.r.o.');
+        $seller = new KnownPartyInput('Seller s.r.o.');
+
+        $lineItem = (new IncomingOrderLineItemInput())
+            ->withCatalogueItemIdentification('SKU-001')
+            ->withSellersItemIdentification('SKU-001')
+            ->addDescription(
+                new IncomingOrderDescription('Test item')
+            );
+
+        $line = new IncomingOrderLineInput(
+            uuid: 'd2045e34-49b4-4238-84e2-950362f2007e',
+            lineExtensionAmount: 100.0,
+            lineExtensionAmountTaxInclusive: 121.0,
+            lineItem: $lineItem,
+            lineQuantity: new IncomingOrderQuantity(
+                value: 1.0,
+                unitCode: 'Ks',
+                scheme: IncomingOrderUnitOfMeasureScheme::Unknown,
+            ),
+            taxSubTotal: new IncomingOrderTaxSubTotal(
+                calculationMethod: IncomingOrderTaxCalculationMethod::Add,
+                scheme: IncomingOrderTaxScheme::Vat,
+                taxableAmount: 100.0,
+                taxAmount: 21.0,
+                taxPercentage: 21.0,
+                taxSchemeExtensionCode: null,
+            ),
+        );
+
+        return (new IncomingOrderInput(
+            uuid: 'e4daf94d-fd98-4f7d-a7c6-93cd21dee5f8',
+            issueDate: new DateTimeImmutable('2024-04-02T00:00:00+02:00'),
+            currency: Currency::CZK,
+            buyerCustomerParty: $buyer,
+            sellerSupplierParty: $seller,
+            monetaryTotal: new IncomingOrderMonetaryTotal(
+                payableAmount: 121.0,
+                payableRoundingAmount: 0.0,
+                taxExclusiveAmount: 100.0,
+                taxInclusiveAmount: 121.0,
+            ),
+            taxExchangeRate: new IncomingOrderTaxExchangeRate(
+                taxCurrency: Currency::CZK,
+                referenceCurrencyRate: 1.0,
+                taxCurrencyRate: 1.0,
+                rateDate: new DateTimeImmutable('2024-04-02T00:00:00+02:00'),
+                exchangeMarketBic: null,
+            ),
+            taxTotal: new IncomingOrderTaxTotal(
+                taxAmount: 21.0,
+                taxSubTotals: [
+                    new IncomingOrderTaxSubTotal(
+                        calculationMethod: IncomingOrderTaxCalculationMethod::Total,
+                        scheme: IncomingOrderTaxScheme::Vat,
+                        taxableAmount: 100.0,
+                        taxAmount: 21.0,
+                        taxPercentage: 21.0,
+                        taxSchemeExtensionCode: null,
+                    ),
+                ],
+            ),
+            paymentMeansCode: IncomingOrderPaymentMeansCode::BankAccount,
+        ))->addDocumentLine($line);
     }
 }

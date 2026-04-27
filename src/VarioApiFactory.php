@@ -15,7 +15,9 @@ use Lemonade\Vario\Client\Http\RequestLogger;
 use Lemonade\Vario\Client\Http\ResponseHandler;
 use Lemonade\Vario\Client\VarioClient;
 use Lemonade\Vario\Http\Adapter\HttpAdapterInterface;
+use Lemonade\Vario\Mapper\IncomingOrder\IncomingOrderMapper;
 use Lemonade\Vario\Mapper\KnownParty\KnownPartyMapper;
+use Lemonade\Vario\Normalizer\IncomingOrder\IncomingOrderInputNormalizer;
 use Lemonade\Vario\Normalizer\KnownParty\KnownPartyInputNormalizer;
 
 /**
@@ -93,7 +95,11 @@ final class VarioApiFactory
                         new KnownPartyInputNormalizer(),
                     ),
                 IncomingOrderApi::class => fn() =>
-                    new IncomingOrderApi($client),
+                new IncomingOrderApi(
+                    $client,
+                    new IncomingOrderMapper(),
+                    new IncomingOrderInputNormalizer(),
+                ),
                 OutgoingInvoiceApi::class => fn() =>
                     new OutgoingInvoiceApi($client),
             ]

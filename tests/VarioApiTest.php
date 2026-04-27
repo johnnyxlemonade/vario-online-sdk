@@ -10,7 +10,9 @@ use Lemonade\Vario\Api\IncomingOrderApi;
 use Lemonade\Vario\Api\KnownPartyApi;
 use Lemonade\Vario\Api\OutgoingInvoiceApi;
 use Lemonade\Vario\Client\VarioClientInterface;
+use Lemonade\Vario\Mapper\IncomingOrder\IncomingOrderMapper;
 use Lemonade\Vario\Mapper\KnownParty\KnownPartyMapper;
+use Lemonade\Vario\Normalizer\IncomingOrder\IncomingOrderInputNormalizer;
 use Lemonade\Vario\Normalizer\KnownParty\KnownPartyInputNormalizer;
 use Lemonade\Vario\VarioApi;
 use PHPUnit\Framework\TestCase;
@@ -96,7 +98,11 @@ final class VarioApiTest extends TestCase
     public function test_incoming_orders_facade(): void
     {
         $client = $this->createMock(VarioClientInterface::class);
-        $api = new IncomingOrderApi($client);
+        $api = new IncomingOrderApi(
+            $client,
+            new IncomingOrderMapper(),
+            new IncomingOrderInputNormalizer(),
+        );
 
         $vario = new VarioApi(
             $client,
