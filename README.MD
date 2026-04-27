@@ -59,7 +59,7 @@ domain models** such as:
 
 -   `KnownParty`
 -   `Product`
--   `Inventory`
+-   `IncomingOrder`
 
 These models are backed by immutable value objects and a configurable
 mapping layer that isolates application logic from the underlying API
@@ -189,7 +189,7 @@ This layer transforms raw DatasetView rows into stable domain models such as:
 
 - `Product`
 - `KnownParty`
-- `Inventory`
+- `IncomingOrder`
 
 By separating mapping logic from application code, changes in the Vario dataset schema usually require modifying only the mapper configuration rather than the business logic.
 
