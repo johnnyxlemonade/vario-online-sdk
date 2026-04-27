@@ -81,6 +81,7 @@ Goals of the SDK:
 - Immutable value objects
 - **DatasetView → Domain mapping layer**
 - **Streaming dataset processing** (`iterate()`, lazy pipelines)
+- **IncomingOrder builder** with automatic line and total calculation
 - **Automatic authentication & token refresh**
 - **PSR-18 transport layer** (replaceable HTTP client, no vendor lock-in)
 - PSR-3 logging support
@@ -98,7 +99,7 @@ The SDK provides abstractions for several Vario Online API modules:
 -   DatasetView API
 -   KnownParty API
 -   Product catalog datasets
--   Incoming orders
+-   Incoming orders (query, mapping, payload preview, builder-based upsert flow)
 -   Outgoing invoices
 
 Additional integrations can be built through the generic DatasetView
@@ -365,6 +366,95 @@ foreach ($mapper->iterate($vario->datasetView()->iterate($productQuery)) as $pro
 Full examples are available in the `examples/` directory.
 
 ---
+
+## Domain Example — Incoming Orders
+
+The SDK provides a typed **IncomingOrder module** for both reading and writing incoming order documents.
+
+For write operations, the recommended entry point is `IncomingOrderBuilder`.
+
+It allows developers to define order lines using a simplified high-level input and automatically derives:
+
+- line totals without VAT
+- line totals with VAT
+- tax subtotals
+- document monetary total
+- document tax total
+
+This reduces the amount of manual low-level payload construction needed for integrations.
+
+### Recommended write flow
+
+```php
+use DateTimeImmutable;
+use Lemonade\Vario\Domain\Common\Currency;
+use Lemonade\Vario\Domain\IncomingOrder\Builder\IncomingOrderBuilder;
+use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderPaymentMeansCode;
+use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderCalculatedLineInput;
+use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
+
+$builder = new IncomingOrderBuilder();
+
+$lineItem = (new IncomingOrderLineItemInput())
+    ->withCatalogueItemIdentification('SKU-001')
+    ->withSellersItemIdentification('SKU-001');
+
+$order = $builder->build(
+    uuid: 'e4daf94d-fd98-4f7d-a7c6-93cd21dee5f8',
+    issueDate: new DateTimeImmutable('2024-04-02T00:00:00+02:00'),
+    currency: Currency::CZK,
+    buyerCustomerParty: $buyer,
+    sellerSupplierParty: $seller,
+    lines: [
+        new IncomingOrderCalculatedLineInput(
+            uuid: 'd2045e34-49b4-4238-84e2-950362f2007e',
+            lineItem: $lineItem,
+            quantity: 2.0,
+            unitCode: 'Ks',
+            unitPrice: 100.0,
+            vatRate: 21.0,
+        ),
+    ],
+    paymentMeansCode: IncomingOrderPaymentMeansCode::BankAccount,
+);
+
+$preview = $vario->incomingOrders()->previewUpsert([$order]);
+
+print_r($preview);
+```
+
+### Low-level write API
+
+For advanced integrations, the SDK still exposes low-level write models such as:
+
+- `IncomingOrderInput`
+- `IncomingOrderLineInput`
+
+These are useful when the integration already calculates all monetary and tax values externally and needs full control over the outgoing payload.
+
+### Read and write model structure
+
+The IncomingOrder module is internally organized into dedicated layers:
+
+- `Read`
+- `Write`
+- `Enum`
+- `ValueObject`
+- `Result`
+- `Calculator`
+- `Builder`
+
+This keeps query models, write payload models and calculated helper flows clearly separated.
+
+Full IncomingOrder examples are available in:
+
+```text
+examples/incoming-order-query.php
+examples/incoming-order-upsert-builder.php
+```
+
+---
+
 ## Documentation
 
 Full documentation is available in the project Wiki:
@@ -378,6 +468,7 @@ Key documentation pages:
 - [Configuration](https://github.com/johnnyxlemonade/vario-online-sdk/wiki/Configuration)
 - [KnownParty Domain](https://github.com/johnnyxlemonade/vario-online-sdk/wiki/KnownParty-Domain)
 - [Product Domain](https://github.com/johnnyxlemonade/vario-online-sdk/wiki/Product-Domain)
+- [IncomingOrder Domain](https://github.com/johnnyxlemonade/vario-online-sdk/wiki/IncomingOrder-Domain)
 - [Filtering & Queries](https://github.com/johnnyxlemonade/vario-online-sdk/wiki/Filtering-and-Queries)
 - [Logging](https://github.com/johnnyxlemonade/vario-online-sdk/wiki/Logging)
 - [Token Storage](https://github.com/johnnyxlemonade/vario-online-sdk/wiki/Token-Storage)
