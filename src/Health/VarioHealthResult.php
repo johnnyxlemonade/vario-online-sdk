@@ -24,7 +24,7 @@ use Throwable;
  * @link        https://lemonadeframework.cz/
  * @author      Honza Mudrak <honzamudrak@gmail.com>
  * @license     MIT
- * @since       1.9.5
+ * @since       1.12.0
  */
 final class VarioHealthResult
 {
