@@ -8,12 +8,13 @@ use Lemonade\Vario\Api\AbstractApi;
 use Lemonade\Vario\Api\DatasetViewApi;
 use Lemonade\Vario\Api\IncomingOrderApi;
 use Lemonade\Vario\Api\KnownPartyApi;
-use Lemonade\Vario\Api\OutgoingInvoiceApi;
+use Lemonade\Vario\Api\OutgoingQuotationApi;
 use Lemonade\Vario\Client\VarioClientInterface;
 use Lemonade\Vario\Mapper\IncomingOrder\IncomingOrderMapper;
 use Lemonade\Vario\Mapper\KnownParty\KnownPartyMapper;
 use Lemonade\Vario\Normalizer\IncomingOrder\IncomingOrderInputNormalizer;
 use Lemonade\Vario\Normalizer\KnownParty\KnownPartyInputNormalizer;
+use Lemonade\Vario\Normalizer\OutgoingQuotation\OutgoingQuotationInputNormalizer;
 use Lemonade\Vario\VarioApi;
 use PHPUnit\Framework\TestCase;
 
@@ -131,6 +132,24 @@ final class VarioApiTest extends TestCase
         );
 
         self::assertSame($api, $vario->knownParties());
+    }
+
+    public function test_outgoing_quotations_facade(): void
+    {
+        $client = $this->createMock(VarioClientInterface::class);
+        $api = new OutgoingQuotationApi(
+            $client,
+            new OutgoingQuotationInputNormalizer(),
+        );
+
+        $vario = new VarioApi(
+            $client,
+            [
+                OutgoingQuotationApi::class => fn() => $api,
+            ]
+        );
+
+        self::assertSame($api, $vario->outgoingQuotations());
     }
 
 }

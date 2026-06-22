@@ -8,6 +8,7 @@ use Lemonade\Vario\Api\AbstractApi;
 use Lemonade\Vario\Api\DatasetViewApi;
 use Lemonade\Vario\Api\IncomingOrderApi;
 use Lemonade\Vario\Api\KnownPartyApi;
+use Lemonade\Vario\Api\OutgoingQuotationApi;
 use Lemonade\Vario\Client\VarioClientInterface;
 
 /**
@@ -86,6 +87,11 @@ final class VarioApi
     public function knownParties(): KnownPartyApi
     {
         return $this->api(KnownPartyApi::class);
+    }
+
+    public function outgoingQuotations(): OutgoingQuotationApi
+    {
+        return $this->api(OutgoingQuotationApi::class);
     }
 
 }

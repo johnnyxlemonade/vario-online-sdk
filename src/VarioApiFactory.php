@@ -7,6 +7,7 @@ namespace Lemonade\Vario;
 use Lemonade\Vario\Api\DatasetViewApi;
 use Lemonade\Vario\Api\IncomingOrderApi;
 use Lemonade\Vario\Api\KnownPartyApi;
+use Lemonade\Vario\Api\OutgoingQuotationApi;
 use Lemonade\Vario\Auth\Authenticator;
 use Lemonade\Vario\Auth\Storage\TokenStorageInterface;
 use Lemonade\Vario\Client\Http\RequestAuthenticator;
@@ -18,6 +19,7 @@ use Lemonade\Vario\Mapper\IncomingOrder\IncomingOrderMapper;
 use Lemonade\Vario\Mapper\KnownParty\KnownPartyMapper;
 use Lemonade\Vario\Normalizer\IncomingOrder\IncomingOrderInputNormalizer;
 use Lemonade\Vario\Normalizer\KnownParty\KnownPartyInputNormalizer;
+use Lemonade\Vario\Normalizer\OutgoingQuotation\OutgoingQuotationInputNormalizer;
 
 /**
  * Class VarioApiFactory
@@ -94,11 +96,16 @@ final class VarioApiFactory
                         new KnownPartyInputNormalizer(),
                     ),
                 IncomingOrderApi::class => fn() =>
-                new IncomingOrderApi(
-                    $client,
-                    new IncomingOrderMapper(),
-                    new IncomingOrderInputNormalizer(),
-                ),
+                    new IncomingOrderApi(
+                        $client,
+                        new IncomingOrderMapper(),
+                        new IncomingOrderInputNormalizer(),
+                    ),
+                OutgoingQuotationApi::class => fn() =>
+                    new OutgoingQuotationApi(
+                        $client,
+                        new OutgoingQuotationInputNormalizer(),
+                    ),
             ],
         );
     }
