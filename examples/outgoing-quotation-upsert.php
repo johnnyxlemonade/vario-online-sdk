@@ -57,6 +57,7 @@ $buyer = (new KnownPartyInput('A - Storex, v.o.s.'))
 |
 | The Vario payload contains only the VAT identification.
 | KnownPartyInput requires a constructor name, so an empty string is used.
+| The normalizer omits empty names from the final payload.
 |
 */
 $seller = (new KnownPartyInput(''))
@@ -144,6 +145,10 @@ echo '<pre>';
 |--------------------------------------------------------------------------
 | Preview payload
 |--------------------------------------------------------------------------
+|
+| Shows the exact request payload that will be sent to the API.
+| Useful for debugging integrations before performing real requests.
+|
 */
 echo "\n=== Preview payload ===\n";
 
@@ -157,6 +162,10 @@ print_r($preview);
 |--------------------------------------------------------------------------
 | Upsert request
 |--------------------------------------------------------------------------
+|
+| Sends the PUT request to the Vario API.
+| This requires access to the target Vario server, for example through VPN.
+|
 */
 // echo "\n=== Upsert result ===\n";
 //
@@ -165,6 +174,6 @@ print_r($preview);
 // ]);
 //
 // print_r(array_map(
-//     fn($row) => $row->toArray(),
+//     static fn($row): array => $row->toArray(),
 //     $result
 // ));
