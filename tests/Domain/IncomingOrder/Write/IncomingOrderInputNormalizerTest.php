@@ -7,18 +7,18 @@ namespace Lemonade\Vario\Tests\Domain\IncomingOrder\Write;
 use DateTimeImmutable;
 use Lemonade\Vario\Domain\Common\Currency;
 use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderPaymentMeansCode;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderTaxCalculationMethod;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderTaxScheme;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderTextualAttributeKind;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderUnitOfMeasureScheme;
-use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderDescription;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderMonetaryTotal;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderQuantity;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderTaxExchangeRate;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderTaxSubTotal;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderTaxTotal;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderUnitConversionFactor;
-use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderAdditionalAttributeInput;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxCalculationMethod;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxScheme;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTextualAttributeKind;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentMonetaryTotal;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentQuantity;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxExchangeRate;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxSubTotal;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxTotal;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentUnitConversionFactor;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentAdditionalAttributeInput;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderInput;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineInput;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
@@ -37,14 +37,14 @@ final class IncomingOrderInputNormalizerTest extends TestCase
         $issueDate = new DateTimeImmutable('2024-04-02T00:00:00+02:00');
 
         $buyer = $this->createParty(
-            name: '1. česká podvodná',
-            contactPerson: 'Rybana Wassermannová',
+            name: '1. Ă„Ĺ¤eskÄ‚Ë‡ podvodnÄ‚Ë‡',
+            contactPerson: 'Rybana WassermannovÄ‚Ë‡',
             email: 'pod.vodnik@zaby.cz',
             telephone: '+420557788996',
             address: new PostalAddress(
-                street: 'Vodná',
+                street: 'VodnÄ‚Ë‡',
                 buildingNumber: '57',
-                city: 'Žabovřesky',
+                city: 'ÄąËťabovÄąâ„˘esky',
                 postalCode: '566 00',
                 countryIso: 'CZ',
             ),
@@ -63,14 +63,14 @@ final class IncomingOrderInputNormalizerTest extends TestCase
         );
 
         $accounting = $this->createParty(
-            name: '1. česká podvodná',
-            contactPerson: 'Rybana Wassermannová',
+            name: '1. Ă„Ĺ¤eskÄ‚Ë‡ podvodnÄ‚Ë‡',
+            contactPerson: 'Rybana WassermannovÄ‚Ë‡',
             email: 'pod.vodnik@zaby.cz',
             telephone: '+420557788996',
             address: new PostalAddress(
-                street: 'Vodná',
+                street: 'VodnÄ‚Ë‡',
                 buildingNumber: '57',
-                city: 'Žabovřesky',
+                city: 'ÄąËťabovÄąâ„˘esky',
                 postalCode: '566 00',
                 countryIso: 'CZ',
             ),
@@ -89,14 +89,14 @@ final class IncomingOrderInputNormalizerTest extends TestCase
         );
 
         $delivery = $this->createParty(
-            name: '1. česká podvodná',
+            name: '1. Ă„Ĺ¤eskÄ‚Ë‡ podvodnÄ‚Ë‡',
             contactPerson: 'Vodomil Wassermann',
             email: 'pod.vodnik@zaby.cz',
             telephone: '+420557788996',
             address: new PostalAddress(
-                street: 'Vodná',
+                street: 'VodnÄ‚Ë‡',
                 buildingNumber: '57',
-                city: 'Žabovřesky',
+                city: 'ÄąËťabovÄąâ„˘esky',
                 postalCode: '566 00',
                 countryIso: 'CZ',
             ),
@@ -127,35 +127,35 @@ final class IncomingOrderInputNormalizerTest extends TestCase
 
         $lineItem1 = (new IncomingOrderLineItemInput())
             ->withCatalogueItemIdentification('grosh big')
-            ->withSellersItemIdentification('děravý groš')
-            ->addDescription(new IncomingOrderDescription('děravý groš'))
-            ->addAdditionalAttribute(new IncomingOrderAdditionalAttributeInput(
+            ->withSellersItemIdentification('dĂ„â€şravÄ‚Ëť groÄąË‡')
+            ->addDescription(new DocumentDescription('dĂ„â€şravÄ‚Ëť groÄąË‡'))
+            ->addAdditionalAttribute(new DocumentAdditionalAttributeInput(
                 name: 'Varianta',
-                value: 'velká díra',
-                attributeKind: IncomingOrderTextualAttributeKind::ExtendedID,
+                value: 'velkÄ‚Ë‡ dÄ‚Â­ra',
+                attributeKind: DocumentTextualAttributeKind::ExtendedID,
                 langId: null,
                 unitCode: null,
-                scheme: IncomingOrderUnitOfMeasureScheme::Unknown,
+                scheme: DocumentUnitOfMeasureScheme::Unknown,
             ))
-            ->addUnitConversionFactor(new IncomingOrderUnitConversionFactor(
+            ->addUnitConversionFactor(new DocumentUnitConversionFactor(
                 value: 1.0,
                 unitCode: 'Ks',
-                scheme: IncomingOrderUnitOfMeasureScheme::Unknown,
+                scheme: DocumentUnitOfMeasureScheme::Unknown,
             ));
 
         $lineItem2 = (new IncomingOrderLineItemInput())
             ->withCatalogueItemIdentification('BELA')
-            ->withSellersItemIdentification('stará bela')
-            ->addDescription(new IncomingOrderDescription('stará bela'))
-            ->addUnitConversionFactor(new IncomingOrderUnitConversionFactor(
+            ->withSellersItemIdentification('starÄ‚Ë‡ bela')
+            ->addDescription(new DocumentDescription('starÄ‚Ë‡ bela'))
+            ->addUnitConversionFactor(new DocumentUnitConversionFactor(
                 value: 1.0,
                 unitCode: 'Ks',
-                scheme: IncomingOrderUnitOfMeasureScheme::Unknown,
+                scheme: DocumentUnitOfMeasureScheme::Unknown,
             ))
-            ->addUnitConversionFactor(new IncomingOrderUnitConversionFactor(
+            ->addUnitConversionFactor(new DocumentUnitConversionFactor(
                 value: 2.0,
                 unitCode: 'm2',
-                scheme: IncomingOrderUnitOfMeasureScheme::SI,
+                scheme: DocumentUnitOfMeasureScheme::SI,
             ));
 
         $line1 = new IncomingOrderLineInput(
@@ -163,7 +163,7 @@ final class IncomingOrderInputNormalizerTest extends TestCase
             lineExtensionAmount: 1500.0,
             lineExtensionAmountTaxInclusive: 1815.0,
             lineItem: $lineItem1,
-            lineQuantity: $this->createQuantity(1.0, 'Ks', IncomingOrderUnitOfMeasureScheme::Unknown),
+            lineQuantity: $this->createQuantity(1.0, 'Ks', DocumentUnitOfMeasureScheme::Unknown),
             taxSubTotal: $this->createTaxSubTotalAdd(1500.0, 315.0, 21.0),
         );
 
@@ -172,7 +172,7 @@ final class IncomingOrderInputNormalizerTest extends TestCase
             lineExtensionAmount: 300.0,
             lineExtensionAmountTaxInclusive: 363.0,
             lineItem: $lineItem2,
-            lineQuantity: $this->createQuantity(1.0, 'Ks', IncomingOrderUnitOfMeasureScheme::Unknown),
+            lineQuantity: $this->createQuantity(1.0, 'Ks', DocumentUnitOfMeasureScheme::Unknown),
             taxSubTotal: $this->createTaxSubTotalAdd(300.0, 63.0, 21.0),
         );
 
@@ -182,20 +182,20 @@ final class IncomingOrderInputNormalizerTest extends TestCase
             currency: Currency::CZK,
             buyerCustomerParty: $buyer,
             sellerSupplierParty: $seller,
-            monetaryTotal: new IncomingOrderMonetaryTotal(
+            monetaryTotal: new DocumentMonetaryTotal(
                 payableAmount: 2178.0,
                 payableRoundingAmount: 0.0,
                 taxExclusiveAmount: 1800.0,
                 taxInclusiveAmount: 2178.0,
             ),
-            taxExchangeRate: new IncomingOrderTaxExchangeRate(
+            taxExchangeRate: new DocumentTaxExchangeRate(
                 taxCurrency: Currency::CZK,
                 referenceCurrencyRate: 1.0,
                 taxCurrencyRate: 1.0,
                 rateDate: $issueDate,
                 exchangeMarketBic: null,
             ),
-            taxTotal: new IncomingOrderTaxTotal(
+            taxTotal: new DocumentTaxTotal(
                 taxAmount: 378.0,
                 taxSubTotals: [
                     $this->createTaxSubTotalTotal(1800.0, 378.0, 21.0),
@@ -215,13 +215,13 @@ final class IncomingOrderInputNormalizerTest extends TestCase
 
         self::assertSame([
             'BuyerCustomerParty' => [
-                'ContactPerson' => 'Rybana Wassermannová',
+                'ContactPerson' => 'Rybana WassermannovÄ‚Ë‡',
                 'ElectronicMail' => 'pod.vodnik@zaby.cz',
-                'Name' => '1. česká podvodná',
+                'Name' => '1. Ă„Ĺ¤eskÄ‚Ë‡ podvodnÄ‚Ë‡',
                 'PostalAddress' => [
-                    'StreetName' => 'Vodná',
+                    'StreetName' => 'VodnÄ‚Ë‡',
                     'BuildingNumber' => '57',
-                    'CityName' => 'Žabovřesky',
+                    'CityName' => 'ÄąËťabovÄąâ„˘esky',
                     'PostalZone' => '566 00',
                     'CountryIso' => 'CZ',
                 ],
@@ -246,17 +246,17 @@ final class IncomingOrderInputNormalizerTest extends TestCase
                     'LineExtensionAmountTaxInclusive' => 1815.0,
                     'LineItem' => [
                         'CatalogueItemIdentification' => 'grosh big',
-                        'SellersItemIdentification' => 'děravý groš',
+                        'SellersItemIdentification' => 'dĂ„â€şravÄ‚Ëť groÄąË‡',
                         'Description' => [
                             [
-                                'Text' => 'děravý groš',
+                                'Text' => 'dĂ„â€şravÄ‚Ëť groÄąË‡',
                             ],
                         ],
                         'AdditionalAttribute' => [
                             [
                                 'AttributeKind' => 'ExtendedID',
                                 'Name' => 'Varianta',
-                                'Value' => 'velká díra',
+                                'Value' => 'velkÄ‚Ë‡ dÄ‚Â­ra',
                                 'Scheme' => 'Unknown',
                             ],
                         ],
@@ -287,10 +287,10 @@ final class IncomingOrderInputNormalizerTest extends TestCase
                     'LineExtensionAmountTaxInclusive' => 363.0,
                     'LineItem' => [
                         'CatalogueItemIdentification' => 'BELA',
-                        'SellersItemIdentification' => 'stará bela',
+                        'SellersItemIdentification' => 'starÄ‚Ë‡ bela',
                         'Description' => [
                             [
-                                'Text' => 'stará bela',
+                                'Text' => 'starÄ‚Ë‡ bela',
                             ],
                         ],
                         'UnitConversionFactor' => [
@@ -358,13 +358,13 @@ final class IncomingOrderInputNormalizerTest extends TestCase
             ],
             'UUID' => 'e4daf94d-fd98-4f7d-a7c6-93cd21dee5f8',
             'AccountingCustomerParty' => [
-                'ContactPerson' => 'Rybana Wassermannová',
+                'ContactPerson' => 'Rybana WassermannovÄ‚Ë‡',
                 'ElectronicMail' => 'pod.vodnik@zaby.cz',
-                'Name' => '1. česká podvodná',
+                'Name' => '1. Ă„Ĺ¤eskÄ‚Ë‡ podvodnÄ‚Ë‡',
                 'PostalAddress' => [
-                    'StreetName' => 'Vodná',
+                    'StreetName' => 'VodnÄ‚Ë‡',
                     'BuildingNumber' => '57',
-                    'CityName' => 'Žabovřesky',
+                    'CityName' => 'ÄąËťabovÄąâ„˘esky',
                     'PostalZone' => '566 00',
                     'CountryIso' => 'CZ',
                 ],
@@ -385,11 +385,11 @@ final class IncomingOrderInputNormalizerTest extends TestCase
             'Delivery' => [
                 'ContactPerson' => 'Vodomil Wassermann',
                 'ElectronicMail' => 'pod.vodnik@zaby.cz',
-                'Name' => '1. česká podvodná',
+                'Name' => '1. Ă„Ĺ¤eskÄ‚Ë‡ podvodnÄ‚Ë‡',
                 'PostalAddress' => [
-                    'StreetName' => 'Vodná',
+                    'StreetName' => 'VodnÄ‚Ë‡',
                     'BuildingNumber' => '57',
-                    'CityName' => 'Žabovřesky',
+                    'CityName' => 'ÄąËťabovÄąâ„˘esky',
                     'PostalZone' => '566 00',
                     'CountryIso' => 'CZ',
                 ],
@@ -418,7 +418,7 @@ final class IncomingOrderInputNormalizerTest extends TestCase
 
         $buyer = (new KnownPartyInput('Buyer'))
             ->withAddress(new PostalAddress(
-                street: 'Hlavní',
+                street: 'HlavnÄ‚Â­',
                 buildingNumber: null,
                 city: 'Praha',
                 postalCode: '11000',
@@ -435,7 +435,7 @@ final class IncomingOrderInputNormalizerTest extends TestCase
             lineExtensionAmount: 100.0,
             lineExtensionAmountTaxInclusive: 121.0,
             lineItem: $lineItem,
-            lineQuantity: $this->createQuantity(1.0, 'Ks', IncomingOrderUnitOfMeasureScheme::Unknown),
+            lineQuantity: $this->createQuantity(1.0, 'Ks', DocumentUnitOfMeasureScheme::Unknown),
             taxSubTotal: $this->createTaxSubTotalAdd(100.0, 21.0, 21.0),
             id: null,
             note: '',
@@ -447,20 +447,20 @@ final class IncomingOrderInputNormalizerTest extends TestCase
             currency: Currency::CZK,
             buyerCustomerParty: $buyer,
             sellerSupplierParty: $seller,
-            monetaryTotal: new IncomingOrderMonetaryTotal(
+            monetaryTotal: new DocumentMonetaryTotal(
                 payableAmount: 121.0,
                 payableRoundingAmount: 0.0,
                 taxExclusiveAmount: 100.0,
                 taxInclusiveAmount: 121.0,
             ),
-            taxExchangeRate: new IncomingOrderTaxExchangeRate(
+            taxExchangeRate: new DocumentTaxExchangeRate(
                 taxCurrency: Currency::CZK,
                 referenceCurrencyRate: 1.0,
                 taxCurrencyRate: 1.0,
                 rateDate: null,
                 exchangeMarketBic: null,
             ),
-            taxTotal: new IncomingOrderTaxTotal(
+            taxTotal: new DocumentTaxTotal(
                 taxAmount: 21.0,
                 taxSubTotals: [
                     $this->createTaxSubTotalTotal(100.0, 21.0, 21.0),
@@ -488,7 +488,7 @@ final class IncomingOrderInputNormalizerTest extends TestCase
         $buyerAddressPayload = $this->requireMap($buyerPayload, 'PostalAddress');
 
         self::assertSame([
-            'StreetName' => 'Hlavní',
+            'StreetName' => 'HlavnÄ‚Â­',
             'CityName' => 'Praha',
             'PostalZone' => '11000',
         ], $buyerAddressPayload);
@@ -523,20 +523,20 @@ final class IncomingOrderInputNormalizerTest extends TestCase
             currency: Currency::CZK,
             buyerCustomerParty: new KnownPartyInput('Buyer Only'),
             sellerSupplierParty: new KnownPartyInput(''),
-            monetaryTotal: new IncomingOrderMonetaryTotal(
+            monetaryTotal: new DocumentMonetaryTotal(
                 payableAmount: 0.0,
                 payableRoundingAmount: 0.0,
                 taxExclusiveAmount: 0.0,
                 taxInclusiveAmount: 0.0,
             ),
-            taxExchangeRate: new IncomingOrderTaxExchangeRate(
+            taxExchangeRate: new DocumentTaxExchangeRate(
                 taxCurrency: Currency::CZK,
                 referenceCurrencyRate: 1.0,
                 taxCurrencyRate: 1.0,
                 rateDate: null,
                 exchangeMarketBic: null,
             ),
-            taxTotal: new IncomingOrderTaxTotal(
+            taxTotal: new DocumentTaxTotal(
                 taxAmount: 0.0,
                 taxSubTotals: [],
             ),
@@ -589,14 +589,14 @@ final class IncomingOrderInputNormalizerTest extends TestCase
 
         $lineItem = (new IncomingOrderLineItemInput())
             ->withStandardItemIdentification('EAN-123')
-            ->addDescription(new IncomingOrderDescription('Popis položky', 'cs'))
-            ->addAdditionalAttribute(new IncomingOrderAdditionalAttributeInput(
+            ->addDescription(new DocumentDescription('Popis poloÄąÄľky', 'cs'))
+            ->addAdditionalAttribute(new DocumentAdditionalAttributeInput(
                 name: 'Barva',
-                value: 'černá',
-                attributeKind: IncomingOrderTextualAttributeKind::FreeText,
+                value: 'Ă„Ĺ¤ernÄ‚Ë‡',
+                attributeKind: DocumentTextualAttributeKind::FreeText,
                 langId: 'cs',
                 unitCode: 'bal',
-                scheme: IncomingOrderUnitOfMeasureScheme::SI,
+                scheme: DocumentUnitOfMeasureScheme::SI,
             ));
 
         $line = new IncomingOrderLineInput(
@@ -604,17 +604,17 @@ final class IncomingOrderInputNormalizerTest extends TestCase
             lineExtensionAmount: 50.0,
             lineExtensionAmountTaxInclusive: 60.5,
             lineItem: $lineItem,
-            lineQuantity: $this->createQuantity(5.0, 'bal', IncomingOrderUnitOfMeasureScheme::SI),
-            taxSubTotal: new IncomingOrderTaxSubTotal(
-                calculationMethod: IncomingOrderTaxCalculationMethod::Add,
-                scheme: IncomingOrderTaxScheme::Vat,
+            lineQuantity: $this->createQuantity(5.0, 'bal', DocumentUnitOfMeasureScheme::SI),
+            taxSubTotal: new DocumentTaxSubTotal(
+                calculationMethod: DocumentTaxCalculationMethod::Add,
+                scheme: DocumentTaxScheme::Vat,
                 taxableAmount: 50.0,
                 taxAmount: 10.5,
                 taxPercentage: 21.0,
                 taxSchemeExtensionCode: 'LOCAL-RC',
             ),
             id: 'ROW-1',
-            note: 'Řádková poznámka',
+            note: 'ÄąÂÄ‚Ë‡dkovÄ‚Ë‡ poznÄ‚Ë‡mka',
         );
 
         $input = new IncomingOrderInput(
@@ -623,25 +623,25 @@ final class IncomingOrderInputNormalizerTest extends TestCase
             currency: Currency::EUR,
             buyerCustomerParty: $buyer,
             sellerSupplierParty: $seller,
-            monetaryTotal: new IncomingOrderMonetaryTotal(
+            monetaryTotal: new DocumentMonetaryTotal(
                 payableAmount: 60.5,
                 payableRoundingAmount: 0.0,
                 taxExclusiveAmount: 50.0,
                 taxInclusiveAmount: 60.5,
             ),
-            taxExchangeRate: new IncomingOrderTaxExchangeRate(
+            taxExchangeRate: new DocumentTaxExchangeRate(
                 taxCurrency: Currency::EUR,
                 referenceCurrencyRate: 1.0,
                 taxCurrencyRate: 1.0,
                 rateDate: new DateTimeImmutable('2024-07-01T00:00:00+02:00'),
                 exchangeMarketBic: 'BANKBIC1',
             ),
-            taxTotal: new IncomingOrderTaxTotal(
+            taxTotal: new DocumentTaxTotal(
                 taxAmount: 10.5,
                 taxSubTotals: [
-                    new IncomingOrderTaxSubTotal(
-                        calculationMethod: IncomingOrderTaxCalculationMethod::Total,
-                        scheme: IncomingOrderTaxScheme::Vat,
+                    new DocumentTaxSubTotal(
+                        calculationMethod: DocumentTaxCalculationMethod::Total,
+                        scheme: DocumentTaxScheme::Vat,
                         taxableAmount: 50.0,
                         taxAmount: 10.5,
                         taxPercentage: 21.0,
@@ -650,7 +650,7 @@ final class IncomingOrderInputNormalizerTest extends TestCase
                 ],
             ),
             id: 'ORD-1',
-            note: 'Hlavičková poznámka',
+            note: 'HlaviĂ„Ĺ¤kovÄ‚Ë‡ poznÄ‚Ë‡mka',
             partialDeliveryIndicator: true,
             paymentMeansCode: IncomingOrderPaymentMeansCode::BankAccount,
         );
@@ -674,7 +674,7 @@ final class IncomingOrderInputNormalizerTest extends TestCase
 
         self::assertSame([
             [
-                'Text' => 'Popis položky',
+                'Text' => 'Popis poloÄąÄľky',
                 'LangID' => 'cs',
             ],
         ], $this->requireList($lineItemPayload, 'Description'));
@@ -683,7 +683,7 @@ final class IncomingOrderInputNormalizerTest extends TestCase
             [
                 'AttributeKind' => 'FreeText',
                 'Name' => 'Barva',
-                'Value' => 'černá',
+                'Value' => 'Ă„Ĺ¤ernÄ‚Ë‡',
                 'LangID' => 'cs',
                 'Scheme' => 'SI',
                 'UnitCode' => 'bal',
@@ -708,12 +708,12 @@ final class IncomingOrderInputNormalizerTest extends TestCase
         ], $taxExchangeRatePayload);
 
         self::assertSame('ORD-1', $payload['ID']);
-        self::assertSame('Hlavičková poznámka', $payload['Note']);
+        self::assertSame('HlaviĂ„Ĺ¤kovÄ‚Ë‡ poznÄ‚Ë‡mka', $payload['Note']);
         self::assertSame('BankAccount', $payload['PaymentMeansCode']);
         self::assertTrue($payload['PartialDeliveryIndicator']);
 
         self::assertSame('ROW-1', $linePayload['ID']);
-        self::assertSame('Řádková poznámka', $linePayload['Note']);
+        self::assertSame('ÄąÂÄ‚Ë‡dkovÄ‚Ë‡ poznÄ‚Ë‡mka', $linePayload['Note']);
         self::assertSame('EAN-123', $lineItemPayload['StandardItemIdentification']);
     }
 
@@ -756,9 +756,9 @@ final class IncomingOrderInputNormalizerTest extends TestCase
     private function createQuantity(
         float $value,
         string $unitCode,
-        IncomingOrderUnitOfMeasureScheme $scheme,
-    ): IncomingOrderQuantity {
-        return new IncomingOrderQuantity(
+        DocumentUnitOfMeasureScheme $scheme,
+    ): DocumentQuantity {
+        return new DocumentQuantity(
             value: $value,
             unitCode: $unitCode,
             scheme: $scheme,
@@ -769,10 +769,10 @@ final class IncomingOrderInputNormalizerTest extends TestCase
         float $taxableAmount,
         float $taxAmount,
         float $taxPercentage,
-    ): IncomingOrderTaxSubTotal {
-        return new IncomingOrderTaxSubTotal(
-            calculationMethod: IncomingOrderTaxCalculationMethod::Add,
-            scheme: IncomingOrderTaxScheme::Vat,
+    ): DocumentTaxSubTotal {
+        return new DocumentTaxSubTotal(
+            calculationMethod: DocumentTaxCalculationMethod::Add,
+            scheme: DocumentTaxScheme::Vat,
             taxableAmount: $taxableAmount,
             taxAmount: $taxAmount,
             taxPercentage: $taxPercentage,
@@ -784,10 +784,10 @@ final class IncomingOrderInputNormalizerTest extends TestCase
         float $taxableAmount,
         float $taxAmount,
         float $taxPercentage,
-    ): IncomingOrderTaxSubTotal {
-        return new IncomingOrderTaxSubTotal(
-            calculationMethod: IncomingOrderTaxCalculationMethod::Total,
-            scheme: IncomingOrderTaxScheme::Vat,
+    ): DocumentTaxSubTotal {
+        return new DocumentTaxSubTotal(
+            calculationMethod: DocumentTaxCalculationMethod::Total,
+            scheme: DocumentTaxScheme::Vat,
             taxableAmount: $taxableAmount,
             taxAmount: $taxAmount,
             taxPercentage: $taxPercentage,

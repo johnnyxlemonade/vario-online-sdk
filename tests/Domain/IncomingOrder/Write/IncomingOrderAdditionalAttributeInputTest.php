@@ -4,49 +4,49 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Tests\Domain\IncomingOrder\Write;
 
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderTextualAttributeKind;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderUnitOfMeasureScheme;
-use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderAdditionalAttributeInput;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTextualAttributeKind;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentAdditionalAttributeInput;
 use PHPUnit\Framework\TestCase;
 
 final class IncomingOrderAdditionalAttributeInputTest extends TestCase
 {
     public function test_it_exposes_all_values(): void
     {
-        $attribute = new IncomingOrderAdditionalAttributeInput(
+        $attribute = new DocumentAdditionalAttributeInput(
             name: 'Varianta',
-            value: 'velká díra',
-            attributeKind: IncomingOrderTextualAttributeKind::FreeText,
+            value: 'velkÄ‚Ë‡ dÄ‚Â­ra',
+            attributeKind: DocumentTextualAttributeKind::FreeText,
             langId: 'cs',
             unitCode: 'Ks',
-            scheme: IncomingOrderUnitOfMeasureScheme::Unknown,
+            scheme: DocumentUnitOfMeasureScheme::Unknown,
         );
 
         self::assertSame('Varianta', $attribute->getName());
-        self::assertSame('velká díra', $attribute->getValue());
+        self::assertSame('velkÄ‚Ë‡ dÄ‚Â­ra', $attribute->getValue());
         self::assertSame(
-            IncomingOrderTextualAttributeKind::FreeText,
+            DocumentTextualAttributeKind::FreeText,
             $attribute->getAttributeKind()
         );
         self::assertSame('cs', $attribute->getLangId());
         self::assertSame('Ks', $attribute->getUnitCode());
         self::assertSame(
-            IncomingOrderUnitOfMeasureScheme::Unknown,
+            DocumentUnitOfMeasureScheme::Unknown,
             $attribute->getScheme()
         );
     }
 
     public function test_it_uses_expected_defaults(): void
     {
-        $attribute = new IncomingOrderAdditionalAttributeInput(
+        $attribute = new DocumentAdditionalAttributeInput(
             name: 'Varianta',
-            value: 'velká díra',
+            value: 'velkÄ‚Ë‡ dÄ‚Â­ra',
         );
 
         self::assertSame('Varianta', $attribute->getName());
-        self::assertSame('velká díra', $attribute->getValue());
+        self::assertSame('velkÄ‚Ë‡ dÄ‚Â­ra', $attribute->getValue());
         self::assertSame(
-            IncomingOrderTextualAttributeKind::ExtendedID,
+            DocumentTextualAttributeKind::ExtendedID,
             $attribute->getAttributeKind()
         );
         self::assertNull($attribute->getLangId());

@@ -9,17 +9,17 @@ use Lemonade\Vario\Api\IncomingOrderApi;
 use Lemonade\Vario\Client\VarioClientInterface;
 use Lemonade\Vario\Domain\Common\Currency;
 use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderPaymentMeansCode;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderTaxCalculationMethod;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderTaxScheme;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderUnitOfMeasureScheme;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxCalculationMethod;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxScheme;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrder;
-use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderDescription;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
 use Lemonade\Vario\Domain\IncomingOrder\Result\IncomingOrderUpsertResult;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderMonetaryTotal;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderQuantity;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderTaxExchangeRate;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderTaxSubTotal;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderTaxTotal;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentMonetaryTotal;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentQuantity;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxExchangeRate;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxSubTotal;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxTotal;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderInput;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineInput;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
@@ -149,7 +149,7 @@ final class IncomingOrderApiTest extends TestCase
             ->withCatalogueItemIdentification('SKU-001')
             ->withSellersItemIdentification('SKU-001')
             ->addDescription(
-                new IncomingOrderDescription('Test item')
+                new DocumentDescription('Test item')
             );
 
         $line = new IncomingOrderLineInput(
@@ -157,14 +157,14 @@ final class IncomingOrderApiTest extends TestCase
             lineExtensionAmount: 100.0,
             lineExtensionAmountTaxInclusive: 121.0,
             lineItem: $lineItem,
-            lineQuantity: new IncomingOrderQuantity(
+            lineQuantity: new DocumentQuantity(
                 value: 1.0,
                 unitCode: 'Ks',
-                scheme: IncomingOrderUnitOfMeasureScheme::Unknown,
+                scheme: DocumentUnitOfMeasureScheme::Unknown,
             ),
-            taxSubTotal: new IncomingOrderTaxSubTotal(
-                calculationMethod: IncomingOrderTaxCalculationMethod::Add,
-                scheme: IncomingOrderTaxScheme::Vat,
+            taxSubTotal: new DocumentTaxSubTotal(
+                calculationMethod: DocumentTaxCalculationMethod::Add,
+                scheme: DocumentTaxScheme::Vat,
                 taxableAmount: 100.0,
                 taxAmount: 21.0,
                 taxPercentage: 21.0,
@@ -178,25 +178,25 @@ final class IncomingOrderApiTest extends TestCase
             currency: Currency::CZK,
             buyerCustomerParty: $buyer,
             sellerSupplierParty: $seller,
-            monetaryTotal: new IncomingOrderMonetaryTotal(
+            monetaryTotal: new DocumentMonetaryTotal(
                 payableAmount: 121.0,
                 payableRoundingAmount: 0.0,
                 taxExclusiveAmount: 100.0,
                 taxInclusiveAmount: 121.0,
             ),
-            taxExchangeRate: new IncomingOrderTaxExchangeRate(
+            taxExchangeRate: new DocumentTaxExchangeRate(
                 taxCurrency: Currency::CZK,
                 referenceCurrencyRate: 1.0,
                 taxCurrencyRate: 1.0,
                 rateDate: new DateTimeImmutable('2024-04-02T00:00:00+02:00'),
                 exchangeMarketBic: null,
             ),
-            taxTotal: new IncomingOrderTaxTotal(
+            taxTotal: new DocumentTaxTotal(
                 taxAmount: 21.0,
                 taxSubTotals: [
-                    new IncomingOrderTaxSubTotal(
-                        calculationMethod: IncomingOrderTaxCalculationMethod::Total,
-                        scheme: IncomingOrderTaxScheme::Vat,
+                    new DocumentTaxSubTotal(
+                        calculationMethod: DocumentTaxCalculationMethod::Total,
+                        scheme: DocumentTaxScheme::Vat,
                         taxableAmount: 100.0,
                         taxAmount: 21.0,
                         taxPercentage: 21.0,

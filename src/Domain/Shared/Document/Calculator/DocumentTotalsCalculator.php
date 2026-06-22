@@ -2,49 +2,37 @@
 
 declare(strict_types=1);
 
-namespace Lemonade\Vario\Domain\IncomingOrder\Calculator;
+namespace Lemonade\Vario\Domain\Shared\Document\Calculator;
 
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderMonetaryTotal;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderTaxSubTotal;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderTaxTotal;
-use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineInput;
+use Lemonade\Vario\Domain\Shared\Document\DocumentLineInterface;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentMonetaryTotal;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxSubTotal;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxTotal;
 
-/**
- * Class IncomingOrderTotalsCalculator
- *
- * Calculates document totals from already prepared low-level line inputs.
- *
- * @package     Lemonade Framework
- * @subpackage  Lemonade\Vario\Domain\IncomingOrder\Calculator
- * @link        https://lemonadeframework.cz/
- * @author      Honza Mudrak <honzamudrak@gmail.com>
- * @license     MIT
- * @since       1.0
- */
-final class IncomingOrderTotalsCalculator
+final class DocumentTotalsCalculator
 {
     public function __construct(
         private readonly int $scale = 2,
     ) {}
 
     /**
-     * @param list<IncomingOrderLineInput> $lines
+     * @param list<DocumentLineInterface> $lines
      * @return array{
-     *     monetaryTotal: IncomingOrderMonetaryTotal,
-     *     taxTotal: IncomingOrderTaxTotal
+     *     monetaryTotal: DocumentMonetaryTotal,
+     *     taxTotal: DocumentTaxTotal
      * }
      */
-    public function calculate(array $lines): array
+    public function calculate(array $lines, float $payableRoundingAmount = 0.0): array
     {
-        $payableAmount = 0.0;
+        $taxInclusiveAmount = 0.0;
         $taxExclusiveAmount = 0.0;
 
-        /** @var array<string,array{template:IncomingOrderTaxSubTotal,taxableAmount:float,taxAmount:float}> $taxGroups */
+        /** @var array<string,array{template:DocumentTaxSubTotal,taxableAmount:float,taxAmount:float}> $taxGroups */
         $taxGroups = [];
 
         foreach ($lines as $line) {
             $taxExclusiveAmount += $line->getLineExtensionAmount();
-            $payableAmount += $line->getLineExtensionAmountTaxInclusive();
+            $taxInclusiveAmount += $line->getLineExtensionAmountTaxInclusive();
 
             $taxSubTotal = $line->getTaxSubTotal();
 
@@ -77,7 +65,7 @@ final class IncomingOrderTotalsCalculator
 
             $taxAmount += $groupTaxAmount;
 
-            $taxSubTotals[] = new IncomingOrderTaxSubTotal(
+            $taxSubTotals[] = new DocumentTaxSubTotal(
                 calculationMethod: $template->getCalculationMethod(),
                 scheme: $template->getScheme(),
                 taxableAmount: $groupTaxableAmount,
@@ -87,18 +75,20 @@ final class IncomingOrderTotalsCalculator
             );
         }
 
-        $payableAmount = $this->round($payableAmount);
+        $taxInclusiveAmount = $this->round($taxInclusiveAmount);
         $taxExclusiveAmount = $this->round($taxExclusiveAmount);
+        $payableRoundingAmount = $this->round($payableRoundingAmount);
         $taxAmount = $this->round($taxAmount);
+        $payableAmount = $this->round($taxInclusiveAmount + $payableRoundingAmount);
 
         return [
-            'monetaryTotal' => new IncomingOrderMonetaryTotal(
+            'monetaryTotal' => new DocumentMonetaryTotal(
                 payableAmount: $payableAmount,
-                payableRoundingAmount: 0.0,
+                payableRoundingAmount: $payableRoundingAmount,
                 taxExclusiveAmount: $taxExclusiveAmount,
-                taxInclusiveAmount: $payableAmount,
+                taxInclusiveAmount: $taxInclusiveAmount,
             ),
-            'taxTotal' => new IncomingOrderTaxTotal(
+            'taxTotal' => new DocumentTaxTotal(
                 taxAmount: $taxAmount,
                 taxSubTotals: $taxSubTotals,
             ),

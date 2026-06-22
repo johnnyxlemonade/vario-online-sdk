@@ -7,10 +7,10 @@ namespace Lemonade\Vario\Domain\IncomingOrder\Write;
 use DateTimeImmutable;
 use Lemonade\Vario\Domain\Common\Currency;
 use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderPaymentMeansCode;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderMonetaryTotal;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderTaxExchangeRate;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderTaxTotal;
 use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentMonetaryTotal;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxExchangeRate;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxTotal;
 
 /**
  * Class IncomingOrderInput
@@ -38,9 +38,9 @@ final class IncomingOrderInput
         private Currency $currency,
         private KnownPartyInput $buyerCustomerParty,
         private KnownPartyInput $sellerSupplierParty,
-        private IncomingOrderMonetaryTotal $monetaryTotal,
-        private IncomingOrderTaxExchangeRate $taxExchangeRate,
-        private IncomingOrderTaxTotal $taxTotal,
+        private DocumentMonetaryTotal $monetaryTotal,
+        private DocumentTaxExchangeRate $taxExchangeRate,
+        private DocumentTaxTotal $taxTotal,
         private ?string $id = null,
         private ?KnownPartyInput $accountingCustomerParty = null,
         private ?KnownPartyInput $delivery = null,
@@ -109,36 +109,36 @@ final class IncomingOrderInput
         return $this;
     }
 
-    public function getMonetaryTotal(): IncomingOrderMonetaryTotal
+    public function getMonetaryTotal(): DocumentMonetaryTotal
     {
         return $this->monetaryTotal;
     }
 
-    public function withMonetaryTotal(IncomingOrderMonetaryTotal $monetaryTotal): self
+    public function withMonetaryTotal(DocumentMonetaryTotal $monetaryTotal): self
     {
         $this->monetaryTotal = $monetaryTotal;
 
         return $this;
     }
 
-    public function getTaxExchangeRate(): IncomingOrderTaxExchangeRate
+    public function getTaxExchangeRate(): DocumentTaxExchangeRate
     {
         return $this->taxExchangeRate;
     }
 
-    public function withTaxExchangeRate(IncomingOrderTaxExchangeRate $taxExchangeRate): self
+    public function withTaxExchangeRate(DocumentTaxExchangeRate $taxExchangeRate): self
     {
         $this->taxExchangeRate = $taxExchangeRate;
 
         return $this;
     }
 
-    public function getTaxTotal(): IncomingOrderTaxTotal
+    public function getTaxTotal(): DocumentTaxTotal
     {
         return $this->taxTotal;
     }
 
-    public function withTaxTotal(IncomingOrderTaxTotal $taxTotal): self
+    public function withTaxTotal(DocumentTaxTotal $taxTotal): self
     {
         $this->taxTotal = $taxTotal;
 

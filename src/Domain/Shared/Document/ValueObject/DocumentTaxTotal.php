@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Lemonade\Vario\Domain\OutgoingQuotation\ValueObject;
+namespace Lemonade\Vario\Domain\Shared\Document\ValueObject;
 
-final class OutgoingQuotationTaxTotal
+final class DocumentTaxTotal
 {
     /**
-     * @param list<OutgoingQuotationTaxSubTotal> $taxSubTotals
+     * @param list<DocumentTaxSubTotal> $taxSubTotals
      */
     public function __construct(
         private readonly float $taxAmount,
@@ -20,7 +20,7 @@ final class OutgoingQuotationTaxTotal
     }
 
     /**
-     * @return list<OutgoingQuotationTaxSubTotal>
+     * @return list<DocumentTaxSubTotal>
      */
     public function getTaxSubTotals(): array
     {

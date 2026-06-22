@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Tests\Domain\IncomingOrder\Write;
 
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderTextualAttributeKind;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderUnitOfMeasureScheme;
-use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderDescription;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderUnitConversionFactor;
-use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderAdditionalAttributeInput;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTextualAttributeKind;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentUnitConversionFactor;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentAdditionalAttributeInput;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
 use PHPUnit\Framework\TestCase;
 
@@ -50,8 +50,8 @@ final class IncomingOrderLineItemInputTest extends TestCase
     {
         $item = new IncomingOrderLineItemInput();
 
-        $first = new IncomingOrderDescription('První popis', 'cs');
-        $second = new IncomingOrderDescription('Second description', 'en');
+        $first = new DocumentDescription('PrvnÄ‚Â­ popis', 'cs');
+        $second = new DocumentDescription('Second description', 'en');
 
         self::assertSame($item, $item->addDescription($first));
         self::assertSame([$first], $item->getDescriptions());
@@ -64,19 +64,19 @@ final class IncomingOrderLineItemInputTest extends TestCase
     {
         $item = new IncomingOrderLineItemInput();
 
-        $first = new IncomingOrderAdditionalAttributeInput(
+        $first = new DocumentAdditionalAttributeInput(
             name: 'Varianta',
-            value: 'velká díra',
-            attributeKind: IncomingOrderTextualAttributeKind::ExtendedID,
+            value: 'velkÄ‚Ë‡ dÄ‚Â­ra',
+            attributeKind: DocumentTextualAttributeKind::ExtendedID,
             langId: 'cs',
             unitCode: null,
-            scheme: IncomingOrderUnitOfMeasureScheme::Unknown,
+            scheme: DocumentUnitOfMeasureScheme::Unknown,
         );
 
-        $second = new IncomingOrderAdditionalAttributeInput(
+        $second = new DocumentAdditionalAttributeInput(
             name: 'Barva',
-            value: 'černá',
-            attributeKind: IncomingOrderTextualAttributeKind::FreeText,
+            value: 'Ă„Ĺ¤ernÄ‚Ë‡',
+            attributeKind: DocumentTextualAttributeKind::FreeText,
             langId: 'cs',
             unitCode: null,
             scheme: null,
@@ -93,16 +93,16 @@ final class IncomingOrderLineItemInputTest extends TestCase
     {
         $item = new IncomingOrderLineItemInput();
 
-        $first = new IncomingOrderUnitConversionFactor(
+        $first = new DocumentUnitConversionFactor(
             value: 1.0,
             unitCode: 'Ks',
-            scheme: IncomingOrderUnitOfMeasureScheme::Unknown,
+            scheme: DocumentUnitOfMeasureScheme::Unknown,
         );
 
-        $second = new IncomingOrderUnitConversionFactor(
+        $second = new DocumentUnitConversionFactor(
             value: 2.0,
             unitCode: 'm2',
-            scheme: IncomingOrderUnitOfMeasureScheme::SI,
+            scheme: DocumentUnitOfMeasureScheme::SI,
         );
 
         self::assertSame($item, $item->addUnitConversionFactor($first));

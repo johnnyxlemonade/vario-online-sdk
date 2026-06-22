@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\IncomingOrder\Read;
 
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderTextualAttributeKind;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderUnitOfMeasureScheme;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTextualAttributeKind;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
 
 /**
  * Class IncomingOrderAdditionalAttribute
@@ -29,16 +29,16 @@ final class IncomingOrderAdditionalAttribute
      * @param array<string,mixed> $extra Additional unmapped API fields.
      */
     public function __construct(
-        private readonly IncomingOrderTextualAttributeKind $attributeKind,
+        private readonly DocumentTextualAttributeKind $attributeKind,
         private readonly string $name,
         private readonly string $value,
         private readonly ?string $langId = null,
         private readonly ?string $unitCode = null,
-        private readonly ?IncomingOrderUnitOfMeasureScheme $scheme = null,
+        private readonly ?DocumentUnitOfMeasureScheme $scheme = null,
         private readonly array $extra = [],
     ) {}
 
-    public function getAttributeKind(): IncomingOrderTextualAttributeKind
+    public function getAttributeKind(): DocumentTextualAttributeKind
     {
         return $this->attributeKind;
     }
@@ -63,7 +63,7 @@ final class IncomingOrderAdditionalAttribute
         return $this->unitCode;
     }
 
-    public function getScheme(): ?IncomingOrderUnitOfMeasureScheme
+    public function getScheme(): ?DocumentUnitOfMeasureScheme
     {
         return $this->scheme;
     }

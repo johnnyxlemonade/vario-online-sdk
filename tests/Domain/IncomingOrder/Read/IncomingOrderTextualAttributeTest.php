@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Tests\Domain\IncomingOrder\Read;
 
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderTextualAttributeKind;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTextualAttributeKind;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderTextualAttribute;
 use PHPUnit\Framework\TestCase;
 
@@ -13,7 +13,7 @@ final class IncomingOrderTextualAttributeTest extends TestCase
     public function test_it_exposes_all_values(): void
     {
         $attribute = new IncomingOrderTextualAttribute(
-            attributeKind: IncomingOrderTextualAttributeKind::ExtendedID,
+            attributeKind: DocumentTextualAttributeKind::ExtendedID,
             name: 'Cislo_dokladu',
             value: 'D-25-02102',
             langId: 'cs',
@@ -23,7 +23,7 @@ final class IncomingOrderTextualAttributeTest extends TestCase
         );
 
         self::assertSame(
-            IncomingOrderTextualAttributeKind::ExtendedID,
+            DocumentTextualAttributeKind::ExtendedID,
             $attribute->getAttributeKind()
         );
         self::assertSame('Cislo_dokladu', $attribute->getName());
@@ -37,11 +37,11 @@ final class IncomingOrderTextualAttributeTest extends TestCase
     public function test_it_supports_nullable_fields(): void
     {
         $attribute = new IncomingOrderTextualAttribute(
-            attributeKind: IncomingOrderTextualAttributeKind::FreeText,
+            attributeKind: DocumentTextualAttributeKind::FreeText,
         );
 
         self::assertSame(
-            IncomingOrderTextualAttributeKind::FreeText,
+            DocumentTextualAttributeKind::FreeText,
             $attribute->getAttributeKind()
         );
         self::assertNull($attribute->getName());

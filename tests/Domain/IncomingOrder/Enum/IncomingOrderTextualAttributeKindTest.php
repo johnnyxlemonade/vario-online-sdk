@@ -4,51 +4,51 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Tests\Domain\IncomingOrder\Enum;
 
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderTextualAttributeKind;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTextualAttributeKind;
 use PHPUnit\Framework\TestCase;
 
 final class IncomingOrderTextualAttributeKindTest extends TestCase
 {
     public function test_it_exposes_expected_enum_values(): void
     {
-        self::assertSame('FreeText', IncomingOrderTextualAttributeKind::FreeText->value);
-        self::assertSame('ExtendedID', IncomingOrderTextualAttributeKind::ExtendedID->value);
-        self::assertSame('BarcodeSymbologyID', IncomingOrderTextualAttributeKind::BarcodeSymbologyID->value);
+        self::assertSame('FreeText', DocumentTextualAttributeKind::FreeText->value);
+        self::assertSame('ExtendedID', DocumentTextualAttributeKind::ExtendedID->value);
+        self::assertSame('BarcodeSymbologyID', DocumentTextualAttributeKind::BarcodeSymbologyID->value);
     }
 
     public function test_to_api_value_returns_backed_value(): void
     {
         self::assertSame(
             'FreeText',
-            IncomingOrderTextualAttributeKind::FreeText->toApiValue()
+            DocumentTextualAttributeKind::FreeText->toApiValue()
         );
 
         self::assertSame(
             'ExtendedID',
-            IncomingOrderTextualAttributeKind::ExtendedID->toApiValue()
+            DocumentTextualAttributeKind::ExtendedID->toApiValue()
         );
 
         self::assertSame(
             'BarcodeSymbologyID',
-            IncomingOrderTextualAttributeKind::BarcodeSymbologyID->toApiValue()
+            DocumentTextualAttributeKind::BarcodeSymbologyID->toApiValue()
         );
     }
 
     public function test_try_from_resolves_known_values(): void
     {
         self::assertSame(
-            IncomingOrderTextualAttributeKind::FreeText,
-            IncomingOrderTextualAttributeKind::tryFrom('FreeText')
+            DocumentTextualAttributeKind::FreeText,
+            DocumentTextualAttributeKind::tryFrom('FreeText')
         );
 
         self::assertSame(
-            IncomingOrderTextualAttributeKind::ExtendedID,
-            IncomingOrderTextualAttributeKind::tryFrom('ExtendedID')
+            DocumentTextualAttributeKind::ExtendedID,
+            DocumentTextualAttributeKind::tryFrom('ExtendedID')
         );
 
         self::assertSame(
-            IncomingOrderTextualAttributeKind::BarcodeSymbologyID,
-            IncomingOrderTextualAttributeKind::tryFrom('BarcodeSymbologyID')
+            DocumentTextualAttributeKind::BarcodeSymbologyID,
+            DocumentTextualAttributeKind::tryFrom('BarcodeSymbologyID')
         );
     }
 

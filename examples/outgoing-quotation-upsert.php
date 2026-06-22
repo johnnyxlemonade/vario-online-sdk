@@ -3,35 +3,27 @@
 declare(strict_types=1);
 
 /**
- * Example: OutgoingQuotation upsert using strict DTOs
+ * Example: OutgoingQuotation upsert builder workflow
  *
  * Demonstrates:
  * - buyer setup
  * - seller setup
  * - identifications
- * - quotation line setup
- * - monetary total
- * - tax exchange rate
- * - tax total
+ * - high-level line definition
+ * - automatic line calculation
+ * - automatic monetary total and tax total calculation
  * - payload preview
- * - real upsert call (commented out)
+ * - upsert request
  */
 
 use Lemonade\Vario\Domain\Common\Currency;
 use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
+use Lemonade\Vario\Domain\OutgoingQuotation\Builder\OutgoingQuotationBuilder;
 use Lemonade\Vario\Domain\OutgoingQuotation\Enum\OutgoingQuotationPaymentMeansCode;
-use Lemonade\Vario\Domain\OutgoingQuotation\Enum\OutgoingQuotationTaxCalculationMethod;
-use Lemonade\Vario\Domain\OutgoingQuotation\Enum\OutgoingQuotationTaxScheme;
-use Lemonade\Vario\Domain\OutgoingQuotation\Enum\OutgoingQuotationUnitOfMeasureScheme;
-use Lemonade\Vario\Domain\OutgoingQuotation\ValueObject\OutgoingQuotationDescription;
-use Lemonade\Vario\Domain\OutgoingQuotation\ValueObject\OutgoingQuotationMonetaryTotal;
-use Lemonade\Vario\Domain\OutgoingQuotation\ValueObject\OutgoingQuotationQuantity;
-use Lemonade\Vario\Domain\OutgoingQuotation\ValueObject\OutgoingQuotationTaxExchangeRate;
-use Lemonade\Vario\Domain\OutgoingQuotation\ValueObject\OutgoingQuotationTaxSubTotal;
-use Lemonade\Vario\Domain\OutgoingQuotation\ValueObject\OutgoingQuotationTaxTotal;
-use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationInput;
-use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationLineInput;
 use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationLineItemInput;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentPriceMode;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineInput;
 use Lemonade\Vario\Domain\Shared\Identification;
 use Lemonade\Vario\Domain\Shared\IdentificationScheme;
 use Lemonade\Vario\VarioApi;
@@ -47,7 +39,7 @@ $buyer = (new KnownPartyInput('A - Storex, v.o.s.'))
     ->addIdentification(new Identification(
         scheme: IdentificationScheme::UIN,
         id: '620927153',
-        originCountry: 'CZ'
+        originCountry: 'CZ',
     ));
 
 /*
@@ -55,8 +47,9 @@ $buyer = (new KnownPartyInput('A - Storex, v.o.s.'))
 | Seller
 |--------------------------------------------------------------------------
 |
-| The Vario payload contains only the VAT identification.
-| KnownPartyInput requires a constructor name, so an empty string is used.
+| The example payload contains only the VAT ID.
+| KnownPartyInput requires a name in the constructor,
+| so an empty string is used here intentionally.
 | The normalizer omits empty names from the final payload.
 |
 */
@@ -64,79 +57,86 @@ $seller = (new KnownPartyInput(''))
     ->addIdentification(new Identification(
         scheme: IdentificationScheme::VAT,
         id: 'CZ61681229',
-        originCountry: 'CZ'
+        originCountry: 'CZ',
     ));
 
 /*
 |--------------------------------------------------------------------------
-| Quotation line
+| Line item definition
 |--------------------------------------------------------------------------
+|
+| This object defines item identity and descriptive metadata.
+| Numeric totals are calculated by the builder from the high-level line input.
+|
 */
 $lineItem = (new OutgoingQuotationLineItemInput())
     ->withCatalogueItemIdentification('A25882')
     ->addDescription(
-        new OutgoingQuotationDescription('Adam křeslo - skládačka')
+        new DocumentDescription('Adam křeslo - skládačka')
     );
-
-$line = new OutgoingQuotationLineInput(
-    uuid: 'd4b5b29c-d658-4568-aaa9-839f11ce1446',
-    lineExtensionAmount: 95.0,
-    lineExtensionAmountTaxInclusive: 114.95,
-    lineItem: $lineItem,
-    lineQuantity: new OutgoingQuotationQuantity(
-        value: 1.0,
-        unitCode: 'Ks',
-        scheme: OutgoingQuotationUnitOfMeasureScheme::Unknown
-    ),
-    taxSubTotal: new OutgoingQuotationTaxSubTotal(
-        calculationMethod: OutgoingQuotationTaxCalculationMethod::Add,
-        scheme: OutgoingQuotationTaxScheme::Vat,
-        taxableAmount: 95.0,
-        taxAmount: 19.95,
-        taxPercentage: 21.0
-    ),
-    id: '1'
-);
 
 /*
 |--------------------------------------------------------------------------
-| Monetary total, tax exchange rate, tax total
+| Builder
 |--------------------------------------------------------------------------
+|
+| The builder accepts simplified line definitions and calculates:
+|
+| - line total without VAT
+| - line total with VAT
+| - line tax subtotal
+| - document monetary total
+| - document tax total
+|
 */
-$quotation = new OutgoingQuotationInput(
+$builder = new OutgoingQuotationBuilder();
+
+/*
+|--------------------------------------------------------------------------
+| High-level line definitions
+|--------------------------------------------------------------------------
+|
+| Only quantity, unit price, VAT rate and VAT mode are provided here.
+| The builder calculates all low-level numeric structures automatically.
+|
+*/
+$lines = [
+    new DocumentCalculatedLineInput(
+        uuid: 'd4b5b29c-d658-4568-aaa9-839f11ce1446',
+        lineItem: $lineItem,
+        quantity: 1.0,
+        unitCode: 'Ks',
+        unitPrice: 95.0,
+        vatRate: 21.0,
+        priceMode: DocumentPriceMode::WithoutVat,
+        id: '1',
+    ),
+];
+
+/*
+|--------------------------------------------------------------------------
+| Build quotation
+|--------------------------------------------------------------------------
+|
+| Produces a complete low-level OutgoingQuotationInput instance
+| compatible with previewUpsert() and upsert().
+|
+| TaxExchangeRate is omitted here intentionally.
+| The builder will create a default 1:1 exchange rate for the quotation currency.
+|
+| PayableRoundingAmount is set explicitly to match the Vario sample payload.
+|
+*/
+$quotation = $builder->build(
     uuid: 'c676048c-3789-4228-82b2-9ca6e7b952f7',
     issueDate: new DateTimeImmutable('2026-06-18T00:00:00+02:00'),
     currency: Currency::CZK,
     buyerCustomerParty: $buyer,
     sellerSupplierParty: $seller,
-    monetaryTotal: new OutgoingQuotationMonetaryTotal(
-        payableAmount: 115.0,
-        payableRoundingAmount: 0.05,
-        taxExclusiveAmount: 95.0,
-        taxInclusiveAmount: 114.95
-    ),
-    taxExchangeRate: new OutgoingQuotationTaxExchangeRate(
-        taxCurrency: Currency::CZK,
-        referenceCurrencyRate: 1.0,
-        taxCurrencyRate: 1.0
-    ),
-    taxTotal: new OutgoingQuotationTaxTotal(
-        taxAmount: 19.95,
-        taxSubTotals: [
-            new OutgoingQuotationTaxSubTotal(
-                calculationMethod: OutgoingQuotationTaxCalculationMethod::Total,
-                scheme: OutgoingQuotationTaxScheme::Vat,
-                taxableAmount: 95.0,
-                taxAmount: 19.95,
-                taxPercentage: 21.0
-            ),
-        ]
-    ),
-    documentLines: [
-        $line,
-    ],
+    lines: $lines,
     id: 'ZAKTEST-2026-00002',
-    paymentMeansCode: OutgoingQuotationPaymentMeansCode::Cash
+    paymentMeansCode: OutgoingQuotationPaymentMeansCode::Cash,
+    payableRoundingAmount: 0.05,
 );
 
 echo '<pre>';
@@ -167,6 +167,7 @@ print_r($preview);
 | This requires access to the target Vario server, for example through VPN.
 |
 */
+
 // echo "\n=== Upsert result ===\n";
 //
 // $result = $vario->outgoingQuotations()->upsert([

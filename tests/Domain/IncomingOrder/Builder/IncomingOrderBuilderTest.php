@@ -8,12 +8,12 @@ use DateTimeImmutable;
 use Lemonade\Vario\Domain\Common\Currency;
 use Lemonade\Vario\Domain\IncomingOrder\Builder\IncomingOrderBuilder;
 use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderPaymentMeansCode;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderPriceMode;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderTaxCalculationMethod;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderTaxScheme;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderUnitOfMeasureScheme;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderTaxExchangeRate;
-use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderCalculatedLineInput;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentPriceMode;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxCalculationMethod;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxScheme;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxExchangeRate;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineInput;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
 use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
 use PHPUnit\Framework\TestCase;
@@ -31,7 +31,7 @@ final class IncomingOrderBuilderTest extends TestCase
         $delivery = new KnownPartyInput('Delivery s.r.o.');
 
         $lines = [
-            new IncomingOrderCalculatedLineInput(
+            new DocumentCalculatedLineInput(
                 uuid: 'line-1',
                 lineItem: new IncomingOrderLineItemInput(
                     catalogueItemIdentification: 'SKU-001',
@@ -40,15 +40,15 @@ final class IncomingOrderBuilderTest extends TestCase
                 unitCode: 'Ks',
                 unitPrice: 100.0,
                 vatRate: 21.0,
-                priceMode: IncomingOrderPriceMode::WithoutVat,
-                unitScheme: IncomingOrderUnitOfMeasureScheme::Unknown,
+                priceMode: DocumentPriceMode::WithoutVat,
+                unitScheme: DocumentUnitOfMeasureScheme::Unknown,
                 id: 'ROW-1',
                 note: 'First row',
-                taxCalculationMethod: IncomingOrderTaxCalculationMethod::Add,
-                taxScheme: IncomingOrderTaxScheme::Vat,
+                taxCalculationMethod: DocumentTaxCalculationMethod::Add,
+                taxScheme: DocumentTaxScheme::Vat,
                 taxSchemeExtensionCode: null,
             ),
-            new IncomingOrderCalculatedLineInput(
+            new DocumentCalculatedLineInput(
                 uuid: 'line-2',
                 lineItem: new IncomingOrderLineItemInput(
                     catalogueItemIdentification: 'SKU-002',
@@ -57,12 +57,12 @@ final class IncomingOrderBuilderTest extends TestCase
                 unitCode: 'Ks',
                 unitPrice: 121.0,
                 vatRate: 21.0,
-                priceMode: IncomingOrderPriceMode::WithVat,
-                unitScheme: IncomingOrderUnitOfMeasureScheme::Unknown,
+                priceMode: DocumentPriceMode::WithVat,
+                unitScheme: DocumentUnitOfMeasureScheme::Unknown,
                 id: 'ROW-2',
                 note: 'Second row',
-                taxCalculationMethod: IncomingOrderTaxCalculationMethod::Add,
-                taxScheme: IncomingOrderTaxScheme::Vat,
+                taxCalculationMethod: DocumentTaxCalculationMethod::Add,
+                taxScheme: DocumentTaxScheme::Vat,
                 taxSchemeExtensionCode: 'LOCAL-RC',
             ),
         ];
@@ -141,7 +141,7 @@ final class IncomingOrderBuilderTest extends TestCase
         $buyer = new KnownPartyInput('Buyer s.r.o.');
         $seller = new KnownPartyInput('Seller s.r.o.');
 
-        $customTaxExchangeRate = new IncomingOrderTaxExchangeRate(
+        $customTaxExchangeRate = new DocumentTaxExchangeRate(
             taxCurrency: Currency::EUR,
             referenceCurrencyRate: 1.0,
             taxCurrencyRate: 25.0,
@@ -156,7 +156,7 @@ final class IncomingOrderBuilderTest extends TestCase
             buyerCustomerParty: $buyer,
             sellerSupplierParty: $seller,
             lines: [
-                new IncomingOrderCalculatedLineInput(
+                new DocumentCalculatedLineInput(
                     uuid: 'line-1',
                     lineItem: new IncomingOrderLineItemInput(
                         catalogueItemIdentification: 'SKU-001',

@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Tests\Domain\IncomingOrder\Read;
 
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderTaxCalculationMethod;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderTaxScheme;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderUnitOfMeasureScheme;
-use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderDescription;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxCalculationMethod;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxScheme;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderLine;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderLineItem;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderUnitPrice;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderQuantity;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderTaxSubTotal;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentQuantity;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxSubTotal;
 use PHPUnit\Framework\TestCase;
 
 final class IncomingOrderLineTest extends TestCase
@@ -23,19 +23,19 @@ final class IncomingOrderLineTest extends TestCase
             catalogueItemIdentification: 'SKU-001',
             sellersItemIdentification: 'SELL-001',
             descriptions: [
-                new IncomingOrderDescription('Test item', 'cs'),
+                new DocumentDescription('Test item', 'cs'),
             ],
         );
 
-        $quantity = new IncomingOrderQuantity(
+        $quantity = new DocumentQuantity(
             value: 2.0,
             unitCode: 'Ks',
-            scheme: IncomingOrderUnitOfMeasureScheme::Unknown,
+            scheme: DocumentUnitOfMeasureScheme::Unknown,
         );
 
-        $taxSubTotal = new IncomingOrderTaxSubTotal(
-            calculationMethod: IncomingOrderTaxCalculationMethod::Add,
-            scheme: IncomingOrderTaxScheme::Vat,
+        $taxSubTotal = new DocumentTaxSubTotal(
+            calculationMethod: DocumentTaxCalculationMethod::Add,
+            scheme: DocumentTaxScheme::Vat,
             taxableAmount: 100.0,
             taxAmount: 21.0,
             taxPercentage: 21.0,
@@ -45,10 +45,10 @@ final class IncomingOrderLineTest extends TestCase
         $unitPrice = new IncomingOrderUnitPrice(
             amount: 50.0,
             amountTaxInclusive: 60.5,
-            quantity: new IncomingOrderQuantity(
+            quantity: new DocumentQuantity(
                 value: 1.0,
                 unitCode: 'Ks',
-                scheme: IncomingOrderUnitOfMeasureScheme::Unknown,
+                scheme: DocumentUnitOfMeasureScheme::Unknown,
             ),
         );
 
@@ -57,7 +57,7 @@ final class IncomingOrderLineTest extends TestCase
             id: 'line-id-1',
             lineExtensionAmount: 100.0,
             lineExtensionAmountTaxInclusive: 121.0,
-            note: 'Poznámka k řádku',
+            note: 'PoznÄ‚Ë‡mka k Äąâ„˘Ä‚Ë‡dku',
             lineItem: $lineItem,
             lineQuantity: $quantity,
             taxSubTotal: $taxSubTotal,
@@ -71,7 +71,7 @@ final class IncomingOrderLineTest extends TestCase
         self::assertSame('line-id-1', $line->getId());
         self::assertSame(100.0, $line->getLineExtensionAmount());
         self::assertSame(121.0, $line->getLineExtensionAmountTaxInclusive());
-        self::assertSame('Poznámka k řádku', $line->getNote());
+        self::assertSame('PoznÄ‚Ë‡mka k Äąâ„˘Ä‚Ë‡dku', $line->getNote());
         self::assertSame($lineItem, $line->getLineItem());
         self::assertSame($quantity, $line->getLineQuantity());
         self::assertSame($taxSubTotal, $line->getTaxSubTotal());

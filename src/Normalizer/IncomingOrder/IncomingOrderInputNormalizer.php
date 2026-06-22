@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Normalizer\IncomingOrder;
 
-use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderDescription;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderMonetaryTotal;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderQuantity;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderTaxExchangeRate;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderTaxSubTotal;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderTaxTotal;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderUnitConversionFactor;
-use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderAdditionalAttributeInput;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderInput;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineInput;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
 use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentMonetaryTotal;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentQuantity;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxExchangeRate;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxSubTotal;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxTotal;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentUnitConversionFactor;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentAdditionalAttributeInput;
 use Lemonade\Vario\Domain\Shared\Identification;
 use Lemonade\Vario\Domain\Shared\PostalAddress;
 
@@ -144,7 +144,7 @@ final class IncomingOrderInputNormalizer
      *     Value: float
      * }
      */
-    private function normalizeQuantity(IncomingOrderQuantity $quantity): array
+    private function normalizeQuantity(DocumentQuantity $quantity): array
     {
         return [
             'Scheme' => $quantity->getScheme()->toApiValue(),
@@ -154,7 +154,7 @@ final class IncomingOrderInputNormalizer
     }
 
     /**
-     * @param list<IncomingOrderUnitConversionFactor> $factors
+     * @param list<DocumentUnitConversionFactor> $factors
      * @return list<array{
      *     Scheme: string,
      *     UnitCode: string,
@@ -184,7 +184,7 @@ final class IncomingOrderInputNormalizer
      *     TaxInclusiveAmount: float
      * }
      */
-    private function normalizeMonetaryTotal(IncomingOrderMonetaryTotal $total): array
+    private function normalizeMonetaryTotal(DocumentMonetaryTotal $total): array
     {
         return [
             'PayableAmount' => $total->getPayableAmount(),
@@ -197,7 +197,7 @@ final class IncomingOrderInputNormalizer
     /**
      * @return array<string,mixed>
      */
-    private function normalizeTaxSubTotal(IncomingOrderTaxSubTotal $tax): array
+    private function normalizeTaxSubTotal(DocumentTaxSubTotal $tax): array
     {
         $payload = [
             'CalculationMethod' => $tax->getCalculationMethod()->toApiValue(),
@@ -220,7 +220,7 @@ final class IncomingOrderInputNormalizer
      *     TaxSubTotal: list<array<string,mixed>>
      * }
      */
-    private function normalizeTaxTotal(IncomingOrderTaxTotal $taxTotal): array
+    private function normalizeTaxTotal(DocumentTaxTotal $taxTotal): array
     {
         $subTotals = [];
 
@@ -237,7 +237,7 @@ final class IncomingOrderInputNormalizer
     /**
      * @return array<string,mixed>
      */
-    private function normalizeTaxExchangeRate(IncomingOrderTaxExchangeRate $rate): array
+    private function normalizeTaxExchangeRate(DocumentTaxExchangeRate $rate): array
     {
         $payload = [
             'ReferenceCurrencyRate' => $rate->getReferenceCurrencyRate(),
@@ -346,7 +346,7 @@ final class IncomingOrderInputNormalizer
     }
 
     /**
-     * @param list<IncomingOrderDescription> $descriptions
+     * @param list<DocumentDescription> $descriptions
      * @return list<array<string,mixed>>
      */
     private function normalizeDescriptions(array $descriptions): array
@@ -369,7 +369,7 @@ final class IncomingOrderInputNormalizer
     }
 
     /**
-     * @param list<IncomingOrderAdditionalAttributeInput> $attributes
+     * @param list<DocumentAdditionalAttributeInput> $attributes
      * @return list<array<string,mixed>>
      */
     private function normalizeAdditionalAttributes(array $attributes): array

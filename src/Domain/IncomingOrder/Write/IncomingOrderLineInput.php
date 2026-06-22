@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\IncomingOrder\Write;
 
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderQuantity;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderTaxSubTotal;
+use Lemonade\Vario\Domain\Shared\Document\DocumentLineInterface;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentQuantity;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxSubTotal;
 
 /**
  * Class IncomingOrderLineInput
@@ -21,15 +22,15 @@ use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderTaxSubTotal;
  * @license     MIT
  * @since       1.0
  */
-final class IncomingOrderLineInput
+final class IncomingOrderLineInput implements DocumentLineInterface
 {
     public function __construct(
         private string $uuid,
         private float $lineExtensionAmount,
         private float $lineExtensionAmountTaxInclusive,
         private IncomingOrderLineItemInput $lineItem,
-        private IncomingOrderQuantity $lineQuantity,
-        private IncomingOrderTaxSubTotal $taxSubTotal,
+        private DocumentQuantity $lineQuantity,
+        private DocumentTaxSubTotal $taxSubTotal,
         private ?string $id = null,
         private ?string $note = null,
     ) {}
@@ -82,24 +83,24 @@ final class IncomingOrderLineInput
         return $this;
     }
 
-    public function getLineQuantity(): IncomingOrderQuantity
+    public function getLineQuantity(): DocumentQuantity
     {
         return $this->lineQuantity;
     }
 
-    public function withLineQuantity(IncomingOrderQuantity $lineQuantity): self
+    public function withLineQuantity(DocumentQuantity $lineQuantity): self
     {
         $this->lineQuantity = $lineQuantity;
 
         return $this;
     }
 
-    public function getTaxSubTotal(): IncomingOrderTaxSubTotal
+    public function getTaxSubTotal(): DocumentTaxSubTotal
     {
         return $this->taxSubTotal;
     }
 
-    public function withTaxSubTotal(IncomingOrderTaxSubTotal $taxSubTotal): self
+    public function withTaxSubTotal(DocumentTaxSubTotal $taxSubTotal): self
     {
         $this->taxSubTotal = $taxSubTotal;
 

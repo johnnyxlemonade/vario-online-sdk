@@ -10,19 +10,19 @@ use Lemonade\Vario\Client\VarioClientInterface;
 use Lemonade\Vario\Domain\Common\Currency;
 use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
 use Lemonade\Vario\Domain\OutgoingQuotation\Enum\OutgoingQuotationPaymentMeansCode;
-use Lemonade\Vario\Domain\OutgoingQuotation\Enum\OutgoingQuotationTaxCalculationMethod;
-use Lemonade\Vario\Domain\OutgoingQuotation\Enum\OutgoingQuotationTaxScheme;
-use Lemonade\Vario\Domain\OutgoingQuotation\Enum\OutgoingQuotationUnitOfMeasureScheme;
 use Lemonade\Vario\Domain\OutgoingQuotation\Result\OutgoingQuotationUpsertResult;
-use Lemonade\Vario\Domain\OutgoingQuotation\ValueObject\OutgoingQuotationDescription;
-use Lemonade\Vario\Domain\OutgoingQuotation\ValueObject\OutgoingQuotationMonetaryTotal;
-use Lemonade\Vario\Domain\OutgoingQuotation\ValueObject\OutgoingQuotationQuantity;
-use Lemonade\Vario\Domain\OutgoingQuotation\ValueObject\OutgoingQuotationTaxExchangeRate;
-use Lemonade\Vario\Domain\OutgoingQuotation\ValueObject\OutgoingQuotationTaxSubTotal;
-use Lemonade\Vario\Domain\OutgoingQuotation\ValueObject\OutgoingQuotationTaxTotal;
 use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationInput;
 use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationLineInput;
 use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationLineItemInput;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxCalculationMethod;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxScheme;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentMonetaryTotal;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentQuantity;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxExchangeRate;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxSubTotal;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxTotal;
 use Lemonade\Vario\Domain\Shared\Identification;
 use Lemonade\Vario\Domain\Shared\IdentificationScheme;
 use Lemonade\Vario\Enum\HttpMethod;
@@ -220,7 +220,7 @@ final class OutgoingQuotationApiTest extends TestCase
 
         $lineItem = (new OutgoingQuotationLineItemInput())
             ->withCatalogueItemIdentification('A25882')
-            ->addDescription(new OutgoingQuotationDescription('Adam křeslo - skládačka'));
+            ->addDescription(new DocumentDescription('Adam křeslo - skládačka'));
 
         return new OutgoingQuotationInput(
             uuid: 'c676048c-3789-4228-82b2-9ca6e7b952f7',
@@ -228,23 +228,23 @@ final class OutgoingQuotationApiTest extends TestCase
             currency: Currency::CZK,
             buyerCustomerParty: $buyer,
             sellerSupplierParty: $seller,
-            monetaryTotal: new OutgoingQuotationMonetaryTotal(
+            monetaryTotal: new DocumentMonetaryTotal(
                 payableAmount: 115.0,
                 payableRoundingAmount: 0.05,
                 taxExclusiveAmount: 95.0,
                 taxInclusiveAmount: 114.95,
             ),
-            taxExchangeRate: new OutgoingQuotationTaxExchangeRate(
+            taxExchangeRate: new DocumentTaxExchangeRate(
                 taxCurrency: Currency::CZK,
                 referenceCurrencyRate: 1.0,
                 taxCurrencyRate: 1.0,
             ),
-            taxTotal: new OutgoingQuotationTaxTotal(
+            taxTotal: new DocumentTaxTotal(
                 taxAmount: 19.95,
                 taxSubTotals: [
-                    new OutgoingQuotationTaxSubTotal(
-                        calculationMethod: OutgoingQuotationTaxCalculationMethod::Total,
-                        scheme: OutgoingQuotationTaxScheme::Vat,
+                    new DocumentTaxSubTotal(
+                        calculationMethod: DocumentTaxCalculationMethod::Total,
+                        scheme: DocumentTaxScheme::Vat,
                         taxableAmount: 95.0,
                         taxAmount: 19.95,
                         taxPercentage: 21.0,
@@ -257,14 +257,14 @@ final class OutgoingQuotationApiTest extends TestCase
                     lineExtensionAmount: 95.0,
                     lineExtensionAmountTaxInclusive: 114.95,
                     lineItem: $lineItem,
-                    lineQuantity: new OutgoingQuotationQuantity(
+                    lineQuantity: new DocumentQuantity(
                         value: 1.0,
                         unitCode: 'Ks',
-                        scheme: OutgoingQuotationUnitOfMeasureScheme::Unknown,
+                        scheme: DocumentUnitOfMeasureScheme::Unknown,
                     ),
-                    taxSubTotal: new OutgoingQuotationTaxSubTotal(
-                        calculationMethod: OutgoingQuotationTaxCalculationMethod::Add,
-                        scheme: OutgoingQuotationTaxScheme::Vat,
+                    taxSubTotal: new DocumentTaxSubTotal(
+                        calculationMethod: DocumentTaxCalculationMethod::Add,
+                        scheme: DocumentTaxScheme::Vat,
                         taxableAmount: 95.0,
                         taxAmount: 19.95,
                         taxPercentage: 21.0,

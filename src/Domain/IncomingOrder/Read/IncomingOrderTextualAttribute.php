@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\IncomingOrder\Read;
 
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderTextualAttributeKind;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTextualAttributeKind;
 
 /**
  * Class IncomingOrderTextualAttribute
@@ -25,14 +25,14 @@ final class IncomingOrderTextualAttribute
      * @param array<string,mixed> $extra Additional unmapped API fields.
      */
     public function __construct(
-        private readonly IncomingOrderTextualAttributeKind $attributeKind,
+        private readonly DocumentTextualAttributeKind $attributeKind,
         private readonly ?string $name = null,
         private readonly ?string $value = null,
         private readonly ?string $langId = null,
         private readonly array $extra = [],
     ) {}
 
-    public function getAttributeKind(): IncomingOrderTextualAttributeKind
+    public function getAttributeKind(): DocumentTextualAttributeKind
     {
         return $this->attributeKind;
     }

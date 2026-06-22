@@ -5,36 +5,36 @@ declare(strict_types=1);
 namespace Lemonade\Vario\Tests\Domain\IncomingOrder\Read;
 
 use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderNumericAttributeKind;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderTextualAttributeKind;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderUnitOfMeasureScheme;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTextualAttributeKind;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderAdditionalAttribute;
-use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderDescription;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderLineItem;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderNumericAttribute;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderTextualAttribute;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderUnitConversionFactor;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentUnitConversionFactor;
 use PHPUnit\Framework\TestCase;
 
 final class IncomingOrderLineItemTest extends TestCase
 {
     public function test_it_exposes_all_values(): void
     {
-        $description1 = new IncomingOrderDescription('Thermax ECO 1000x610x30 mm', 'cs');
-        $description2 = new IncomingOrderDescription('Thermax ECO', 'en');
+        $description1 = new DocumentDescription('Thermax ECO 1000x610x30 mm', 'cs');
+        $description2 = new DocumentDescription('Thermax ECO', 'en');
 
         $additionalAttribute = new IncomingOrderAdditionalAttribute(
-            attributeKind: IncomingOrderTextualAttributeKind::ExtendedID,
+            attributeKind: DocumentTextualAttributeKind::ExtendedID,
             name: 'Varianta',
-            value: 'velká díra',
+            value: 'velkÄ‚Ë‡ dÄ‚Â­ra',
             langId: 'cs',
             unitCode: null,
-            scheme: IncomingOrderUnitOfMeasureScheme::Unknown,
+            scheme: DocumentUnitOfMeasureScheme::Unknown,
         );
 
         $textualAttribute = new IncomingOrderTextualAttribute(
-            attributeKind: IncomingOrderTextualAttributeKind::ExtendedID,
+            attributeKind: DocumentTextualAttributeKind::ExtendedID,
             name: 'Sklad',
-            value: 'Mělník',
+            value: 'MĂ„â€şlnÄ‚Â­k',
             langId: 'cs',
         );
 
@@ -45,16 +45,16 @@ final class IncomingOrderLineItemTest extends TestCase
             unitCode: 'Ks',
         );
 
-        $factor1 = new IncomingOrderUnitConversionFactor(
+        $factor1 = new DocumentUnitConversionFactor(
             value: 1.0,
             unitCode: 'Ks',
-            scheme: IncomingOrderUnitOfMeasureScheme::Unknown,
+            scheme: DocumentUnitOfMeasureScheme::Unknown,
         );
 
-        $factor2 = new IncomingOrderUnitConversionFactor(
+        $factor2 = new DocumentUnitConversionFactor(
             value: 2.0,
             unitCode: 'm2',
-            scheme: IncomingOrderUnitOfMeasureScheme::SI,
+            scheme: DocumentUnitOfMeasureScheme::SI,
         );
 
         $item = new IncomingOrderLineItem(

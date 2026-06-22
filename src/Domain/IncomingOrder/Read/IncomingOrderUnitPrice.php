@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\IncomingOrder\Read;
 
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderQuantity;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentQuantity;
 
 /**
  * Class IncomingOrderUnitPrice
@@ -27,7 +27,7 @@ final class IncomingOrderUnitPrice
     public function __construct(
         private readonly ?float $amount = null,
         private readonly ?float $amountTaxInclusive = null,
-        private readonly ?IncomingOrderQuantity $quantity = null,
+        private readonly ?DocumentQuantity $quantity = null,
         private readonly array $extra = [],
     ) {}
 
@@ -41,7 +41,7 @@ final class IncomingOrderUnitPrice
         return $this->amountTaxInclusive;
     }
 
-    public function getQuantity(): ?IncomingOrderQuantity
+    public function getQuantity(): ?DocumentQuantity
     {
         return $this->quantity;
     }

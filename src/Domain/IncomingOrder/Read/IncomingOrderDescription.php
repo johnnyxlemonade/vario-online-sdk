@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Lemonade\Vario\Domain\IncomingOrder\Read;
 
 /**
- * Class IncomingOrderDescription
+ * Class DocumentDescription
  *
  * Text description entry for IncomingOrder line item.
  *
@@ -16,7 +16,7 @@ namespace Lemonade\Vario\Domain\IncomingOrder\Read;
  * @license     MIT
  * @since       1.0
  */
-final class IncomingOrderDescription
+final class DocumentDescription
 {
     public function __construct(
         private readonly string $text,

@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Lemonade\Vario\Domain\OutgoingQuotation\ValueObject;
+namespace Lemonade\Vario\Domain\Shared\Document\ValueObject;
 
 use DateTimeImmutable;
 use Lemonade\Vario\Domain\Common\Currency;
 
-final class OutgoingQuotationTaxExchangeRate
+final class DocumentTaxExchangeRate
 {
     public function __construct(
         private readonly Currency $taxCurrency,

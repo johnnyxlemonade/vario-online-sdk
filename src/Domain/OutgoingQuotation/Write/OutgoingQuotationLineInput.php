@@ -4,18 +4,19 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\OutgoingQuotation\Write;
 
-use Lemonade\Vario\Domain\OutgoingQuotation\ValueObject\OutgoingQuotationQuantity;
-use Lemonade\Vario\Domain\OutgoingQuotation\ValueObject\OutgoingQuotationTaxSubTotal;
+use Lemonade\Vario\Domain\Shared\Document\DocumentLineInterface;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentQuantity;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxSubTotal;
 
-final class OutgoingQuotationLineInput
+final class OutgoingQuotationLineInput implements DocumentLineInterface
 {
     public function __construct(
         private readonly string $uuid,
         private readonly float $lineExtensionAmount,
         private readonly float $lineExtensionAmountTaxInclusive,
         private readonly OutgoingQuotationLineItemInput $lineItem,
-        private readonly OutgoingQuotationQuantity $lineQuantity,
-        private readonly OutgoingQuotationTaxSubTotal $taxSubTotal,
+        private readonly DocumentQuantity $lineQuantity,
+        private readonly DocumentTaxSubTotal $taxSubTotal,
         private readonly ?string $id = null,
         private readonly ?string $note = null,
     ) {}
@@ -96,12 +97,12 @@ final class OutgoingQuotationLineInput
         );
     }
 
-    public function getLineQuantity(): OutgoingQuotationQuantity
+    public function getLineQuantity(): DocumentQuantity
     {
         return $this->lineQuantity;
     }
 
-    public function withLineQuantity(OutgoingQuotationQuantity $lineQuantity): self
+    public function withLineQuantity(DocumentQuantity $lineQuantity): self
     {
         return new self(
             uuid: $this->uuid,
@@ -115,12 +116,12 @@ final class OutgoingQuotationLineInput
         );
     }
 
-    public function getTaxSubTotal(): OutgoingQuotationTaxSubTotal
+    public function getTaxSubTotal(): DocumentTaxSubTotal
     {
         return $this->taxSubTotal;
     }
 
-    public function withTaxSubTotal(OutgoingQuotationTaxSubTotal $taxSubTotal): self
+    public function withTaxSubTotal(DocumentTaxSubTotal $taxSubTotal): self
     {
         return new self(
             uuid: $this->uuid,

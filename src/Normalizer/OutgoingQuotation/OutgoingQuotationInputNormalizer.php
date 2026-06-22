@@ -5,15 +5,15 @@ declare(strict_types=1);
 namespace Lemonade\Vario\Normalizer\OutgoingQuotation;
 
 use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
-use Lemonade\Vario\Domain\OutgoingQuotation\ValueObject\OutgoingQuotationDescription;
-use Lemonade\Vario\Domain\OutgoingQuotation\ValueObject\OutgoingQuotationMonetaryTotal;
-use Lemonade\Vario\Domain\OutgoingQuotation\ValueObject\OutgoingQuotationQuantity;
-use Lemonade\Vario\Domain\OutgoingQuotation\ValueObject\OutgoingQuotationTaxExchangeRate;
-use Lemonade\Vario\Domain\OutgoingQuotation\ValueObject\OutgoingQuotationTaxSubTotal;
-use Lemonade\Vario\Domain\OutgoingQuotation\ValueObject\OutgoingQuotationTaxTotal;
 use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationInput;
 use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationLineInput;
 use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationLineItemInput;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentMonetaryTotal;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentQuantity;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxExchangeRate;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxSubTotal;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxTotal;
 use Lemonade\Vario\Domain\Shared\Identification;
 use Lemonade\Vario\Domain\Shared\PostalAddress;
 
@@ -141,7 +141,7 @@ final class OutgoingQuotationInputNormalizer
      *     Value: float
      * }
      */
-    private function normalizeQuantity(OutgoingQuotationQuantity $quantity): array
+    private function normalizeQuantity(DocumentQuantity $quantity): array
     {
         return [
             'Scheme' => $quantity->getScheme()->toApiValue(),
@@ -158,7 +158,7 @@ final class OutgoingQuotationInputNormalizer
      *     TaxInclusiveAmount: float
      * }
      */
-    private function normalizeMonetaryTotal(OutgoingQuotationMonetaryTotal $total): array
+    private function normalizeMonetaryTotal(DocumentMonetaryTotal $total): array
     {
         return [
             'TaxExclusiveAmount' => $total->getTaxExclusiveAmount(),
@@ -171,7 +171,7 @@ final class OutgoingQuotationInputNormalizer
     /**
      * @return array<string,mixed>
      */
-    private function normalizeTaxSubTotal(OutgoingQuotationTaxSubTotal $tax): array
+    private function normalizeTaxSubTotal(DocumentTaxSubTotal $tax): array
     {
         $payload = [
             'CalculationMethod' => $tax->getCalculationMethod()->toApiValue(),
@@ -192,7 +192,7 @@ final class OutgoingQuotationInputNormalizer
      *     TaxSubTotal: list<array<string,mixed>>
      * }
      */
-    private function normalizeTaxTotal(OutgoingQuotationTaxTotal $taxTotal): array
+    private function normalizeTaxTotal(DocumentTaxTotal $taxTotal): array
     {
         $subTotals = [];
 
@@ -209,7 +209,7 @@ final class OutgoingQuotationInputNormalizer
     /**
      * @return array<string,mixed>
      */
-    private function normalizeTaxExchangeRate(OutgoingQuotationTaxExchangeRate $rate): array
+    private function normalizeTaxExchangeRate(DocumentTaxExchangeRate $rate): array
     {
         $payload = [
             'ReferenceCurrencyRate' => $rate->getReferenceCurrencyRate(),
@@ -313,7 +313,7 @@ final class OutgoingQuotationInputNormalizer
     }
 
     /**
-     * @param list<OutgoingQuotationDescription> $descriptions
+     * @param list<DocumentDescription> $descriptions
      * @return list<array<string,mixed>>
      */
     private function normalizeDescriptions(array $descriptions): array

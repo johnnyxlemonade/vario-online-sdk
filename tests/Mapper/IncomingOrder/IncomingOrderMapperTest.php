@@ -6,10 +6,10 @@ namespace Lemonade\Vario\Tests\Mapper\IncomingOrder;
 
 use Lemonade\Vario\Domain\Common\Currency;
 use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderPaymentMeansCode;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderTaxCalculationMethod;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderTaxScheme;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderTextualAttributeKind;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderUnitOfMeasureScheme;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxCalculationMethod;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxScheme;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTextualAttributeKind;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
 use Lemonade\Vario\Mapper\IncomingOrder\IncomingOrderMapper;
 use PHPUnit\Framework\TestCase;
 use UnexpectedValueException;
@@ -25,13 +25,13 @@ final class IncomingOrderMapperTest extends TestCase
             'ID' => 'ORD-1',
             'IssueDate' => '2025-05-06T00:00:00+01:00',
             'Currency' => 'CZK',
-            'Note' => 'Objednávka poznámka',
+            'Note' => 'ObjednÄ‚Ë‡vka poznÄ‚Ë‡mka',
             'PartialDeliveryIndicator' => 1,
             'PaymentMeansCode' => 'BankAccount',
 
             'BuyerCustomerParty' => [
                 'Name' => 'KARLOMIX TRADE s.r.o. - stavebniny',
-                'ContactPerson' => 'Jan Dvořák',
+                'ContactPerson' => 'Jan DvoÄąâ„˘Ä‚Ë‡k',
                 'ElectronicMail' => 'dvorak@karlomix.cz',
                 'Telephone' => '608120126',
                 'PostalAddress' => [
@@ -93,7 +93,7 @@ final class IncomingOrderMapperTest extends TestCase
 
             'Delivery' => [
                 'Name' => 'KARLOMIX TRADE s.r.o. - sklad',
-                'ContactPerson' => 'Skladník',
+                'ContactPerson' => 'SkladnÄ‚Â­k',
                 'ElectronicMail' => 'sklad@karlomix.cz',
                 'Telephone' => '111222333',
                 'PostalAddress' => [
@@ -143,7 +143,7 @@ final class IncomingOrderMapperTest extends TestCase
                     'ID' => '1',
                     'LineExtensionAmount' => 11680.5,
                     'LineExtensionAmountTaxInclusive' => 14133.4,
-                    'Note' => 'řádková poznámka',
+                    'Note' => 'Äąâ„˘Ä‚Ë‡dkovÄ‚Ë‡ poznÄ‚Ë‡mka',
                     'LineItem' => [
                         'BuyersItemIdentification' => 'BUY-1',
                         'CatalogueItemIdentification' => 'M500-1000610-30',
@@ -162,7 +162,7 @@ final class IncomingOrderMapperTest extends TestCase
                             [
                                 'AttributeKind' => 'ExtendedID',
                                 'Name' => 'Varianta',
-                                'Value' => 'šedá',
+                                'Value' => 'ÄąË‡edÄ‚Ë‡',
                                 'LangID' => 'cs',
                                 'UnitCode' => 'bal',
                                 'Scheme' => 'SI',
@@ -177,7 +177,7 @@ final class IncomingOrderMapperTest extends TestCase
                             [
                                 'AttributeKind' => 'ExtendedID',
                                 'Name' => 'Sklad',
-                                'Value' => 'Mělník',
+                                'Value' => 'MĂ„â€şlnÄ‚Â­k',
                                 'LangID' => 'cs',
                                 'TextExtra' => 'x',
                             ],
@@ -298,7 +298,7 @@ final class IncomingOrderMapperTest extends TestCase
                     'raben 7.5.2025',
                     null,
                     123,
-                    'druhá možnost',
+                    'druhÄ‚Ë‡ moÄąÄľnost',
                 ],
                 'RequestedDeliveryDate' => '2025-05-07T00:00:00+01:00',
                 'Carrier' => 'Raben',
@@ -328,14 +328,14 @@ final class IncomingOrderMapperTest extends TestCase
         self::assertSame('ORD-1', $order->getId());
         self::assertSame('2025-05-06T00:00:00+01:00', $order->getIssueDate()?->format(DATE_ATOM));
         self::assertSame(Currency::CZK, $order->getCurrency());
-        self::assertSame('Objednávka poznámka', $order->getNote());
+        self::assertSame('ObjednÄ‚Ë‡vka poznÄ‚Ë‡mka', $order->getNote());
         self::assertTrue($order->getPartialDeliveryIndicator());
         self::assertSame(IncomingOrderPaymentMeansCode::BankAccount, $order->getPaymentMeansCode());
 
         $buyer = $order->getBuyerCustomerParty();
         self::assertNotNull($buyer);
         self::assertSame('KARLOMIX TRADE s.r.o. - stavebniny', $buyer->getName());
-        self::assertSame('Jan Dvořák', $buyer->getContactPerson());
+        self::assertSame('Jan DvoÄąâ„˘Ä‚Ë‡k', $buyer->getContactPerson());
         self::assertSame('dvorak@karlomix.cz', $buyer->getEmail());
         self::assertSame('608120126', $buyer->getTelephone());
         self::assertTrue($buyer->hasAddress());
@@ -355,7 +355,7 @@ final class IncomingOrderMapperTest extends TestCase
 
         $delivery = $order->getDelivery();
         self::assertNotNull($delivery);
-        self::assertSame('Skladník', $delivery->getContactPerson());
+        self::assertSame('SkladnÄ‚Â­k', $delivery->getContactPerson());
 
         self::assertTrue($order->hasDocumentLines());
         self::assertCount(2, $order->getDocumentLines());
@@ -365,7 +365,7 @@ final class IncomingOrderMapperTest extends TestCase
         self::assertSame('1', $line1->getId());
         self::assertSame(11680.5, $line1->getLineExtensionAmount());
         self::assertSame(14133.4, $line1->getLineExtensionAmountTaxInclusive());
-        self::assertSame('řádková poznámka', $line1->getNote());
+        self::assertSame('Äąâ„˘Ä‚Ë‡dkovÄ‚Ë‡ poznÄ‚Ë‡mka', $line1->getNote());
         self::assertTrue($line1->hasLineItem());
         self::assertTrue($line1->hasQuantity());
         self::assertTrue($line1->hasTaxSubTotal());
@@ -391,20 +391,20 @@ final class IncomingOrderMapperTest extends TestCase
         self::assertTrue($line1Item->hasAdditionalAttributes());
         self::assertCount(1, $line1Item->getAdditionalAttributes());
         $additionalAttribute = $line1Item->getAdditionalAttributes()[0];
-        self::assertSame(IncomingOrderTextualAttributeKind::ExtendedID, $additionalAttribute->getAttributeKind());
+        self::assertSame(DocumentTextualAttributeKind::ExtendedID, $additionalAttribute->getAttributeKind());
         self::assertSame('Varianta', $additionalAttribute->getName());
-        self::assertSame('šedá', $additionalAttribute->getValue());
+        self::assertSame('ÄąË‡edÄ‚Ë‡', $additionalAttribute->getValue());
         self::assertSame('cs', $additionalAttribute->getLangId());
         self::assertSame('bal', $additionalAttribute->getUnitCode());
-        self::assertSame(IncomingOrderUnitOfMeasureScheme::SI, $additionalAttribute->getScheme());
+        self::assertSame(DocumentUnitOfMeasureScheme::SI, $additionalAttribute->getScheme());
         self::assertSame(['AdditionalExtra' => 'extra-a'], $additionalAttribute->getExtra());
 
         self::assertTrue($line1Item->hasTextualAttributes());
         self::assertCount(1, $line1Item->getTextualAttributes());
         $textualAttribute = $line1Item->getTextualAttributes()[0];
-        self::assertSame(IncomingOrderTextualAttributeKind::ExtendedID, $textualAttribute->getAttributeKind());
+        self::assertSame(DocumentTextualAttributeKind::ExtendedID, $textualAttribute->getAttributeKind());
         self::assertSame('Sklad', $textualAttribute->getName());
-        self::assertSame('Mělník', $textualAttribute->getValue());
+        self::assertSame('MĂ„â€şlnÄ‚Â­k', $textualAttribute->getValue());
         self::assertSame('cs', $textualAttribute->getLangId());
         self::assertSame(['TextExtra' => 'x'], $textualAttribute->getExtra());
 
@@ -420,10 +420,10 @@ final class IncomingOrderMapperTest extends TestCase
         self::assertCount(2, $line1Item->getUnitConversionFactors());
         self::assertSame(1.0, $line1Item->getUnitConversionFactors()[0]->getValue());
         self::assertSame('ks', $line1Item->getUnitConversionFactors()[0]->getUnitCode());
-        self::assertSame(IncomingOrderUnitOfMeasureScheme::Unknown, $line1Item->getUnitConversionFactors()[0]->getScheme());
+        self::assertSame(DocumentUnitOfMeasureScheme::Unknown, $line1Item->getUnitConversionFactors()[0]->getScheme());
         self::assertSame(2.0, $line1Item->getUnitConversionFactors()[1]->getValue());
         self::assertSame('m2', $line1Item->getUnitConversionFactors()[1]->getUnitCode());
-        self::assertSame(IncomingOrderUnitOfMeasureScheme::SI, $line1Item->getUnitConversionFactors()[1]->getScheme());
+        self::assertSame(DocumentUnitOfMeasureScheme::SI, $line1Item->getUnitConversionFactors()[1]->getScheme());
 
         self::assertSame([
             'UnexpectedNested' => 'line-item-extra',
@@ -433,12 +433,12 @@ final class IncomingOrderMapperTest extends TestCase
         self::assertNotNull($line1Quantity);
         self::assertSame(30.0, $line1Quantity->getValue());
         self::assertSame('ks', $line1Quantity->getUnitCode());
-        self::assertSame(IncomingOrderUnitOfMeasureScheme::Unknown, $line1Quantity->getScheme());
+        self::assertSame(DocumentUnitOfMeasureScheme::Unknown, $line1Quantity->getScheme());
 
         $line1Tax = $line1->getTaxSubTotal();
         self::assertNotNull($line1Tax);
-        self::assertSame(IncomingOrderTaxCalculationMethod::Add, $line1Tax->getCalculationMethod());
-        self::assertSame(IncomingOrderTaxScheme::Vat, $line1Tax->getScheme());
+        self::assertSame(DocumentTaxCalculationMethod::Add, $line1Tax->getCalculationMethod());
+        self::assertSame(DocumentTaxScheme::Vat, $line1Tax->getScheme());
         self::assertSame(11680.5, $line1Tax->getTaxableAmount());
         self::assertSame(2452.9, $line1Tax->getTaxAmount());
         self::assertSame(21.0, $line1Tax->getTaxPercentage());
@@ -491,7 +491,7 @@ final class IncomingOrderMapperTest extends TestCase
         self::assertSame(2620.9, $taxTotal->getTaxAmount());
         self::assertCount(1, $taxTotal->getTaxSubTotals());
         self::assertSame(
-            IncomingOrderTaxCalculationMethod::Total,
+            DocumentTaxCalculationMethod::Total,
             $taxTotal->getTaxSubTotals()[0]->getCalculationMethod()
         );
 
@@ -499,7 +499,7 @@ final class IncomingOrderMapperTest extends TestCase
         $deliveryDetail = $order->getDeliveryDetail();
         self::assertNotNull($deliveryDetail);
         self::assertSame(
-            ['raben 7.5.2025', '123', 'druhá možnost'],
+            ['raben 7.5.2025', '123', 'druhÄ‚Ë‡ moÄąÄľnost'],
             $deliveryDetail->getOptionCodes()
         );
         self::assertSame(
@@ -723,7 +723,7 @@ final class IncomingOrderMapperTest extends TestCase
         self::assertTrue($lineItem->hasAdditionalAttributes());
         self::assertCount(1, $lineItem->getAdditionalAttributes());
         self::assertSame(
-            IncomingOrderTextualAttributeKind::ExtendedID,
+            DocumentTextualAttributeKind::ExtendedID,
             $lineItem->getAdditionalAttributes()[0]->getAttributeKind()
         );
         self::assertSame('Fallback', $lineItem->getAdditionalAttributes()[0]->getName());
@@ -771,7 +771,7 @@ final class IncomingOrderMapperTest extends TestCase
 
         self::assertTrue($order->hasTextualAttributes());
         self::assertCount(1, $order->getTextualAttributes());
-        self::assertSame(IncomingOrderTextualAttributeKind::FreeText, $order->getTextualAttributes()[0]->getAttributeKind());
+        self::assertSame(DocumentTextualAttributeKind::FreeText, $order->getTextualAttributes()[0]->getAttributeKind());
         self::assertSame('DocNo', $order->getTextualAttributes()[0]->getName());
         self::assertSame('D-1', $order->getTextualAttributes()[0]->getValue());
         self::assertSame('cs', $order->getTextualAttributes()[0]->getLangId());

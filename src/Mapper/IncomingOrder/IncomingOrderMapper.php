@@ -8,26 +8,26 @@ use DateTimeImmutable;
 use Lemonade\Vario\Domain\Common\Currency;
 use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderNumericAttributeKind;
 use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderPaymentMeansCode;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderTaxCalculationMethod;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderTaxScheme;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderTextualAttributeKind;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderUnitOfMeasureScheme;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrder;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderAdditionalAttribute;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderDeliveryDetail;
-use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderDescription;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderLine;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderLineItem;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderNumericAttribute;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderParty;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderTextualAttribute;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderUnitPrice;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderMonetaryTotal;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderQuantity;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderTaxExchangeRate;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderTaxSubTotal;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderTaxTotal;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderUnitConversionFactor;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxCalculationMethod;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxScheme;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTextualAttributeKind;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentMonetaryTotal;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentQuantity;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxExchangeRate;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxSubTotal;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxTotal;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentUnitConversionFactor;
 use Lemonade\Vario\Domain\Shared\Identification;
 use Lemonade\Vario\Domain\Shared\IdentificationCollection;
 use Lemonade\Vario\Domain\Shared\IdentificationScheme;
@@ -323,7 +323,7 @@ final class IncomingOrderMapper
 
     /**
      * @param array<int,array<string,mixed>> $rows
-     * @return list<IncomingOrderDescription>
+     * @return list<DocumentDescription>
      */
     private function mapDescriptions(array $rows): array
     {
@@ -336,7 +336,7 @@ final class IncomingOrderMapper
                 continue;
             }
 
-            $mapped[] = new IncomingOrderDescription(
+            $mapped[] = new DocumentDescription(
                 text: $text,
                 langId: $this->stringOrNull($row['LangID'] ?? null),
             );
@@ -361,11 +361,11 @@ final class IncomingOrderMapper
                 continue;
             }
 
-            $kind = IncomingOrderTextualAttributeKind::tryFrom(
+            $kind = DocumentTextualAttributeKind::tryFrom(
                 $this->stringOrNull($row['AttributeKind'] ?? null) ?? 'ExtendedID',
-            ) ?? IncomingOrderTextualAttributeKind::ExtendedID;
+            ) ?? DocumentTextualAttributeKind::ExtendedID;
 
-            $scheme = IncomingOrderUnitOfMeasureScheme::tryFrom(
+            $scheme = DocumentUnitOfMeasureScheme::tryFrom(
                 $this->stringOrNull($row['Scheme'] ?? null) ?? '',
             );
 
@@ -402,7 +402,7 @@ final class IncomingOrderMapper
         $mapped = [];
 
         foreach ($rows as $row) {
-            $kind = IncomingOrderTextualAttributeKind::tryFrom(
+            $kind = DocumentTextualAttributeKind::tryFrom(
                 $this->stringOrNull($row['AttributeKind'] ?? null) ?? '',
             );
 
@@ -469,7 +469,7 @@ final class IncomingOrderMapper
 
     /**
      * @param array<int,array<string,mixed>> $rows
-     * @return list<IncomingOrderUnitConversionFactor>
+     * @return list<DocumentUnitConversionFactor>
      */
     private function mapUnitConversionFactors(array $rows): array
     {
@@ -483,11 +483,11 @@ final class IncomingOrderMapper
                 continue;
             }
 
-            $scheme = IncomingOrderUnitOfMeasureScheme::tryFrom(
+            $scheme = DocumentUnitOfMeasureScheme::tryFrom(
                 $this->stringOrNull($row['Scheme'] ?? null) ?? 'Unknown',
-            ) ?? IncomingOrderUnitOfMeasureScheme::Unknown;
+            ) ?? DocumentUnitOfMeasureScheme::Unknown;
 
-            $mapped[] = new IncomingOrderUnitConversionFactor(
+            $mapped[] = new DocumentUnitConversionFactor(
                 value: $value,
                 unitCode: $unitCode,
                 scheme: $scheme,
@@ -500,7 +500,7 @@ final class IncomingOrderMapper
     /**
      * @param array<string,mixed>|null $data
      */
-    private function mapQuantity(?array $data): ?IncomingOrderQuantity
+    private function mapQuantity(?array $data): ?DocumentQuantity
     {
         if ($data === null || $data === []) {
             return null;
@@ -513,11 +513,11 @@ final class IncomingOrderMapper
             return null;
         }
 
-        $scheme = IncomingOrderUnitOfMeasureScheme::tryFrom(
+        $scheme = DocumentUnitOfMeasureScheme::tryFrom(
             $this->stringOrNull($data['Scheme'] ?? null) ?? 'Unknown',
-        ) ?? IncomingOrderUnitOfMeasureScheme::Unknown;
+        ) ?? DocumentUnitOfMeasureScheme::Unknown;
 
-        return new IncomingOrderQuantity(
+        return new DocumentQuantity(
             value: $value,
             unitCode: $unitCode,
             scheme: $scheme,
@@ -527,7 +527,7 @@ final class IncomingOrderMapper
     /**
      * @param array<string,mixed>|null $data
      */
-    private function mapMonetaryTotal(?array $data): ?IncomingOrderMonetaryTotal
+    private function mapMonetaryTotal(?array $data): ?DocumentMonetaryTotal
     {
         if ($data === null || $data === []) {
             return null;
@@ -547,7 +547,7 @@ final class IncomingOrderMapper
             return null;
         }
 
-        return new IncomingOrderMonetaryTotal(
+        return new DocumentMonetaryTotal(
             payableAmount: $payableAmount,
             payableRoundingAmount: $payableRoundingAmount,
             taxExclusiveAmount: $taxExclusiveAmount,
@@ -558,17 +558,17 @@ final class IncomingOrderMapper
     /**
      * @param array<string,mixed>|null $data
      */
-    private function mapTaxSubTotal(?array $data): ?IncomingOrderTaxSubTotal
+    private function mapTaxSubTotal(?array $data): ?DocumentTaxSubTotal
     {
         if ($data === null || $data === []) {
             return null;
         }
 
-        $calculationMethod = IncomingOrderTaxCalculationMethod::tryFrom(
+        $calculationMethod = DocumentTaxCalculationMethod::tryFrom(
             $this->stringOrNull($data['CalculationMethod'] ?? null) ?? '',
         );
 
-        $scheme = IncomingOrderTaxScheme::tryFrom(
+        $scheme = DocumentTaxScheme::tryFrom(
             $this->stringOrNull($data['Scheme'] ?? null) ?? '',
         );
 
@@ -586,7 +586,7 @@ final class IncomingOrderMapper
             return null;
         }
 
-        return new IncomingOrderTaxSubTotal(
+        return new DocumentTaxSubTotal(
             calculationMethod: $calculationMethod,
             scheme: $scheme,
             taxableAmount: $taxableAmount,
@@ -662,7 +662,7 @@ final class IncomingOrderMapper
     /**
      * @param array<string,mixed>|null $data
      */
-    private function mapTaxTotal(?array $data): ?IncomingOrderTaxTotal
+    private function mapTaxTotal(?array $data): ?DocumentTaxTotal
     {
         if ($data === null || $data === []) {
             return null;
@@ -689,7 +689,7 @@ final class IncomingOrderMapper
             return null;
         }
 
-        return new IncomingOrderTaxTotal(
+        return new DocumentTaxTotal(
             taxAmount: $taxAmount,
             taxSubTotals: $subTotals,
         );
@@ -698,7 +698,7 @@ final class IncomingOrderMapper
     /**
      * @param array<string,mixed>|null $data
      */
-    private function mapTaxExchangeRate(?array $data): ?IncomingOrderTaxExchangeRate
+    private function mapTaxExchangeRate(?array $data): ?DocumentTaxExchangeRate
     {
         if ($data === null || $data === []) {
             return null;
@@ -719,7 +719,7 @@ final class IncomingOrderMapper
             return null;
         }
 
-        return new IncomingOrderTaxExchangeRate(
+        return new DocumentTaxExchangeRate(
             taxCurrency: $taxCurrency,
             referenceCurrencyRate: $referenceCurrencyRate,
             taxCurrencyRate: $taxCurrencyRate,

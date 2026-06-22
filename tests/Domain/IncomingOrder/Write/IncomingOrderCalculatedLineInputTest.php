@@ -4,11 +4,11 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Tests\Domain\IncomingOrder\Write;
 
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderPriceMode;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderTaxCalculationMethod;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderTaxScheme;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderUnitOfMeasureScheme;
-use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderCalculatedLineInput;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentPriceMode;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxCalculationMethod;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxScheme;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineInput;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
 use PHPUnit\Framework\TestCase;
 
@@ -21,19 +21,19 @@ final class IncomingOrderCalculatedLineInputTest extends TestCase
             sellersItemIdentification: 'SELL-001',
         );
 
-        $input = new IncomingOrderCalculatedLineInput(
+        $input = new DocumentCalculatedLineInput(
             uuid: 'line-calc-uuid-1',
             lineItem: $lineItem,
             quantity: 5.0,
             unitCode: 'm2',
             unitPrice: 123.45,
             vatRate: 21.0,
-            priceMode: IncomingOrderPriceMode::WithVat,
-            unitScheme: IncomingOrderUnitOfMeasureScheme::SI,
+            priceMode: DocumentPriceMode::WithVat,
+            unitScheme: DocumentUnitOfMeasureScheme::SI,
             id: 'line-id-1',
-            note: 'výpočet řádku',
-            taxCalculationMethod: IncomingOrderTaxCalculationMethod::Total,
-            taxScheme: IncomingOrderTaxScheme::Vat,
+            note: 'vÄ‚ËťpoĂ„Ĺ¤et Äąâ„˘Ä‚Ë‡dku',
+            taxCalculationMethod: DocumentTaxCalculationMethod::Total,
+            taxScheme: DocumentTaxScheme::Vat,
             taxSchemeExtensionCode: 'LOCAL-RC',
         );
 
@@ -43,12 +43,12 @@ final class IncomingOrderCalculatedLineInputTest extends TestCase
         self::assertSame('m2', $input->getUnitCode());
         self::assertSame(123.45, $input->getUnitPrice());
         self::assertSame(21.0, $input->getVatRate());
-        self::assertSame(IncomingOrderPriceMode::WithVat, $input->getPriceMode());
-        self::assertSame(IncomingOrderUnitOfMeasureScheme::SI, $input->getUnitScheme());
+        self::assertSame(DocumentPriceMode::WithVat, $input->getPriceMode());
+        self::assertSame(DocumentUnitOfMeasureScheme::SI, $input->getUnitScheme());
         self::assertSame('line-id-1', $input->getId());
-        self::assertSame('výpočet řádku', $input->getNote());
-        self::assertSame(IncomingOrderTaxCalculationMethod::Total, $input->getTaxCalculationMethod());
-        self::assertSame(IncomingOrderTaxScheme::Vat, $input->getTaxScheme());
+        self::assertSame('vÄ‚ËťpoĂ„Ĺ¤et Äąâ„˘Ä‚Ë‡dku', $input->getNote());
+        self::assertSame(DocumentTaxCalculationMethod::Total, $input->getTaxCalculationMethod());
+        self::assertSame(DocumentTaxScheme::Vat, $input->getTaxScheme());
         self::assertSame('LOCAL-RC', $input->getTaxSchemeExtensionCode());
     }
 
@@ -58,7 +58,7 @@ final class IncomingOrderCalculatedLineInputTest extends TestCase
             catalogueItemIdentification: 'CAT-001',
         );
 
-        $input = new IncomingOrderCalculatedLineInput(
+        $input = new DocumentCalculatedLineInput(
             uuid: 'line-calc-uuid-2',
             lineItem: $lineItem,
             quantity: 1.0,
@@ -73,12 +73,12 @@ final class IncomingOrderCalculatedLineInputTest extends TestCase
         self::assertSame('Ks', $input->getUnitCode());
         self::assertSame(100.0, $input->getUnitPrice());
         self::assertSame(21.0, $input->getVatRate());
-        self::assertSame(IncomingOrderPriceMode::WithoutVat, $input->getPriceMode());
-        self::assertSame(IncomingOrderUnitOfMeasureScheme::Unknown, $input->getUnitScheme());
+        self::assertSame(DocumentPriceMode::WithoutVat, $input->getPriceMode());
+        self::assertSame(DocumentUnitOfMeasureScheme::Unknown, $input->getUnitScheme());
         self::assertNull($input->getId());
         self::assertNull($input->getNote());
-        self::assertSame(IncomingOrderTaxCalculationMethod::Add, $input->getTaxCalculationMethod());
-        self::assertSame(IncomingOrderTaxScheme::Vat, $input->getTaxScheme());
+        self::assertSame(DocumentTaxCalculationMethod::Add, $input->getTaxCalculationMethod());
+        self::assertSame(DocumentTaxScheme::Vat, $input->getTaxScheme());
         self::assertNull($input->getTaxSchemeExtensionCode());
     }
 }

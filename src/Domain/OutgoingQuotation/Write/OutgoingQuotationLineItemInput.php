@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\OutgoingQuotation\Write;
 
-use Lemonade\Vario\Domain\OutgoingQuotation\ValueObject\OutgoingQuotationDescription;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
 
 final class OutgoingQuotationLineItemInput
 {
     /**
-     * @param list<OutgoingQuotationDescription> $descriptions
+     * @param list<DocumentDescription> $descriptions
      */
     public function __construct(
         private readonly ?string $buyersItemIdentification = null,
@@ -84,14 +84,14 @@ final class OutgoingQuotationLineItemInput
     }
 
     /**
-     * @return list<OutgoingQuotationDescription>
+     * @return list<DocumentDescription>
      */
     public function getDescriptions(): array
     {
         return $this->descriptions;
     }
 
-    public function addDescription(OutgoingQuotationDescription $description): self
+    public function addDescription(DocumentDescription $description): self
     {
         $descriptions = $this->descriptions;
         $descriptions[] = $description;
@@ -106,7 +106,7 @@ final class OutgoingQuotationLineItemInput
     }
 
     /**
-     * @param list<OutgoingQuotationDescription> $descriptions
+     * @param list<DocumentDescription> $descriptions
      */
     public function withDescriptions(array $descriptions): self
     {

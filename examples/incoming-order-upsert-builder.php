@@ -13,91 +13,57 @@ declare(strict_types=1);
  * - upsert request
  */
 
-
 use Lemonade\Vario\Domain\Common\Currency;
 use Lemonade\Vario\Domain\IncomingOrder\Builder\IncomingOrderBuilder;
 use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderPaymentMeansCode;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderPriceMode;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderTextualAttributeKind;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderUnitOfMeasureScheme;
-use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderDescription;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderUnitConversionFactor;
-use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderAdditionalAttributeInput;
-use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderCalculatedLineInput;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
 use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentPriceMode;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTextualAttributeKind;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentUnitConversionFactor;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentAdditionalAttributeInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineInput;
 use Lemonade\Vario\Domain\Shared\Identification;
 use Lemonade\Vario\Domain\Shared\IdentificationScheme;
-use Lemonade\Vario\Domain\Shared\PostalAddress;
 use Lemonade\Vario\VarioApi;
 
 /** @var VarioApi $vario */
 
-$buyer = (new KnownPartyInput('1. česká podvodná'))
-    ->withContactPerson('Rybana Wassermannová')
-    ->withEmail('pod.vodnik@zaby.cz')
-    ->withTelephone('+420557788996')
-    ->withAddress(new PostalAddress(
-        street: 'Vodná',
-        buildingNumber: '57',
-        city: 'Žabovřesky',
-        postalCode: '566 00',
-        countryIso: null
-    ))
+/*
+|--------------------------------------------------------------------------
+| Buyer
+|--------------------------------------------------------------------------
+*/
+$buyer = (new KnownPartyInput('A - Storex, v.o.s.'))
     ->addIdentification(new Identification(
         scheme: IdentificationScheme::UIN,
-        id: '89745612',
-        originCountry: 'CZ'
-    ))
-    ->addIdentification(new Identification(
-        scheme: IdentificationScheme::VAT,
-        id: 'CZ89745612',
-        originCountry: 'CZ'
+        id: '620927153',
+        originCountry: 'CZ',
     ));
 
-$accounting = (new KnownPartyInput('1. česká podvodná'))
-    ->withContactPerson('Rybana Wassermannová')
-    ->withEmail('pod.vodnik@zaby.cz')
-    ->withTelephone('+420557788996')
-    ->withAddress(new PostalAddress(
-        street: 'Vodná',
-        buildingNumber: '57',
-        city: 'Žabovřesky',
-        postalCode: '566 00',
-        countryIso: null
-    ))
-    ->addIdentification(new Identification(
-        scheme: IdentificationScheme::UIN,
-        id: '89745612',
-        originCountry: 'CZ'
-    ))
-    ->addIdentification(new Identification(
-        scheme: IdentificationScheme::VAT,
-        id: 'CZ89745612',
-        originCountry: 'CZ'
-    ));
+/*
+|--------------------------------------------------------------------------
+| Accounting customer
+|--------------------------------------------------------------------------
+|
+| IncomingOrder supports a separate accounting customer party.
+| This example uses the same company as the buyer to keep the scenario compact.
+|
+*/
+$accounting = $buyer;
 
-$delivery = (new KnownPartyInput('1. česká podvodná'))
-    ->withContactPerson('Vodomil Wassermann')
-    ->withEmail('pod.vodnik@zaby.cz')
-    ->withTelephone('+420557788996')
-    ->withAddress(new PostalAddress(
-        street: 'Vodná',
-        buildingNumber: '57',
-        city: 'Žabovřesky',
-        postalCode: '566 00',
-        countryIso: null
-    ))
-    ->addIdentification(new Identification(
-        scheme: IdentificationScheme::UIN,
-        id: '89745612',
-        originCountry: 'CZ'
-    ))
-    ->addIdentification(new Identification(
-        scheme: IdentificationScheme::VAT,
-        id: 'CZ89745612',
-        originCountry: 'CZ'
-    ));
+/*
+|--------------------------------------------------------------------------
+| Delivery
+|--------------------------------------------------------------------------
+|
+| IncomingOrder supports a separate delivery party.
+| This example uses the same company as the buyer to keep the scenario compact.
+|
+*/
+$delivery = $buyer;
 
 /*
 |--------------------------------------------------------------------------
@@ -105,15 +71,16 @@ $delivery = (new KnownPartyInput('1. česká podvodná'))
 |--------------------------------------------------------------------------
 |
 | The example payload contains only the VAT ID.
-| However, KnownPartyInput requires a name in the constructor,
+| KnownPartyInput requires a name in the constructor,
 | so an empty string is used here intentionally.
+| The normalizer omits empty names from the final payload.
 |
 */
 $seller = (new KnownPartyInput(''))
     ->addIdentification(new Identification(
         scheme: IdentificationScheme::VAT,
-        id: 'CZ11223344',
-        originCountry: 'CZ'
+        id: 'CZ61681229',
+        originCountry: 'CZ',
     ));
 
 /*
@@ -129,23 +96,23 @@ $lineItem1 = (new IncomingOrderLineItemInput())
     ->withCatalogueItemIdentification('grosh big')
     ->withSellersItemIdentification('děravý groš')
     ->addDescription(
-        new IncomingOrderDescription('děravý groš')
+        new DocumentDescription('děravý groš')
     )
     ->addAdditionalAttribute(
-        new IncomingOrderAdditionalAttributeInput(
+        new DocumentAdditionalAttributeInput(
             name: 'Varianta',
             value: 'velká díra',
-            attributeKind: IncomingOrderTextualAttributeKind::ExtendedID,
+            attributeKind: DocumentTextualAttributeKind::ExtendedID,
             langId: null,
             unitCode: null,
-            scheme: IncomingOrderUnitOfMeasureScheme::Unknown
+            scheme: DocumentUnitOfMeasureScheme::Unknown,
         )
     )
     ->addUnitConversionFactor(
-        new IncomingOrderUnitConversionFactor(
+        new DocumentUnitConversionFactor(
             value: 1.0,
             unitCode: 'Ks',
-            scheme: IncomingOrderUnitOfMeasureScheme::Unknown
+            scheme: DocumentUnitOfMeasureScheme::Unknown,
         )
     );
 
@@ -153,20 +120,20 @@ $lineItem2 = (new IncomingOrderLineItemInput())
     ->withCatalogueItemIdentification('BELA')
     ->withSellersItemIdentification('stará bela')
     ->addDescription(
-        new IncomingOrderDescription('stará bela')
+        new DocumentDescription('stará bela')
     )
     ->addUnitConversionFactor(
-        new IncomingOrderUnitConversionFactor(
+        new DocumentUnitConversionFactor(
             value: 1.0,
             unitCode: 'Ks',
-            scheme: IncomingOrderUnitOfMeasureScheme::Unknown
+            scheme: DocumentUnitOfMeasureScheme::Unknown,
         )
     )
     ->addUnitConversionFactor(
-        new IncomingOrderUnitConversionFactor(
+        new DocumentUnitConversionFactor(
             value: 2.0,
             unitCode: 'm2',
-            scheme: IncomingOrderUnitOfMeasureScheme::SI
+            scheme: DocumentUnitOfMeasureScheme::SI,
         )
     );
 
@@ -196,23 +163,23 @@ $builder = new IncomingOrderBuilder();
 |
 */
 $lines = [
-    new IncomingOrderCalculatedLineInput(
+    new DocumentCalculatedLineInput(
         uuid: 'd2045e34-49b4-4238-84e2-950362f2007e',
         lineItem: $lineItem1,
         quantity: 1.0,
         unitCode: 'Ks',
         unitPrice: 1500.0,
         vatRate: 21.0,
-        priceMode: IncomingOrderPriceMode::WithoutVat,
+        priceMode: DocumentPriceMode::WithoutVat,
     ),
-    new IncomingOrderCalculatedLineInput(
+    new DocumentCalculatedLineInput(
         uuid: '935f3ea7-3fda-40d8-af8f-a5582fc81f54',
         lineItem: $lineItem2,
         quantity: 1.0,
         unitCode: 'Ks',
         unitPrice: 300.0,
         vatRate: 21.0,
-        priceMode: IncomingOrderPriceMode::WithoutVat,
+        priceMode: DocumentPriceMode::WithoutVat,
     ),
 ];
 
@@ -267,8 +234,8 @@ print_r($preview);
 | Upsert request
 |--------------------------------------------------------------------------
 |
-| Sends the PUT request to the Vario API
-| and returns confirmation objects.
+| Sends the PUT request to the Vario API.
+| This requires access to the target Vario server, for example through VPN.
 |
 */
 
@@ -279,6 +246,6 @@ print_r($preview);
 // ]);
 //
 // print_r(array_map(
-//     fn($r) => $r->toArray(),
+//     static fn($row): array => $row->toArray(),
 //     $result
 // ));

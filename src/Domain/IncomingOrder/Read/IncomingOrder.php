@@ -7,9 +7,9 @@ namespace Lemonade\Vario\Domain\IncomingOrder\Read;
 use DateTimeImmutable;
 use Lemonade\Vario\Domain\Common\Currency;
 use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderPaymentMeansCode;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderMonetaryTotal;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderTaxExchangeRate;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderTaxTotal;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentMonetaryTotal;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxExchangeRate;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxTotal;
 
 /**
  * Class IncomingOrder
@@ -82,9 +82,9 @@ final class IncomingOrder
         // DOCUMENT CONTENT
         // =========================
         private readonly array $documentLines = [],
-        private readonly ?IncomingOrderMonetaryTotal $monetaryTotal = null,
-        private readonly ?IncomingOrderTaxExchangeRate $taxExchangeRate = null,
-        private readonly ?IncomingOrderTaxTotal $taxTotal = null,
+        private readonly ?DocumentMonetaryTotal $monetaryTotal = null,
+        private readonly ?DocumentTaxExchangeRate $taxExchangeRate = null,
+        private readonly ?DocumentTaxTotal $taxTotal = null,
         private readonly ?IncomingOrderDeliveryDetail $deliveryDetail = null,
         private readonly array $textualAttributes = [],
 
@@ -167,12 +167,12 @@ final class IncomingOrder
         return $this->monetaryTotal !== null;
     }
 
-    public function getMonetaryTotal(): ?IncomingOrderMonetaryTotal
+    public function getMonetaryTotal(): ?DocumentMonetaryTotal
     {
         return $this->monetaryTotal;
     }
 
-    public function getTaxExchangeRate(): ?IncomingOrderTaxExchangeRate
+    public function getTaxExchangeRate(): ?DocumentTaxExchangeRate
     {
         return $this->taxExchangeRate;
     }
@@ -182,7 +182,7 @@ final class IncomingOrder
         return $this->taxTotal !== null;
     }
 
-    public function getTaxTotal(): ?IncomingOrderTaxTotal
+    public function getTaxTotal(): ?DocumentTaxTotal
     {
         return $this->taxTotal;
     }

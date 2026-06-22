@@ -8,9 +8,9 @@ use DateTimeImmutable;
 use Lemonade\Vario\Domain\Common\Currency;
 use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
 use Lemonade\Vario\Domain\OutgoingQuotation\Enum\OutgoingQuotationPaymentMeansCode;
-use Lemonade\Vario\Domain\OutgoingQuotation\ValueObject\OutgoingQuotationMonetaryTotal;
-use Lemonade\Vario\Domain\OutgoingQuotation\ValueObject\OutgoingQuotationTaxExchangeRate;
-use Lemonade\Vario\Domain\OutgoingQuotation\ValueObject\OutgoingQuotationTaxTotal;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentMonetaryTotal;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxExchangeRate;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxTotal;
 
 final class OutgoingQuotationInput
 {
@@ -23,9 +23,9 @@ final class OutgoingQuotationInput
         private readonly Currency $currency,
         private readonly KnownPartyInput $buyerCustomerParty,
         private readonly KnownPartyInput $sellerSupplierParty,
-        private readonly OutgoingQuotationMonetaryTotal $monetaryTotal,
-        private readonly OutgoingQuotationTaxExchangeRate $taxExchangeRate,
-        private readonly OutgoingQuotationTaxTotal $taxTotal,
+        private readonly DocumentMonetaryTotal $monetaryTotal,
+        private readonly DocumentTaxExchangeRate $taxExchangeRate,
+        private readonly DocumentTaxTotal $taxTotal,
         private readonly array $documentLines,
         private readonly ?string $id = null,
         private readonly ?string $note = null,
@@ -147,12 +147,12 @@ final class OutgoingQuotationInput
         );
     }
 
-    public function getMonetaryTotal(): OutgoingQuotationMonetaryTotal
+    public function getMonetaryTotal(): DocumentMonetaryTotal
     {
         return $this->monetaryTotal;
     }
 
-    public function withMonetaryTotal(OutgoingQuotationMonetaryTotal $monetaryTotal): self
+    public function withMonetaryTotal(DocumentMonetaryTotal $monetaryTotal): self
     {
         return new self(
             uuid: $this->uuid,
@@ -170,12 +170,12 @@ final class OutgoingQuotationInput
         );
     }
 
-    public function getTaxExchangeRate(): OutgoingQuotationTaxExchangeRate
+    public function getTaxExchangeRate(): DocumentTaxExchangeRate
     {
         return $this->taxExchangeRate;
     }
 
-    public function withTaxExchangeRate(OutgoingQuotationTaxExchangeRate $taxExchangeRate): self
+    public function withTaxExchangeRate(DocumentTaxExchangeRate $taxExchangeRate): self
     {
         return new self(
             uuid: $this->uuid,
@@ -193,12 +193,12 @@ final class OutgoingQuotationInput
         );
     }
 
-    public function getTaxTotal(): OutgoingQuotationTaxTotal
+    public function getTaxTotal(): DocumentTaxTotal
     {
         return $this->taxTotal;
     }
 
-    public function withTaxTotal(OutgoingQuotationTaxTotal $taxTotal): self
+    public function withTaxTotal(DocumentTaxTotal $taxTotal): self
     {
         return new self(
             uuid: $this->uuid,

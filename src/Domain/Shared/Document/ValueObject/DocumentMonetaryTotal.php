@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Lemonade\Vario\Domain\OutgoingQuotation\ValueObject;
+namespace Lemonade\Vario\Domain\Shared\Document\ValueObject;
 
-final class OutgoingQuotationMonetaryTotal
+final class DocumentMonetaryTotal
 {
     public function __construct(
         private readonly float $payableAmount,

@@ -7,20 +7,20 @@ namespace Lemonade\Vario\Tests\Domain\IncomingOrder\Read;
 use DateTimeImmutable;
 use Lemonade\Vario\Domain\Common\Currency;
 use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderPaymentMeansCode;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderTaxCalculationMethod;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderTaxScheme;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderTextualAttributeKind;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxCalculationMethod;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxScheme;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTextualAttributeKind;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrder;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderDeliveryDetail;
-use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderDescription;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderLine;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderLineItem;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderParty;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderTextualAttribute;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderMonetaryTotal;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderTaxExchangeRate;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderTaxSubTotal;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderTaxTotal;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentMonetaryTotal;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxExchangeRate;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxSubTotal;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxTotal;
 use PHPUnit\Framework\TestCase;
 
 final class IncomingOrderTest extends TestCase
@@ -41,19 +41,19 @@ final class IncomingOrderTest extends TestCase
             lineItem: new IncomingOrderLineItem(
                 catalogueItemIdentification: 'SKU-001',
                 descriptions: [
-                    new IncomingOrderDescription('Test item', 'cs'),
+                    new DocumentDescription('Test item', 'cs'),
                 ],
             ),
         );
 
-        $monetaryTotal = new IncomingOrderMonetaryTotal(
+        $monetaryTotal = new DocumentMonetaryTotal(
             payableAmount: 121.0,
             payableRoundingAmount: 0.0,
             taxExclusiveAmount: 100.0,
             taxInclusiveAmount: 121.0,
         );
 
-        $taxExchangeRate = new IncomingOrderTaxExchangeRate(
+        $taxExchangeRate = new DocumentTaxExchangeRate(
             taxCurrency: Currency::CZK,
             referenceCurrencyRate: 1.0,
             taxCurrencyRate: 1.0,
@@ -61,12 +61,12 @@ final class IncomingOrderTest extends TestCase
             exchangeMarketBic: 'CNBACZPP',
         );
 
-        $taxTotal = new IncomingOrderTaxTotal(
+        $taxTotal = new DocumentTaxTotal(
             taxAmount: 21.0,
             taxSubTotals: [
-                new IncomingOrderTaxSubTotal(
-                    calculationMethod: IncomingOrderTaxCalculationMethod::Total,
-                    scheme: IncomingOrderTaxScheme::Vat,
+                new DocumentTaxSubTotal(
+                    calculationMethod: DocumentTaxCalculationMethod::Total,
+                    scheme: DocumentTaxScheme::Vat,
                     taxableAmount: 100.0,
                     taxAmount: 21.0,
                     taxPercentage: 21.0,
@@ -81,7 +81,7 @@ final class IncomingOrderTest extends TestCase
         );
 
         $textualAttribute = new IncomingOrderTextualAttribute(
-            attributeKind: IncomingOrderTextualAttributeKind::ExtendedID,
+            attributeKind: DocumentTextualAttributeKind::ExtendedID,
             name: 'Cislo_dokladu',
             value: 'D-25-02102',
             langId: 'cs',

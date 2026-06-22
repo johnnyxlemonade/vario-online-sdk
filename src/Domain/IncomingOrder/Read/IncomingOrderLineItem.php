@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\IncomingOrder\Read;
 
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderUnitConversionFactor;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentUnitConversionFactor;
 
 /**
  * Class IncomingOrderLineItem
@@ -31,11 +32,11 @@ use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderUnitConversionF
 final class IncomingOrderLineItem
 {
     /**
-     * @param list<IncomingOrderDescription> $descriptions
+     * @param list<DocumentDescription> $descriptions
      * @param list<IncomingOrderAdditionalAttribute> $additionalAttributes
      * @param list<IncomingOrderTextualAttribute> $textualAttributes
      * @param list<IncomingOrderNumericAttribute> $numericAttributes
-     * @param list<IncomingOrderUnitConversionFactor> $unitConversionFactors
+     * @param list<DocumentUnitConversionFactor> $unitConversionFactors
      * @param array<string,mixed> $extra Additional unmapped API fields.
      */
     public function __construct(
@@ -88,7 +89,7 @@ final class IncomingOrderLineItem
     }
 
     /**
-     * @return list<IncomingOrderDescription>
+     * @return list<DocumentDescription>
      */
     public function getDescriptions(): array
     {
@@ -130,7 +131,7 @@ final class IncomingOrderLineItem
     }
 
     /**
-     * @return list<IncomingOrderUnitConversionFactor>
+     * @return list<DocumentUnitConversionFactor>
      */
     public function getUnitConversionFactors(): array
     {
@@ -145,7 +146,7 @@ final class IncomingOrderLineItem
             || $this->buyersItemIdentification !== null;
     }
 
-    public function getPrimaryDescription(): ?IncomingOrderDescription
+    public function getPrimaryDescription(): ?DocumentDescription
     {
         return $this->descriptions[0] ?? null;
     }

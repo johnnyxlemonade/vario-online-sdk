@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Tests\Domain\IncomingOrder\Read;
 
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderUnitOfMeasureScheme;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderUnitPrice;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderQuantity;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentQuantity;
 use PHPUnit\Framework\TestCase;
 
 final class IncomingOrderUnitPriceTest extends TestCase
 {
     public function test_it_exposes_all_values(): void
     {
-        $quantity = new IncomingOrderQuantity(
+        $quantity = new DocumentQuantity(
             value: 1.5,
             unitCode: 'Ks',
-            scheme: IncomingOrderUnitOfMeasureScheme::Unknown,
+            scheme: DocumentUnitOfMeasureScheme::Unknown,
         );
 
         $price = new IncomingOrderUnitPrice(

@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\IncomingOrder\Read;
 
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderQuantity;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderTaxSubTotal;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentQuantity;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxSubTotal;
 
 /**
  * Class IncomingOrderLine
@@ -59,8 +59,8 @@ final class IncomingOrderLine
         // VALUE OBJECTS
         // =========================
         private readonly ?IncomingOrderLineItem $lineItem = null,
-        private readonly ?IncomingOrderQuantity $lineQuantity = null,
-        private readonly ?IncomingOrderTaxSubTotal $taxSubTotal = null,
+        private readonly ?DocumentQuantity $lineQuantity = null,
+        private readonly ?DocumentTaxSubTotal $taxSubTotal = null,
         private readonly ?IncomingOrderUnitPrice $unitPrice = null,
 
         // =========================
@@ -99,12 +99,12 @@ final class IncomingOrderLine
         return $this->lineItem;
     }
 
-    public function getLineQuantity(): ?IncomingOrderQuantity
+    public function getLineQuantity(): ?DocumentQuantity
     {
         return $this->lineQuantity;
     }
 
-    public function getTaxSubTotal(): ?IncomingOrderTaxSubTotal
+    public function getTaxSubTotal(): ?DocumentTaxSubTotal
     {
         return $this->taxSubTotal;
     }

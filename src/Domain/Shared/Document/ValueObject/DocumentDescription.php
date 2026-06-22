@@ -2,9 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Lemonade\Vario\Domain\OutgoingQuotation\ValueObject;
+namespace Lemonade\Vario\Domain\Shared\Document\ValueObject;
 
-final class OutgoingQuotationDescription
+final class DocumentDescription
 {
     public function __construct(
         private readonly string $text,

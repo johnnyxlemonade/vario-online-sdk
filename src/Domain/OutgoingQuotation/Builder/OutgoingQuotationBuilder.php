@@ -2,33 +2,24 @@
 
 declare(strict_types=1);
 
-namespace Lemonade\Vario\Domain\IncomingOrder\Builder;
+namespace Lemonade\Vario\Domain\OutgoingQuotation\Builder;
 
 use DateTimeImmutable;
 use Lemonade\Vario\Domain\Common\Currency;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderPaymentMeansCode;
-use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderInput;
-use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineInput;
 use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
+use Lemonade\Vario\Domain\OutgoingQuotation\Enum\OutgoingQuotationPaymentMeansCode;
+use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationInput;
+use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationLineInput;
+use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationLineItemInput;
 use Lemonade\Vario\Domain\Shared\Document\Calculator\DocumentLineCalculator;
 use Lemonade\Vario\Domain\Shared\Document\Calculator\DocumentTotalsCalculator;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxCalculationMethod;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxExchangeRate;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxSubTotal;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxTotal;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineInput;
 
-/**
- * Class IncomingOrderBuilder
- *
- * Developer-friendly builder that creates a complete IncomingOrderInput
- * from simplified line definitions and automatically calculated totals.
- *
- * @package     Lemonade Framework
- * @subpackage  Lemonade\Vario\Domain\IncomingOrder\Builder
- * @link        https://lemonadeframework.cz/
- * @author      Honza Mudrak <honzamudrak@gmail.com>
- * @license     MIT
- * @since       1.0
- */
-final class IncomingOrderBuilder
+final class OutgoingQuotationBuilder
 {
     private DocumentLineCalculator $lineCalculator;
     private DocumentTotalsCalculator $totalsCalculator;
@@ -42,7 +33,7 @@ final class IncomingOrderBuilder
     }
 
     /**
-     * @param list<DocumentCalculatedLineInput<\Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput>> $lines
+     * @param list<DocumentCalculatedLineInput<OutgoingQuotationLineItemInput>> $lines
      */
     public function build(
         string $uuid,
@@ -52,19 +43,17 @@ final class IncomingOrderBuilder
         KnownPartyInput $sellerSupplierParty,
         array $lines,
         ?string $id = null,
-        ?KnownPartyInput $accountingCustomerParty = null,
-        ?KnownPartyInput $delivery = null,
         ?string $note = null,
-        bool $partialDeliveryIndicator = false,
-        ?IncomingOrderPaymentMeansCode $paymentMeansCode = null,
+        ?OutgoingQuotationPaymentMeansCode $paymentMeansCode = null,
         ?DocumentTaxExchangeRate $taxExchangeRate = null,
-    ): IncomingOrderInput {
+        float $payableRoundingAmount = 0.0,
+    ): OutgoingQuotationInput {
         $documentLines = [];
 
         foreach ($lines as $line) {
             $calculated = $this->lineCalculator->calculate($line);
 
-            $documentLines[] = new IncomingOrderLineInput(
+            $documentLines[] = new OutgoingQuotationLineInput(
                 uuid: $line->getUuid(),
                 lineExtensionAmount: $calculated['lineExtensionAmount'],
                 lineExtensionAmountTaxInclusive: $calculated['lineExtensionAmountTaxInclusive'],
@@ -76,19 +65,31 @@ final class IncomingOrderBuilder
             );
         }
 
-        $totals = $this->totalsCalculator->calculate($documentLines, 0.0);
+        $totals = $this->totalsCalculator->calculate($documentLines, $payableRoundingAmount);
+        $taxTotal = new DocumentTaxTotal(
+            taxAmount: $totals['taxTotal']->getTaxAmount(),
+            taxSubTotals: array_map(
+                static fn(DocumentTaxSubTotal $taxSubTotal): DocumentTaxSubTotal => new DocumentTaxSubTotal(
+                    calculationMethod: DocumentTaxCalculationMethod::Total,
+                    scheme: $taxSubTotal->getScheme(),
+                    taxableAmount: $taxSubTotal->getTaxableAmount(),
+                    taxAmount: $taxSubTotal->getTaxAmount(),
+                    taxPercentage: $taxSubTotal->getTaxPercentage(),
+                    taxSchemeExtensionCode: $taxSubTotal->getTaxSchemeExtensionCode(),
+                ),
+                $totals['taxTotal']->getTaxSubTotals(),
+            ),
+        );
 
         if ($taxExchangeRate === null) {
             $taxExchangeRate = new DocumentTaxExchangeRate(
                 taxCurrency: $currency,
                 referenceCurrencyRate: 1.0,
                 taxCurrencyRate: 1.0,
-                rateDate: $issueDate,
-                exchangeMarketBic: null,
             );
         }
 
-        return (new IncomingOrderInput(
+        return new OutgoingQuotationInput(
             uuid: $uuid,
             issueDate: $issueDate,
             currency: $currency,
@@ -96,14 +97,11 @@ final class IncomingOrderBuilder
             sellerSupplierParty: $sellerSupplierParty,
             monetaryTotal: $totals['monetaryTotal'],
             taxExchangeRate: $taxExchangeRate,
-            taxTotal: $totals['taxTotal'],
-        ))
-            ->withId($id)
-            ->withAccountingCustomerParty($accountingCustomerParty)
-            ->withDelivery($delivery)
-            ->withNote($note)
-            ->withPartialDeliveryIndicator($partialDeliveryIndicator)
-            ->withPaymentMeansCode($paymentMeansCode)
-            ->withDocumentLines($documentLines);
+            taxTotal: $taxTotal,
+            documentLines: $documentLines,
+            id: $id,
+            note: $note,
+            paymentMeansCode: $paymentMeansCode,
+        );
     }
 }

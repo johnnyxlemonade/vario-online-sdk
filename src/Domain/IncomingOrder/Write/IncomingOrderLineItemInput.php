@@ -4,8 +4,9 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\IncomingOrder\Write;
 
-use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderDescription;
-use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderUnitConversionFactor;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentUnitConversionFactor;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentAdditionalAttributeInput;
 
 /**
  * Class IncomingOrderLineItemInput
@@ -24,13 +25,13 @@ use Lemonade\Vario\Domain\IncomingOrder\ValueObject\IncomingOrderUnitConversionF
  */
 final class IncomingOrderLineItemInput
 {
-    /** @var list<IncomingOrderDescription> */
+    /** @var list<DocumentDescription> */
     private array $descriptions = [];
 
-    /** @var list<IncomingOrderAdditionalAttributeInput> */
+    /** @var list<DocumentAdditionalAttributeInput> */
     private array $additionalAttributes = [];
 
-    /** @var list<IncomingOrderUnitConversionFactor> */
+    /** @var list<DocumentUnitConversionFactor> */
     private array $unitConversionFactors = [];
 
     public function __construct(
@@ -89,14 +90,14 @@ final class IncomingOrderLineItemInput
     }
 
     /**
-     * @return list<IncomingOrderDescription>
+     * @return list<DocumentDescription>
      */
     public function getDescriptions(): array
     {
         return $this->descriptions;
     }
 
-    public function addDescription(IncomingOrderDescription $description): self
+    public function addDescription(DocumentDescription $description): self
     {
         $this->descriptions[] = $description;
 
@@ -104,7 +105,7 @@ final class IncomingOrderLineItemInput
     }
 
     /**
-     * @param list<IncomingOrderDescription> $descriptions
+     * @param list<DocumentDescription> $descriptions
      */
     public function withDescriptions(array $descriptions): self
     {
@@ -114,14 +115,14 @@ final class IncomingOrderLineItemInput
     }
 
     /**
-     * @return list<IncomingOrderAdditionalAttributeInput>
+     * @return list<DocumentAdditionalAttributeInput>
      */
     public function getAdditionalAttributes(): array
     {
         return $this->additionalAttributes;
     }
 
-    public function addAdditionalAttribute(IncomingOrderAdditionalAttributeInput $attribute): self
+    public function addAdditionalAttribute(DocumentAdditionalAttributeInput $attribute): self
     {
         $this->additionalAttributes[] = $attribute;
 
@@ -129,7 +130,7 @@ final class IncomingOrderLineItemInput
     }
 
     /**
-     * @param list<IncomingOrderAdditionalAttributeInput> $additionalAttributes
+     * @param list<DocumentAdditionalAttributeInput> $additionalAttributes
      */
     public function withAdditionalAttributes(array $additionalAttributes): self
     {
@@ -139,14 +140,14 @@ final class IncomingOrderLineItemInput
     }
 
     /**
-     * @return list<IncomingOrderUnitConversionFactor>
+     * @return list<DocumentUnitConversionFactor>
      */
     public function getUnitConversionFactors(): array
     {
         return $this->unitConversionFactors;
     }
 
-    public function addUnitConversionFactor(IncomingOrderUnitConversionFactor $unitConversionFactor): self
+    public function addUnitConversionFactor(DocumentUnitConversionFactor $unitConversionFactor): self
     {
         $this->unitConversionFactors[] = $unitConversionFactor;
 
@@ -154,7 +155,7 @@ final class IncomingOrderLineItemInput
     }
 
     /**
-     * @param list<IncomingOrderUnitConversionFactor> $unitConversionFactors
+     * @param list<DocumentUnitConversionFactor> $unitConversionFactors
      */
     public function withUnitConversionFactors(array $unitConversionFactors): self
     {

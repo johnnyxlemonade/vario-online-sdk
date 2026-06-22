@@ -2,28 +2,28 @@
 
 declare(strict_types=1);
 
-namespace Lemonade\Vario\Domain\OutgoingQuotation\ValueObject;
+namespace Lemonade\Vario\Domain\Shared\Document\ValueObject;
 
-use Lemonade\Vario\Domain\OutgoingQuotation\Enum\OutgoingQuotationTaxCalculationMethod;
-use Lemonade\Vario\Domain\OutgoingQuotation\Enum\OutgoingQuotationTaxScheme;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxCalculationMethod;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxScheme;
 
-final class OutgoingQuotationTaxSubTotal
+final class DocumentTaxSubTotal
 {
     public function __construct(
-        private readonly OutgoingQuotationTaxCalculationMethod $calculationMethod,
-        private readonly OutgoingQuotationTaxScheme $scheme,
+        private readonly DocumentTaxCalculationMethod $calculationMethod,
+        private readonly DocumentTaxScheme $scheme,
         private readonly float $taxableAmount,
         private readonly float $taxAmount,
         private readonly float $taxPercentage,
         private readonly ?string $taxSchemeExtensionCode = null,
     ) {}
 
-    public function getCalculationMethod(): OutgoingQuotationTaxCalculationMethod
+    public function getCalculationMethod(): DocumentTaxCalculationMethod
     {
         return $this->calculationMethod;
     }
 
-    public function getScheme(): OutgoingQuotationTaxScheme
+    public function getScheme(): DocumentTaxScheme
     {
         return $this->scheme;
     }
