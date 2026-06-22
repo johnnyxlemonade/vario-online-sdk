@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Tests\Domain\IncomingOrder\Write;
 
+use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineInput;
+use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxCalculationMethod;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxScheme;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentQuantity;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxSubTotal;
-use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineInput;
-use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
 use PHPUnit\Framework\TestCase;
 
 final class IncomingOrderLineInputTest extends TestCase
@@ -44,7 +44,7 @@ final class IncomingOrderLineInputTest extends TestCase
             lineQuantity: $quantity,
             taxSubTotal: $taxSubTotal,
             id: 'line-id-1',
-            note: 'poznÄ‚Ë‡mka',
+            note: 'poznámka',
         );
 
         self::assertSame('line-uuid-1', $line->getUuid());
@@ -54,7 +54,7 @@ final class IncomingOrderLineInputTest extends TestCase
         self::assertSame($quantity, $line->getLineQuantity());
         self::assertSame($taxSubTotal, $line->getTaxSubTotal());
         self::assertSame('line-id-1', $line->getId());
-        self::assertSame('poznÄ‚Ë‡mka', $line->getNote());
+        self::assertSame('poznámka', $line->getNote());
     }
 
     public function test_with_methods_update_values(): void
@@ -114,7 +114,7 @@ final class IncomingOrderLineInputTest extends TestCase
             ->withLineQuantity($quantity2)
             ->withTaxSubTotal($tax2)
             ->withId('line-id-2')
-            ->withNote('novÄ‚Ë‡ poznÄ‚Ë‡mka');
+            ->withNote('nová poznámka');
 
         self::assertSame($line, $result);
 
@@ -125,7 +125,7 @@ final class IncomingOrderLineInputTest extends TestCase
         self::assertSame($quantity2, $line->getLineQuantity());
         self::assertSame($tax2, $line->getTaxSubTotal());
         self::assertSame('line-id-2', $line->getId());
-        self::assertSame('novÄ‚Ë‡ poznÄ‚Ë‡mka', $line->getNote());
+        self::assertSame('nová poznámka', $line->getNote());
     }
 
     public function test_it_supports_nullable_fields(): void

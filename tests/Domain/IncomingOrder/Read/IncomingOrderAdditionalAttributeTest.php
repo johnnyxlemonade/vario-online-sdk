@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Tests\Domain\IncomingOrder\Read;
 
+use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderAdditionalAttribute;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTextualAttributeKind;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
-use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderAdditionalAttribute;
 use PHPUnit\Framework\TestCase;
 
 final class IncomingOrderAdditionalAttributeTest extends TestCase
@@ -16,7 +16,7 @@ final class IncomingOrderAdditionalAttributeTest extends TestCase
         $attribute = new IncomingOrderAdditionalAttribute(
             attributeKind: DocumentTextualAttributeKind::ExtendedID,
             name: 'Varianta',
-            value: 'velkÄ‚Ë‡ dÄ‚Â­ra',
+            value: 'velká díra',
             langId: 'cs',
             unitCode: 'Ks',
             scheme: DocumentUnitOfMeasureScheme::Unknown,
@@ -30,7 +30,7 @@ final class IncomingOrderAdditionalAttributeTest extends TestCase
             $attribute->getAttributeKind()
         );
         self::assertSame('Varianta', $attribute->getName());
-        self::assertSame('velkÄ‚Ë‡ dÄ‚Â­ra', $attribute->getValue());
+        self::assertSame('velká díra', $attribute->getValue());
         self::assertSame('cs', $attribute->getLangId());
         self::assertSame('Ks', $attribute->getUnitCode());
         self::assertSame(
@@ -47,7 +47,7 @@ final class IncomingOrderAdditionalAttributeTest extends TestCase
         $attribute = new IncomingOrderAdditionalAttribute(
             attributeKind: DocumentTextualAttributeKind::FreeText,
             name: 'Barva',
-            value: 'Ă„Ĺ¤ernÄ‚Ë‡',
+            value: 'černá',
         );
 
         self::assertSame(
@@ -55,7 +55,7 @@ final class IncomingOrderAdditionalAttributeTest extends TestCase
             $attribute->getAttributeKind()
         );
         self::assertSame('Barva', $attribute->getName());
-        self::assertSame('Ă„Ĺ¤ernÄ‚Ë‡', $attribute->getValue());
+        self::assertSame('černá', $attribute->getValue());
         self::assertNull($attribute->getLangId());
         self::assertNull($attribute->getUnitCode());
         self::assertNull($attribute->getScheme());

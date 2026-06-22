@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Tests\Domain\IncomingOrder\Write;
 
+use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTextualAttributeKind;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentUnitConversionFactor;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentAdditionalAttributeInput;
-use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
 use PHPUnit\Framework\TestCase;
 
 final class IncomingOrderLineItemInputTest extends TestCase
@@ -50,7 +50,7 @@ final class IncomingOrderLineItemInputTest extends TestCase
     {
         $item = new IncomingOrderLineItemInput();
 
-        $first = new DocumentDescription('PrvnÄ‚Â­ popis', 'cs');
+        $first = new DocumentDescription('První popis', 'cs');
         $second = new DocumentDescription('Second description', 'en');
 
         self::assertSame($item, $item->addDescription($first));
@@ -66,7 +66,7 @@ final class IncomingOrderLineItemInputTest extends TestCase
 
         $first = new DocumentAdditionalAttributeInput(
             name: 'Varianta',
-            value: 'velkÄ‚Ë‡ dÄ‚Â­ra',
+            value: 'velká díra',
             attributeKind: DocumentTextualAttributeKind::ExtendedID,
             langId: 'cs',
             unitCode: null,
@@ -75,7 +75,7 @@ final class IncomingOrderLineItemInputTest extends TestCase
 
         $second = new DocumentAdditionalAttributeInput(
             name: 'Barva',
-            value: 'Ă„Ĺ¤ernÄ‚Ë‡',
+            value: 'černá',
             attributeKind: DocumentTextualAttributeKind::FreeText,
             langId: 'cs',
             unitCode: null,

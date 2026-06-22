@@ -15,7 +15,7 @@ final class IncomingOrderAdditionalAttributeInputTest extends TestCase
     {
         $attribute = new DocumentAdditionalAttributeInput(
             name: 'Varianta',
-            value: 'velkÄ‚Ë‡ dÄ‚Â­ra',
+            value: 'velká díra',
             attributeKind: DocumentTextualAttributeKind::FreeText,
             langId: 'cs',
             unitCode: 'Ks',
@@ -23,7 +23,7 @@ final class IncomingOrderAdditionalAttributeInputTest extends TestCase
         );
 
         self::assertSame('Varianta', $attribute->getName());
-        self::assertSame('velkÄ‚Ë‡ dÄ‚Â­ra', $attribute->getValue());
+        self::assertSame('velká díra', $attribute->getValue());
         self::assertSame(
             DocumentTextualAttributeKind::FreeText,
             $attribute->getAttributeKind()
@@ -40,11 +40,11 @@ final class IncomingOrderAdditionalAttributeInputTest extends TestCase
     {
         $attribute = new DocumentAdditionalAttributeInput(
             name: 'Varianta',
-            value: 'velkÄ‚Ë‡ dÄ‚Â­ra',
+            value: 'velká díra',
         );
 
         self::assertSame('Varianta', $attribute->getName());
-        self::assertSame('velkÄ‚Ë‡ dÄ‚Â­ra', $attribute->getValue());
+        self::assertSame('velká díra', $attribute->getValue());
         self::assertSame(
             DocumentTextualAttributeKind::ExtendedID,
             $attribute->getAttributeKind()

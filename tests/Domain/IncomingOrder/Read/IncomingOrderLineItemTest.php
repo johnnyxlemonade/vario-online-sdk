@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace Lemonade\Vario\Tests\Domain\IncomingOrder\Read;
 
 use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderNumericAttributeKind;
-use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTextualAttributeKind;
-use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderAdditionalAttribute;
-use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderLineItem;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderNumericAttribute;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderTextualAttribute;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTextualAttributeKind;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentUnitConversionFactor;
 use PHPUnit\Framework\TestCase;
 
@@ -25,7 +25,7 @@ final class IncomingOrderLineItemTest extends TestCase
         $additionalAttribute = new IncomingOrderAdditionalAttribute(
             attributeKind: DocumentTextualAttributeKind::ExtendedID,
             name: 'Varianta',
-            value: 'velkÄ‚Ë‡ dÄ‚Â­ra',
+            value: 'velká díra',
             langId: 'cs',
             unitCode: null,
             scheme: DocumentUnitOfMeasureScheme::Unknown,
@@ -34,7 +34,7 @@ final class IncomingOrderLineItemTest extends TestCase
         $textualAttribute = new IncomingOrderTextualAttribute(
             attributeKind: DocumentTextualAttributeKind::ExtendedID,
             name: 'Sklad',
-            value: 'MĂ„â€şlnÄ‚Â­k',
+            value: 'Mlýnek',
             langId: 'cs',
         );
 

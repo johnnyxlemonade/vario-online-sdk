@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Tests\Domain\IncomingOrder\Read;
 
+use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderLine;
+use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderLineItem;
+use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderUnitPrice;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxCalculationMethod;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxScheme;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
-use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderLine;
-use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderLineItem;
-use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderUnitPrice;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentQuantity;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxSubTotal;
 use PHPUnit\Framework\TestCase;
@@ -57,7 +57,7 @@ final class IncomingOrderLineTest extends TestCase
             id: 'line-id-1',
             lineExtensionAmount: 100.0,
             lineExtensionAmountTaxInclusive: 121.0,
-            note: 'PoznÄ‚Ë‡mka k Äąâ„˘Ä‚Ë‡dku',
+            note: 'Poznámka k řádku',
             lineItem: $lineItem,
             lineQuantity: $quantity,
             taxSubTotal: $taxSubTotal,
@@ -71,7 +71,7 @@ final class IncomingOrderLineTest extends TestCase
         self::assertSame('line-id-1', $line->getId());
         self::assertSame(100.0, $line->getLineExtensionAmount());
         self::assertSame(121.0, $line->getLineExtensionAmountTaxInclusive());
-        self::assertSame('PoznÄ‚Ë‡mka k Äąâ„˘Ä‚Ë‡dku', $line->getNote());
+        self::assertSame('Poznámka k řádku', $line->getNote());
         self::assertSame($lineItem, $line->getLineItem());
         self::assertSame($quantity, $line->getLineQuantity());
         self::assertSame($taxSubTotal, $line->getTaxSubTotal());

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Tests\Domain\IncomingOrder\Write;
 
+use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentPriceMode;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxCalculationMethod;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxScheme;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineInput;
-use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
 use PHPUnit\Framework\TestCase;
 
 final class IncomingOrderCalculatedLineInputTest extends TestCase
@@ -31,7 +31,7 @@ final class IncomingOrderCalculatedLineInputTest extends TestCase
             priceMode: DocumentPriceMode::WithVat,
             unitScheme: DocumentUnitOfMeasureScheme::SI,
             id: 'line-id-1',
-            note: 'vÄ‚ËťpoĂ„Ĺ¤et Äąâ„˘Ä‚Ë‡dku',
+            note: 'výpočet řádku',
             taxCalculationMethod: DocumentTaxCalculationMethod::Total,
             taxScheme: DocumentTaxScheme::Vat,
             taxSchemeExtensionCode: 'LOCAL-RC',
@@ -46,7 +46,7 @@ final class IncomingOrderCalculatedLineInputTest extends TestCase
         self::assertSame(DocumentPriceMode::WithVat, $input->getPriceMode());
         self::assertSame(DocumentUnitOfMeasureScheme::SI, $input->getUnitScheme());
         self::assertSame('line-id-1', $input->getId());
-        self::assertSame('vÄ‚ËťpoĂ„Ĺ¤et Äąâ„˘Ä‚Ë‡dku', $input->getNote());
+        self::assertSame('výpočet řádku', $input->getNote());
         self::assertSame(DocumentTaxCalculationMethod::Total, $input->getTaxCalculationMethod());
         self::assertSame(DocumentTaxScheme::Vat, $input->getTaxScheme());
         self::assertSame('LOCAL-RC', $input->getTaxSchemeExtensionCode());

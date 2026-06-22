@@ -7,6 +7,10 @@ namespace Lemonade\Vario\Tests\Domain\IncomingOrder\Write;
 use DateTimeImmutable;
 use Lemonade\Vario\Domain\Common\Currency;
 use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderPaymentMeansCode;
+use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderInput;
+use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineInput;
+use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
+use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxCalculationMethod;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxScheme;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTextualAttributeKind;
@@ -19,10 +23,6 @@ use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxSubTotal;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxTotal;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentUnitConversionFactor;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentAdditionalAttributeInput;
-use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderInput;
-use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineInput;
-use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
-use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
 use Lemonade\Vario\Domain\Shared\Identification;
 use Lemonade\Vario\Domain\Shared\IdentificationScheme;
 use Lemonade\Vario\Domain\Shared\PostalAddress;
@@ -37,14 +37,14 @@ final class IncomingOrderInputNormalizerTest extends TestCase
         $issueDate = new DateTimeImmutable('2024-04-02T00:00:00+02:00');
 
         $buyer = $this->createParty(
-            name: '1. Ă„Ĺ¤eskÄ‚Ë‡ podvodnÄ‚Ë‡',
-            contactPerson: 'Rybana WassermannovÄ‚Ë‡',
+            name: '1. česká podvodná',
+            contactPerson: 'Rybana Wassermannová',
             email: 'pod.vodnik@zaby.cz',
             telephone: '+420557788996',
             address: new PostalAddress(
-                street: 'VodnÄ‚Ë‡',
+                street: 'Vodná',
                 buildingNumber: '57',
-                city: 'ÄąËťabovÄąâ„˘esky',
+                city: 'Žabovřesky',
                 postalCode: '566 00',
                 countryIso: 'CZ',
             ),
@@ -63,14 +63,14 @@ final class IncomingOrderInputNormalizerTest extends TestCase
         );
 
         $accounting = $this->createParty(
-            name: '1. Ă„Ĺ¤eskÄ‚Ë‡ podvodnÄ‚Ë‡',
-            contactPerson: 'Rybana WassermannovÄ‚Ë‡',
+            name: '1. česká podvodná',
+            contactPerson: 'Rybana Wassermannová',
             email: 'pod.vodnik@zaby.cz',
             telephone: '+420557788996',
             address: new PostalAddress(
-                street: 'VodnÄ‚Ë‡',
+                street: 'Vodná',
                 buildingNumber: '57',
-                city: 'ÄąËťabovÄąâ„˘esky',
+                city: 'Žabovřesky',
                 postalCode: '566 00',
                 countryIso: 'CZ',
             ),
@@ -89,14 +89,14 @@ final class IncomingOrderInputNormalizerTest extends TestCase
         );
 
         $delivery = $this->createParty(
-            name: '1. Ă„Ĺ¤eskÄ‚Ë‡ podvodnÄ‚Ë‡',
+            name: '1. česká podvodná',
             contactPerson: 'Vodomil Wassermann',
             email: 'pod.vodnik@zaby.cz',
             telephone: '+420557788996',
             address: new PostalAddress(
-                street: 'VodnÄ‚Ë‡',
+                street: 'Vodná',
                 buildingNumber: '57',
-                city: 'ÄąËťabovÄąâ„˘esky',
+                city: 'Žabovřesky',
                 postalCode: '566 00',
                 countryIso: 'CZ',
             ),
@@ -127,11 +127,11 @@ final class IncomingOrderInputNormalizerTest extends TestCase
 
         $lineItem1 = (new IncomingOrderLineItemInput())
             ->withCatalogueItemIdentification('grosh big')
-            ->withSellersItemIdentification('dĂ„â€şravÄ‚Ëť groÄąË‡')
-            ->addDescription(new DocumentDescription('dĂ„â€şravÄ‚Ëť groÄąË‡'))
+            ->withSellersItemIdentification('děravý groš')
+            ->addDescription(new DocumentDescription('děravý groš'))
             ->addAdditionalAttribute(new DocumentAdditionalAttributeInput(
                 name: 'Varianta',
-                value: 'velkÄ‚Ë‡ dÄ‚Â­ra',
+                value: 'velká díra',
                 attributeKind: DocumentTextualAttributeKind::ExtendedID,
                 langId: null,
                 unitCode: null,
@@ -145,8 +145,8 @@ final class IncomingOrderInputNormalizerTest extends TestCase
 
         $lineItem2 = (new IncomingOrderLineItemInput())
             ->withCatalogueItemIdentification('BELA')
-            ->withSellersItemIdentification('starÄ‚Ë‡ bela')
-            ->addDescription(new DocumentDescription('starÄ‚Ë‡ bela'))
+            ->withSellersItemIdentification('stará bela')
+            ->addDescription(new DocumentDescription('stará bela'))
             ->addUnitConversionFactor(new DocumentUnitConversionFactor(
                 value: 1.0,
                 unitCode: 'Ks',
@@ -215,13 +215,13 @@ final class IncomingOrderInputNormalizerTest extends TestCase
 
         self::assertSame([
             'BuyerCustomerParty' => [
-                'ContactPerson' => 'Rybana WassermannovÄ‚Ë‡',
+                'ContactPerson' => 'Rybana Wassermannová',
                 'ElectronicMail' => 'pod.vodnik@zaby.cz',
-                'Name' => '1. Ă„Ĺ¤eskÄ‚Ë‡ podvodnÄ‚Ë‡',
+                'Name' => '1. česká podvodná',
                 'PostalAddress' => [
-                    'StreetName' => 'VodnÄ‚Ë‡',
+                    'StreetName' => 'Vodná',
                     'BuildingNumber' => '57',
-                    'CityName' => 'ÄąËťabovÄąâ„˘esky',
+                    'CityName' => 'Žabovřesky',
                     'PostalZone' => '566 00',
                     'CountryIso' => 'CZ',
                 ],
@@ -246,17 +246,17 @@ final class IncomingOrderInputNormalizerTest extends TestCase
                     'LineExtensionAmountTaxInclusive' => 1815.0,
                     'LineItem' => [
                         'CatalogueItemIdentification' => 'grosh big',
-                        'SellersItemIdentification' => 'dĂ„â€şravÄ‚Ëť groÄąË‡',
+                        'SellersItemIdentification' => 'děravý groš',
                         'Description' => [
                             [
-                                'Text' => 'dĂ„â€şravÄ‚Ëť groÄąË‡',
+                                'Text' => 'děravý groš',
                             ],
                         ],
                         'AdditionalAttribute' => [
                             [
                                 'AttributeKind' => 'ExtendedID',
                                 'Name' => 'Varianta',
-                                'Value' => 'velkÄ‚Ë‡ dÄ‚Â­ra',
+                                'Value' => 'velká díra',
                                 'Scheme' => 'Unknown',
                             ],
                         ],
@@ -287,10 +287,10 @@ final class IncomingOrderInputNormalizerTest extends TestCase
                     'LineExtensionAmountTaxInclusive' => 363.0,
                     'LineItem' => [
                         'CatalogueItemIdentification' => 'BELA',
-                        'SellersItemIdentification' => 'starÄ‚Ë‡ bela',
+                        'SellersItemIdentification' => 'stará bela',
                         'Description' => [
                             [
-                                'Text' => 'starÄ‚Ë‡ bela',
+                                'Text' => 'stará bela',
                             ],
                         ],
                         'UnitConversionFactor' => [
@@ -358,13 +358,13 @@ final class IncomingOrderInputNormalizerTest extends TestCase
             ],
             'UUID' => 'e4daf94d-fd98-4f7d-a7c6-93cd21dee5f8',
             'AccountingCustomerParty' => [
-                'ContactPerson' => 'Rybana WassermannovÄ‚Ë‡',
+                'ContactPerson' => 'Rybana Wassermannová',
                 'ElectronicMail' => 'pod.vodnik@zaby.cz',
-                'Name' => '1. Ă„Ĺ¤eskÄ‚Ë‡ podvodnÄ‚Ë‡',
+                'Name' => '1. česká podvodná',
                 'PostalAddress' => [
-                    'StreetName' => 'VodnÄ‚Ë‡',
+                    'StreetName' => 'Vodná',
                     'BuildingNumber' => '57',
-                    'CityName' => 'ÄąËťabovÄąâ„˘esky',
+                    'CityName' => 'Žabovřesky',
                     'PostalZone' => '566 00',
                     'CountryIso' => 'CZ',
                 ],
@@ -385,11 +385,11 @@ final class IncomingOrderInputNormalizerTest extends TestCase
             'Delivery' => [
                 'ContactPerson' => 'Vodomil Wassermann',
                 'ElectronicMail' => 'pod.vodnik@zaby.cz',
-                'Name' => '1. Ă„Ĺ¤eskÄ‚Ë‡ podvodnÄ‚Ë‡',
+                'Name' => '1. česká podvodná',
                 'PostalAddress' => [
-                    'StreetName' => 'VodnÄ‚Ë‡',
+                    'StreetName' => 'Vodná',
                     'BuildingNumber' => '57',
-                    'CityName' => 'ÄąËťabovÄąâ„˘esky',
+                    'CityName' => 'Žabovřesky',
                     'PostalZone' => '566 00',
                     'CountryIso' => 'CZ',
                 ],
@@ -418,7 +418,7 @@ final class IncomingOrderInputNormalizerTest extends TestCase
 
         $buyer = (new KnownPartyInput('Buyer'))
             ->withAddress(new PostalAddress(
-                street: 'HlavnÄ‚Â­',
+                street: 'Hlavní',
                 buildingNumber: null,
                 city: 'Praha',
                 postalCode: '11000',
@@ -488,7 +488,7 @@ final class IncomingOrderInputNormalizerTest extends TestCase
         $buyerAddressPayload = $this->requireMap($buyerPayload, 'PostalAddress');
 
         self::assertSame([
-            'StreetName' => 'HlavnÄ‚Â­',
+            'StreetName' => 'Hlavní',
             'CityName' => 'Praha',
             'PostalZone' => '11000',
         ], $buyerAddressPayload);
@@ -589,10 +589,10 @@ final class IncomingOrderInputNormalizerTest extends TestCase
 
         $lineItem = (new IncomingOrderLineItemInput())
             ->withStandardItemIdentification('EAN-123')
-            ->addDescription(new DocumentDescription('Popis poloÄąÄľky', 'cs'))
+            ->addDescription(new DocumentDescription('Popis položky', 'cs'))
             ->addAdditionalAttribute(new DocumentAdditionalAttributeInput(
                 name: 'Barva',
-                value: 'Ă„Ĺ¤ernÄ‚Ë‡',
+                value: 'černá',
                 attributeKind: DocumentTextualAttributeKind::FreeText,
                 langId: 'cs',
                 unitCode: 'bal',
@@ -614,7 +614,7 @@ final class IncomingOrderInputNormalizerTest extends TestCase
                 taxSchemeExtensionCode: 'LOCAL-RC',
             ),
             id: 'ROW-1',
-            note: 'ÄąÂÄ‚Ë‡dkovÄ‚Ë‡ poznÄ‚Ë‡mka',
+            note: 'Řádková poznámka',
         );
 
         $input = new IncomingOrderInput(
@@ -650,7 +650,7 @@ final class IncomingOrderInputNormalizerTest extends TestCase
                 ],
             ),
             id: 'ORD-1',
-            note: 'HlaviĂ„Ĺ¤kovÄ‚Ë‡ poznÄ‚Ë‡mka',
+            note: 'Hlavičková poznámka',
             partialDeliveryIndicator: true,
             paymentMeansCode: IncomingOrderPaymentMeansCode::BankAccount,
         );
@@ -674,7 +674,7 @@ final class IncomingOrderInputNormalizerTest extends TestCase
 
         self::assertSame([
             [
-                'Text' => 'Popis poloÄąÄľky',
+                'Text' => 'Popis položky',
                 'LangID' => 'cs',
             ],
         ], $this->requireList($lineItemPayload, 'Description'));
@@ -683,7 +683,7 @@ final class IncomingOrderInputNormalizerTest extends TestCase
             [
                 'AttributeKind' => 'FreeText',
                 'Name' => 'Barva',
-                'Value' => 'Ă„Ĺ¤ernÄ‚Ë‡',
+                'Value' => 'černá',
                 'LangID' => 'cs',
                 'Scheme' => 'SI',
                 'UnitCode' => 'bal',
@@ -708,12 +708,12 @@ final class IncomingOrderInputNormalizerTest extends TestCase
         ], $taxExchangeRatePayload);
 
         self::assertSame('ORD-1', $payload['ID']);
-        self::assertSame('HlaviĂ„Ĺ¤kovÄ‚Ë‡ poznÄ‚Ë‡mka', $payload['Note']);
+        self::assertSame('Hlavičková poznámka', $payload['Note']);
         self::assertSame('BankAccount', $payload['PaymentMeansCode']);
         self::assertTrue($payload['PartialDeliveryIndicator']);
 
         self::assertSame('ROW-1', $linePayload['ID']);
-        self::assertSame('ÄąÂÄ‚Ë‡dkovÄ‚Ë‡ poznÄ‚Ë‡mka', $linePayload['Note']);
+        self::assertSame('Řádková poznámka', $linePayload['Note']);
         self::assertSame('EAN-123', $lineItemPayload['StandardItemIdentification']);
     }
 
