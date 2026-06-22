@@ -17,7 +17,7 @@ final class FilterGroup implements QueryFilterInterface
      */
     public function __construct(
         private readonly GroupOperator $operator = GroupOperator::AND,
-        array $filters = []
+        array $filters = [],
     ) {
         $this->filters = $filters;
     }

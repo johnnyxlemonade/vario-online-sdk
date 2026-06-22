@@ -27,7 +27,7 @@ final class RedisTokenStorage implements TokenStorageInterface
 
     public function __construct(
         private readonly Redis $redis,
-        private readonly string $key = '_lemonade_vario_auth_token'
+        private readonly string $key = '_lemonade_vario_auth_token',
     ) {}
 
     public function get(): ?Token
@@ -68,7 +68,7 @@ final class RedisTokenStorage implements TokenStorageInterface
         $this->redis->set(
             $this->key,
             json_encode($token->toArray(), JSON_THROW_ON_ERROR),
-            $ttl
+            $ttl,
         );
     }
 

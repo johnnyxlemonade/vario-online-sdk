@@ -49,7 +49,7 @@ abstract class AbstractPagedQuery implements PagedQueryInterface
         int $pageIndex,
         int $pageLength,
         ?string $sortColumn,
-        ?QueryFilterCollection $filters
+        ?QueryFilterCollection $filters,
     ): static {
         return new static($pageIndex, $pageLength, $sortColumn, $filters);
     }
@@ -64,7 +64,7 @@ abstract class AbstractPagedQuery implements PagedQueryInterface
             $this->pageIndex + 1,
             $this->pageLength,
             $this->sortColumn,
-            $this->filters
+            $this->filters,
         );
     }
 
@@ -74,7 +74,7 @@ abstract class AbstractPagedQuery implements PagedQueryInterface
             max(0, $this->pageIndex - 1),
             $this->pageLength,
             $this->sortColumn,
-            $this->filters
+            $this->filters,
         );
     }
 
@@ -93,7 +93,7 @@ abstract class AbstractPagedQuery implements PagedQueryInterface
             $pageIndex,
             $this->pageLength,
             $this->sortColumn,
-            $this->filters
+            $this->filters,
         );
     }
 
@@ -103,7 +103,7 @@ abstract class AbstractPagedQuery implements PagedQueryInterface
             $this->pageIndex,
             $pageLength,
             $this->sortColumn,
-            $this->filters
+            $this->filters,
         );
     }
 
@@ -113,7 +113,7 @@ abstract class AbstractPagedQuery implements PagedQueryInterface
             $this->pageIndex,
             $this->pageLength,
             $column,
-            $this->filters
+            $this->filters,
         );
     }
 
@@ -123,7 +123,7 @@ abstract class AbstractPagedQuery implements PagedQueryInterface
             $this->pageIndex,
             $this->pageLength,
             $this->sortColumn,
-            $filters
+            $filters,
         );
     }
 
@@ -131,7 +131,7 @@ abstract class AbstractPagedQuery implements PagedQueryInterface
     {
         return $this->withFilters(
             ($this->filters ?? QueryFilterCollection::empty())
-                ->withFilter($filter)
+                ->withFilter($filter),
         );
     }
 
@@ -149,7 +149,7 @@ abstract class AbstractPagedQuery implements PagedQueryInterface
         $p = $prefix !== '' ? $prefix . '.' : '';
 
         $data = [
-            $p . 'PageIndex'  => $this->pageIndex,
+            $p . 'PageIndex' => $this->pageIndex,
             $p . 'PageLength' => $this->pageLength,
         ];
 

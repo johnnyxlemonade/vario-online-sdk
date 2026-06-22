@@ -39,14 +39,14 @@ final class VarioHealthResult
 
     public static function available(
         float $durationMs,
-        ?int $statusCode = null
+        ?int $statusCode = null,
     ): self {
         return new self(
             available: true,
             reason: null,
             message: null,
             durationMs: $durationMs,
-            statusCode: $statusCode
+            statusCode: $statusCode,
         );
     }
 
@@ -55,7 +55,7 @@ final class VarioHealthResult
         string $message,
         float $durationMs,
         ?int $statusCode = null,
-        ?Throwable $previous = null
+        ?Throwable $previous = null,
     ): self {
         return new self(
             available: false,
@@ -63,7 +63,7 @@ final class VarioHealthResult
             message: $message,
             durationMs: $durationMs,
             statusCode: $statusCode,
-            previous: $previous
+            previous: $previous,
         );
     }
 
@@ -110,7 +110,7 @@ final class VarioHealthResult
                 $this->statusCode !== null
                     ? sprintf(' with HTTP %d', $this->statusCode)
                     : '',
-                $this->durationMs
+                $this->durationMs,
             );
         }
 
@@ -122,7 +122,7 @@ final class VarioHealthResult
             $this->durationMs,
             $this->message !== null
                 ? sprintf(': %s', $this->message)
-                : ''
+                : '',
         );
     }
 

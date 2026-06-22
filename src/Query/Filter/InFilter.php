@@ -24,7 +24,7 @@ final class InFilter implements QueryFilterInterface
      */
     public function __construct(
         private readonly string $property,
-        private readonly array $values
+        private readonly array $values,
     ) {}
 
     public function toArray(): array
@@ -35,7 +35,7 @@ final class InFilter implements QueryFilterInterface
             $result[] = [[
                 'Property' => $this->property,
                 'Operator' => Operator::EQUALS->value,
-                'Value'    => $value,
+                'Value' => $value,
             ]];
         }
 

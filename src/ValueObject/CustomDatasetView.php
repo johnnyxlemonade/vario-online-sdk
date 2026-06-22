@@ -9,7 +9,7 @@ final class CustomDatasetView implements DatasetViewInterface
     use DatasetViewBehaviour;
 
     public function __construct(
-        private readonly string $value
+        private readonly string $value,
     ) {}
 
     protected function rawValue(): string

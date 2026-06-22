@@ -87,7 +87,7 @@ final class IncomingOrderUpsertResult
 
         if (!is_string($uuid) || $uuid === '') {
             throw new UnexpectedValueException(
-                'IncomingOrderUpsertResult payload missing valid UUID.'
+                'IncomingOrderUpsertResult payload missing valid UUID.',
             );
         }
 
@@ -126,7 +126,6 @@ final class IncomingOrderUpsertResult
     }
 
     /**
-     * @param mixed $value
      */
     private static function parseNullableDateTime(mixed $value, string $field): ?DateTimeImmutable
     {
@@ -137,7 +136,7 @@ final class IncomingOrderUpsertResult
         if (!is_string($value)) {
             throw new UnexpectedValueException(sprintf(
                 'IncomingOrderUpsertResult field "%s" must be a valid datetime string or null.',
-                $field
+                $field,
             ));
         }
 
@@ -147,7 +146,7 @@ final class IncomingOrderUpsertResult
             throw new UnexpectedValueException(sprintf(
                 'IncomingOrderUpsertResult field "%s" contains invalid datetime value "%s".',
                 $field,
-                $value
+                $value,
             ), 0, $e);
         }
     }

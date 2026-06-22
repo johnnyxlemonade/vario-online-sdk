@@ -47,7 +47,7 @@ final class Authenticator
         private readonly RequestFactoryInterface $requestFactory,
         private readonly StreamFactoryInterface $streamFactory,
         private readonly TokenStorageInterface $storage,
-        private readonly VarioClientConfig $config
+        private readonly VarioClientConfig $config,
     ) {}
 
     public function authenticate(): void
@@ -61,7 +61,7 @@ final class Authenticator
                 || !$this->isTokenValidForConfig($token)
             ) {
                 $this->config->getLogger()->debug(
-                    'Stored token invalid for current configuration, clearing'
+                    'Stored token invalid for current configuration, clearing',
                 );
 
                 $this->storage->clear();
@@ -71,7 +71,7 @@ final class Authenticator
 
         if ($token !== null) {
             $this->config->getLogger()->debug(
-                'Vario authentication skipped: valid token already present'
+                'Vario authentication skipped: valid token already present',
             );
             return;
         }
@@ -79,13 +79,13 @@ final class Authenticator
         try {
             $this->config->getLogger()->info('Vario authentication started');
 
-            $request  = $this->buildRequest();
+            $request = $this->buildRequest();
             $response = $this->httpClient->sendRequest($request);
 
         } catch (ClientExceptionInterface $e) {
             throw new AuthenticationException(
                 'Authentication request failed',
-                previous: $e
+                previous: $e,
             );
         }
 
@@ -99,8 +99,8 @@ final class Authenticator
             new Token(
                 value: $tokenValue,
                 expiresAtUtc: null,
-                configHash: Token::buildConfigHash($this->config)
-            )
+                configHash: Token::buildConfigHash($this->config),
+            ),
         );
 
         $this->config->getLogger()->info('Vario authentication successful');
@@ -115,10 +115,10 @@ final class Authenticator
 
         $body = $this->streamFactory->createStream(
             json_encode([
-                'LoginName'     => $this->config->getLoginName(),
-                'Password'      => $this->config->getPassword(),
+                'LoginName' => $this->config->getLoginName(),
+                'Password' => $this->config->getPassword(),
                 'CompanyNumber' => $this->config->getCompanyNumber(),
-            ], JSON_THROW_ON_ERROR)
+            ], JSON_THROW_ON_ERROR),
         );
 
         return $request->withBody($body);

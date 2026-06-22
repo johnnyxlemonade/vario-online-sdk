@@ -8,7 +8,6 @@ use Lemonade\Vario\Api\AbstractApi;
 use Lemonade\Vario\Api\DatasetViewApi;
 use Lemonade\Vario\Api\IncomingOrderApi;
 use Lemonade\Vario\Api\KnownPartyApi;
-use Lemonade\Vario\Api\OutgoingInvoiceApi;
 use Lemonade\Vario\Client\VarioClientInterface;
 
 /**
@@ -42,7 +41,7 @@ final class VarioApi
      */
     public function __construct(
         private readonly VarioClientInterface $client,
-        array $factories
+        array $factories,
     ) {
         $this->factories = $factories;
     }
@@ -63,7 +62,7 @@ final class VarioApi
             if (!isset($this->factories[$class])) {
                 throw new \LogicException(sprintf(
                     'API factory for "%s" not registered.',
-                    $class
+                    $class,
                 ));
             }
 
@@ -73,7 +72,6 @@ final class VarioApi
         /** @var T */
         return $this->apis[$class];
     }
-
 
     public function datasetView(): DatasetViewApi
     {
@@ -90,8 +88,4 @@ final class VarioApi
         return $this->api(KnownPartyApi::class);
     }
 
-    public function outgoingInvoices(): OutgoingInvoiceApi
-    {
-        return $this->api(OutgoingInvoiceApi::class);
-    }
 }

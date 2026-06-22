@@ -74,7 +74,7 @@ final class VarioClient implements VarioClientInterface
         private readonly RequestAuthenticator $requestAuthenticator,
         private readonly RequestLogger $requestLogger,
         private readonly ResponseHandler $responseHandler,
-        callable $reauthCallback
+        callable $reauthCallback,
     ) {
         $this->reauthCallback = Closure::fromCallable($reauthCallback);
     }
@@ -94,7 +94,7 @@ final class VarioClient implements VarioClientInterface
     public function sendJson(
         HttpMethod $method,
         string $uri,
-        ?array $payload = null
+        ?array $payload = null,
     ): array {
 
         $request = $this->createRequest($method, $uri);
@@ -104,7 +104,7 @@ final class VarioClient implements VarioClientInterface
         }
 
         return $this->decodeJsonResponse(
-            $this->send($request)
+            $this->send($request),
         );
     }
 
@@ -114,14 +114,14 @@ final class VarioClient implements VarioClientInterface
     public function sendQuery(
         HttpMethod $method,
         string $uri,
-        array $query
+        array $query,
     ): array {
 
         $request = $this->createRequest($method, $uri);
         $request = $this->withQuery($request, $query);
 
         return $this->decodeJsonResponse(
-            $this->send($request)
+            $this->send($request),
         );
     }
 
@@ -135,7 +135,7 @@ final class VarioClient implements VarioClientInterface
      */
     private function withJsonBody(
         RequestInterface $request,
-        array $payload
+        array $payload,
     ): RequestInterface {
 
         $json = json_encode($payload, JSON_THROW_ON_ERROR);
@@ -151,11 +151,11 @@ final class VarioClient implements VarioClientInterface
      */
     private function withQuery(
         RequestInterface $request,
-        array $query
+        array $query,
     ): RequestInterface {
 
         $uri = $request->getUri()->withQuery(
-            http_build_query($query, '', '&', PHP_QUERY_RFC3986)
+            http_build_query($query, '', '&', PHP_QUERY_RFC3986),
         );
 
         return $request->withUri($uri);
@@ -177,7 +177,7 @@ final class VarioClient implements VarioClientInterface
         if (!is_array($decoded)) {
             throw new ApiException(sprintf(
                 'Invalid JSON response from Vario API (%d). Expected JSON object or array.',
-                $response->getStatusCode()
+                $response->getStatusCode(),
             ));
         }
 
@@ -187,19 +187,19 @@ final class VarioClient implements VarioClientInterface
 
     private function sendWithRetry(
         RequestInterface $request,
-        bool $allowRetry
+        bool $allowRetry,
     ): ResponseInterface {
 
         $preparedRequest = $this->requestAuthenticator->authenticate(
             $request,
-            $this->tokenStorage
+            $this->tokenStorage,
         );
 
         $this->rewindRequestBody($preparedRequest);
 
         $this->requestLogger->logRequest(
             $this->logger,
-            $preparedRequest
+            $preparedRequest,
         );
 
         $start = microtime(true);
@@ -219,7 +219,7 @@ final class VarioClient implements VarioClientInterface
 
             throw new ApiException(
                 'HTTP request to Vario API failed',
-                previous: $e
+                previous: $e,
             );
         }
 
@@ -229,14 +229,14 @@ final class VarioClient implements VarioClientInterface
             $this->logger,
             $preparedRequest,
             $response,
-            $durationMs
+            $durationMs,
         );
 
         return $this->responseHandler->handle(
             $preparedRequest,
             $response,
             fn(): ResponseInterface =>
-            $this->handleUnauthorizedResponse($preparedRequest, $allowRetry)
+            $this->handleUnauthorizedResponse($preparedRequest, $allowRetry),
         );
     }
 
@@ -251,7 +251,7 @@ final class VarioClient implements VarioClientInterface
 
     private function handleUnauthorizedResponse(
         RequestInterface $request,
-        bool $allowRetry
+        bool $allowRetry,
     ): ResponseInterface {
         $this->logger->warning('Vario API unauthorized (401)', [
             'uri' => (string) $request->getUri(),
@@ -260,7 +260,7 @@ final class VarioClient implements VarioClientInterface
 
         if (!$allowRetry) {
             throw new AuthenticationException(
-                'Authentication failed after retry. Check login credentials or company number.'
+                'Authentication failed after retry. Check login credentials or company number.',
             );
         }
 
@@ -285,7 +285,7 @@ final class VarioClient implements VarioClientInterface
 
             throw new AuthenticationException(
                 'Re-authentication failed',
-                previous: $e
+                previous: $e,
             );
         }
     }

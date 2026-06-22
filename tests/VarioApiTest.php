@@ -133,19 +133,4 @@ final class VarioApiTest extends TestCase
         self::assertSame($api, $vario->knownParties());
     }
 
-    public function test_outgoing_invoices_facade(): void
-    {
-        $client = $this->createMock(VarioClientInterface::class);
-        $api = new OutgoingInvoiceApi($client);
-
-        $vario = new VarioApi(
-            $client,
-            [
-                OutgoingInvoiceApi::class => fn() => $api,
-            ]
-        );
-
-        self::assertSame($api, $vario->outgoingInvoices());
-    }
-
 }

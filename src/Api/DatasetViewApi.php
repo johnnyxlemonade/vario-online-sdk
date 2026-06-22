@@ -52,7 +52,7 @@ final class DatasetViewApi extends AbstractApi
         $result = $this->sendQuery(
             HttpMethod::GET,
             VarioEndpoint::DatasetView,
-            $query->toArray()
+            $query->toArray(),
         );
 
         /** @var array{
@@ -85,7 +85,7 @@ final class DatasetViewApi extends AbstractApi
      */
     public function iterate(
         DatasetViewQuery $baseQuery,
-        ?int $pageLength = null
+        ?int $pageLength = null,
     ): \Generator {
 
         $pageLength ??= $baseQuery->getPageLength();
@@ -97,7 +97,7 @@ final class DatasetViewApi extends AbstractApi
                 pageIndex: $pageIndex,
                 pageLength: $pageLength,
                 sortColumn: $baseQuery->getSortColumn(),
-                filters: $baseQuery->getFilters()
+                filters: $baseQuery->getFilters(),
             );
 
             $result = $this->fetch($query);

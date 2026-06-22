@@ -89,7 +89,7 @@ final class ProductCollection implements IteratorAggregate, Countable
     public function filter(callable $predicate): self
     {
         return new self(
-            ...array_values(array_filter($this->items, $predicate))
+            ...array_values(array_filter($this->items, $predicate)),
         );
     }
 

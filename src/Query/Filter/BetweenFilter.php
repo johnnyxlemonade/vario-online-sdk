@@ -22,7 +22,7 @@ final class BetweenFilter implements QueryFilterInterface
     public function __construct(
         private readonly string $property,
         private readonly int|float|string $from,
-        private readonly int|float|string $to
+        private readonly int|float|string $to,
     ) {}
 
     public function toArray(): array
@@ -31,12 +31,12 @@ final class BetweenFilter implements QueryFilterInterface
             [
                 'Property' => $this->property,
                 'Operator' => Operator::GREATER_OR_EQUAL->value,
-                'Value'    => $this->from,
+                'Value' => $this->from,
             ],
             [
                 'Property' => $this->property,
                 'Operator' => Operator::LESS_OR_EQUAL->value,
-                'Value'    => $this->to,
+                'Value' => $this->to,
             ],
         ]];
     }

@@ -21,7 +21,7 @@ final class NotEqualsFilter extends AbstractFilter
 {
     public function __construct(
         private readonly string $property,
-        private readonly string|int|float|bool $value
+        private readonly string|int|float|bool $value,
     ) {}
 
     /**
@@ -32,7 +32,7 @@ final class NotEqualsFilter extends AbstractFilter
         return $this->group([
             'Property' => $this->property,
             'Operator' => Operator::NOT_EQUALS->value,
-            'Value'    => $this->value,
+            'Value' => $this->value,
         ]);
     }
 }

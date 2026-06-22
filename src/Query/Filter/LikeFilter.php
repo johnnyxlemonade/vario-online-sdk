@@ -21,7 +21,7 @@ final class LikeFilter extends AbstractFilter
 {
     public function __construct(
         private readonly string $property,
-        private readonly string $value
+        private readonly string $value,
     ) {}
 
     /**
@@ -32,7 +32,7 @@ final class LikeFilter extends AbstractFilter
         return $this->group([
             'Property' => $this->property,
             'Operator' => Operator::LIKE->value,
-            'Value'    => $this->value,
+            'Value' => $this->value,
         ]);
     }
 }

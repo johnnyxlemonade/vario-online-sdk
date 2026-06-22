@@ -23,7 +23,7 @@ final class ProductPricesMapping implements ProductSectionMapping
         private readonly ?string $basePrice = 'Cena_Cenik',
         private readonly ?string $vatRate = 'Sazba_DPH',
         private readonly ?string $priceIncludesVat = 'Ceny_vcetne_DPH',
-        private readonly ?string $currency = null
+        private readonly ?string $currency = null,
     ) {}
 
     public function getBasePrice(): ?string

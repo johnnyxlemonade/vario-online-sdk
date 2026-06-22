@@ -41,7 +41,7 @@ use Lemonade\Vario\Enum\VarioEndpoint;
 abstract class AbstractApi
 {
     public function __construct(
-        protected readonly VarioClientInterface $client
+        protected readonly VarioClientInterface $client,
     ) {}
 
     /**
@@ -51,12 +51,12 @@ abstract class AbstractApi
     protected function sendJson(
         HttpMethod $method,
         VarioEndpoint $endpoint,
-        ?array $payload = null
+        ?array $payload = null,
     ): array {
         return $this->client->sendJson(
             $method,
             $endpoint->value,
-            $payload
+            $payload,
         );
     }
 
@@ -67,12 +67,12 @@ abstract class AbstractApi
     protected function sendQuery(
         HttpMethod $method,
         VarioEndpoint $endpoint,
-        array $query
+        array $query,
     ): array {
         return $this->client->sendQuery(
             $method,
             $endpoint->value,
-            $query
+            $query,
         );
     }
 }

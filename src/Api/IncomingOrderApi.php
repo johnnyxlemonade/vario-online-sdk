@@ -64,7 +64,7 @@ final class IncomingOrderApi extends AbstractApi
         $result = $this->sendJson(
             HttpMethod::QUERY,
             VarioEndpoint::IncomingOrder,
-            $query->toArray()
+            $query->toArray(),
         );
 
         /** @var list<array<string,mixed>> $result */
@@ -97,7 +97,7 @@ final class IncomingOrderApi extends AbstractApi
         $result = $this->sendJson(
             HttpMethod::PUT,
             VarioEndpoint::IncomingOrder,
-            $payload
+            $payload,
         );
 
         /** @var list<array<string,mixed>> $result */

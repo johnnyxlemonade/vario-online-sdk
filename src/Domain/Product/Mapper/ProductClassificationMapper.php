@@ -35,7 +35,7 @@ use Lemonade\Vario\Domain\Product\ValueObject\ProductClassification;
 final class ProductClassificationMapper extends AbstractProductSectionMapper
 {
     public function __construct(
-        private readonly ProductClassificationMapping $mapping
+        private readonly ProductClassificationMapping $mapping,
     ) {}
 
     public function map(DatasetRow $row): ?ProductClassification

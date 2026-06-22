@@ -24,7 +24,7 @@ final class PriceLevel
 {
     public function __construct(
         private readonly string $code,
-        private readonly Price $price
+        private readonly Price $price,
     ) {}
 
     public function getCode(): string

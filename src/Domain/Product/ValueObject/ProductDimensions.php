@@ -32,7 +32,7 @@ final class ProductDimensions implements ProductSection
         ?float $width,
         ?float $height,
         ?float $depth,
-        ?float $weightKg
+        ?float $weightKg,
     ): self {
         return new self(
             width: $width,
@@ -40,7 +40,7 @@ final class ProductDimensions implements ProductSection
             depth: $depth,
             weightGrams: $weightKg !== null
                 ? $weightKg * self::KG_TO_GRAMS
-                : null
+                : null,
         );
     }
 

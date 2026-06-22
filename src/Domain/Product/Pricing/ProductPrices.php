@@ -26,7 +26,7 @@ final class ProductPrices implements ProductSection
 {
     public function __construct(
         private readonly PriceCollection $levels,
-        private readonly ?Price $basePrice = null
+        private readonly ?Price $basePrice = null,
     ) {}
 
     public function getBasePrice(): ?Price

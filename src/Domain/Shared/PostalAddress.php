@@ -46,7 +46,7 @@ final class PostalAddress implements Stringable, JsonSerializable
         private readonly ?string $buildingNumber = null,
         private readonly ?string $city = null,
         private readonly ?string $postalCode = null,
-        private readonly ?string $countryIso = null
+        private readonly ?string $countryIso = null,
     ) {}
 
     /* =========================
@@ -123,7 +123,7 @@ final class PostalAddress implements Stringable, JsonSerializable
                 $this->getCityLine(),
                 $this->getCountryIso(),
             ],
-            static fn(?string $v): bool => $v !== null && $v !== ''
+            static fn(?string $v): bool => $v !== null && $v !== '',
         );
 
         if ($parts === []) {

@@ -20,7 +20,7 @@ namespace Lemonade\Vario\Query\Filter;
 final class IsNullFilter implements QueryFilterInterface
 {
     public function __construct(
-        private readonly string $property
+        private readonly string $property,
     ) {}
 
     public function toArray(): array
@@ -29,7 +29,7 @@ final class IsNullFilter implements QueryFilterInterface
             [
                 'Property' => $this->property,
                 'Operator' => Operator::EQUALS->value,
-                'Value'    => null,
+                'Value' => null,
             ],
         ]];
     }

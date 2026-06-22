@@ -33,11 +33,11 @@ final class SessionTokenStorage implements TokenStorageInterface
      */
     public function __construct(
         private readonly SessionInterface $session,
-        private readonly string $key = '_lemonade_vario_auth_token'
+        private readonly string $key = '_lemonade_vario_auth_token',
     ) {
         if (!$this->session->isActive()) {
             throw new \RuntimeException(
-                'SessionTokenStorage requires an active session.'
+                'SessionTokenStorage requires an active session.',
             );
         }
     }

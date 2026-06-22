@@ -26,7 +26,7 @@ final class DatasetRow
 {
     /** @param array<string,mixed> $data */
     public function __construct(
-        private array $data
+        private array $data,
     ) {}
 
     public function get(string $field): mixed

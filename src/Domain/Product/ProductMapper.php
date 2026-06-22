@@ -20,7 +20,7 @@ namespace Lemonade\Vario\Domain\Product;
 final class ProductMapper
 {
     public function __construct(
-        private readonly ProductDatasetMapping $mapping
+        private readonly ProductDatasetMapping $mapping,
     ) {}
 
     public function map(DatasetRow $row): Product
@@ -60,7 +60,7 @@ final class ProductMapper
     public function collect(iterable $rows): ProductCollection
     {
         return new ProductCollection(
-            ...$this->iterate($rows)
+            ...$this->iterate($rows),
         );
     }
 
@@ -70,7 +70,7 @@ final class ProductMapper
     public function lazy(iterable $rows): LazyProductCollection
     {
         return new LazyProductCollection(
-            fn() => $this->iterate($rows)
+            fn() => $this->iterate($rows),
         );
     }
 

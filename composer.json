@@ -1,8 +1,7 @@
 {
-  "name": "lemonade/vario-online-sdk",
+  "name": "johnnyxlemonade/vario-online-sdk",
   "description": "PHP SDK for the Vario Online API providing typed dataset queries, domain models and PSR-18 HTTP integration for Vario ERP systems.",
   "type": "library",
-  "license": "MIT",
   "keywords": [
     "vario",
     "vario-api",
@@ -15,10 +14,6 @@
     "psr-18"
   ],
   "homepage": "https://github.com/johnnyxlemonade/vario-online-sdk",
-  "support": {
-    "issues": "https://github.com/johnnyxlemonade/vario-online-sdk/issues",
-    "source": "https://github.com/johnnyxlemonade/vario-online-sdk"
-  },
   "authors": [
     {
       "name": "Honza Mudrak",
@@ -51,6 +46,7 @@
     }
   },
   "require-dev": {
+    "friendsofphp/php-cs-fixer": "^3.94",
     "guzzlehttp/guzzle": "^7.8",
     "monolog/monolog": "^3.0",
     "phpstan/phpstan": "^2.1",
@@ -58,15 +54,82 @@
     "phpunit/phpunit": "^10.5 || ^11.0"
   },
   "scripts": {
-    "test": "phpunit",
-    "stan": "phpstan analyse",
-    "stan:ci": "phpstan analyse --no-progress --memory-limit=1G",
-    "ci": [
-      "@stan:ci",
+    "post-autoload-dump": [
+      "@php -r \"echo 'Autoload refreshed'.PHP_EOL;\""
+    ],
+    "lint": "@php tools/lint.php",
+    "autoload:dev": [
+      "@composer dump-autoload"
+    ],
+    "autoload:optimize": [
+      "@composer dump-autoload --optimize"
+    ],
+    "autoload:prod": [
+      "@composer dump-autoload --optimize --classmap-authoritative"
+    ],
+    "autoload:apcu": [
+      "@composer dump-autoload --optimize --apcu"
+    ],
+    "composer:validate": [
+      "@composer validate --strict"
+    ],
+    "test": [
+      "@php vendor/bin/phpunit"
+    ],
+    "test:ci": [
+      "@php vendor/bin/phpunit --colors=always"
+    ],
+    "stan": [
+      "@php vendor/bin/phpstan analyse --memory-limit=32G"
+    ],
+    "stan:ci": [
+      "@php vendor/bin/phpstan analyse --no-progress --error-format=github --memory-limit=1G"
+    ],
+    "cs:check": [
+      "@php vendor/bin/php-cs-fixer fix --dry-run --diff --allow-risky=yes"
+    ],
+    "cs:fix": [
+      "@php vendor/bin/php-cs-fixer fix --allow-risky=yes"
+    ],
+    "qa": [
+      "@cs:check",
+      "@stan",
       "@test"
+    ],
+    "check": [
+      "@composer:validate",
+      "@check:platform",
+      "@lint",
+      "@qa"
+    ],
+    "check:platform": [
+      "@composer check-platform-reqs"
     ]
   },
-  "minimum-stability": "stable",
+  "scripts-descriptions": {
+    "lint": "Check PHP syntax for source and tests.",
+    "autoload:dev": "Regenerate Composer autoload files for development.",
+    "autoload:optimize": "Regenerate optimized Composer autoload files.",
+    "autoload:prod": "Regenerate optimized authoritative classmap for production.",
+    "autoload:apcu": "Regenerate optimized Composer autoload files with APCu support.",
+    "composer:validate": "Validate composer.json in strict mode.",
+    "test": "Run the PHPUnit test suite.",
+    "test:ci": "Run the PHPUnit test suite with CI-friendly output.",
+    "stan": "Run PHPStan static analysis.",
+    "stan:ci": "Run PHPStan static analysis with GitHub Actions output format.",
+    "cs:check": "Check coding standards using PHP CS Fixer without modifying files.",
+    "cs:fix": "Fix coding standards using PHP CS Fixer.",
+    "qa": "Run coding standards check, static analysis and tests.",
+    "check:platform": "Check installed platform requirements.",
+    "check": "Run full project validation."
+  },
+  "license": "MIT",
+  "support": {
+    "email": "honzamudrak@gmail.com",
+    "source": "https://github.com/johnnyxlemonade/framework",
+    "issues": "https://github.com/johnnyxlemonade/framework/issues"
+  },
+  "minimum-stability": "dev",
   "prefer-stable": true,
   "config": {
     "sort-packages": true

@@ -30,7 +30,7 @@ final class Price implements ProductSection
         private readonly float $value,
         private readonly bool $includesVat,
         private readonly ?VatRate $vatRate = null,
-        private readonly ?Currency $currency = null
+        private readonly ?Currency $currency = null,
     ) {}
 
     public function getValue(): float

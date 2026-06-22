@@ -27,7 +27,7 @@ final class RequestLogger
         LoggerInterface $logger,
         RequestInterface $request,
         ResponseInterface $response,
-        float $durationMs
+        float $durationMs,
     ): void {
 
         $uri = $request->getUri();

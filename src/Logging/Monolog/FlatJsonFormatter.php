@@ -54,12 +54,12 @@ final class FlatJsonFormatter implements FormatterInterface
                 'message' => $record->message,
             ],
             $record->context,
-            $record->extra
+            $record->extra,
         );
 
         return json_encode(
             $flat,
-            JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE
+            JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE,
         ) . "\n";
     }
 

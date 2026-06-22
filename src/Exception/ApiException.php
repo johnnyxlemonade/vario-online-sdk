@@ -10,7 +10,7 @@ class ApiException extends VarioException
         string $message,
         private readonly ?int $statusCode = null,
         private readonly ?string $responseBody = null,
-        ?\Throwable $previous = null
+        ?\Throwable $previous = null,
     ) {
         // HTTP status je transport metadata,
         // nikoliv runtime exception code.

@@ -158,7 +158,7 @@ final class IdentificationCollection implements IteratorAggregate, Countable
                 'id' => $i->getId(),
                 'originCountry' => $i->getOriginCountry(),
             ],
-            $this->items
+            $this->items,
         );
     }
 }

@@ -69,7 +69,7 @@ final class LazyProductCollection implements IteratorAggregate
     public function collect(): ProductCollection
     {
         return new ProductCollection(
-            ...iterator_to_array($this->getIterator(), false)
+            ...iterator_to_array($this->getIterator(), false),
         );
     }
 

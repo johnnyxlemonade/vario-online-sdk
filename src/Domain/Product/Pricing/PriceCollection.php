@@ -81,7 +81,7 @@ final class PriceCollection implements IteratorAggregate
     {
         return array_map(
             static fn(PriceLevel $level) => $level->toArray(),
-            $this->levels
+            $this->levels,
         );
     }
 }

@@ -14,7 +14,7 @@ use Psr\Log\LoggerInterface;
 final class ResponseHandler
 {
     public function __construct(
-        private readonly LoggerInterface $logger
+        private readonly LoggerInterface $logger,
     ) {}
 
     /**
@@ -23,7 +23,7 @@ final class ResponseHandler
     public function handle(
         RequestInterface $request,
         ResponseInterface $response,
-        callable $onUnauthorized
+        callable $onUnauthorized,
     ): ResponseInterface {
 
         $statusCode = $response->getStatusCode();
@@ -44,7 +44,7 @@ final class ResponseHandler
 
     private function throwForbidden(
         RequestInterface $request,
-        ResponseInterface $response
+        ResponseInterface $response,
     ): never {
 
         $body = (string) $response->getBody();
@@ -56,17 +56,17 @@ final class ResponseHandler
         throw new ForbiddenException(
             sprintf(
                 "Vario API forbidden\nURI: %s",
-                (string) $request->getUri()
+                (string) $request->getUri(),
             ),
             HttpStatus::FORBIDDEN->value,
-            $body
+            $body,
         );
     }
 
     private function handleGeneric(
         RequestInterface $request,
         ResponseInterface $response,
-        int $status
+        int $status,
     ): ResponseInterface {
 
         if ($status < 400) {
@@ -84,10 +84,10 @@ final class ResponseHandler
             sprintf(
                 "Vario API error\nStatus: %d\nURI: %s",
                 $status,
-                (string) $request->getUri()
+                (string) $request->getUri(),
             ),
             $status,
-            $body
+            $body,
         );
     }
 }

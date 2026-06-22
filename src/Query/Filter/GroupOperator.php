@@ -10,5 +10,5 @@ namespace Lemonade\Vario\Query\Filter;
 enum GroupOperator: string
 {
     case AND = 'AND';
-    case OR  = 'OR';
+    case OR = 'OR';
 }

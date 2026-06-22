@@ -21,7 +21,7 @@ final class GreaterThanFilter extends AbstractFilter
 {
     public function __construct(
         private readonly string $property,
-        private readonly int|float|string $value
+        private readonly int|float|string $value,
     ) {}
 
     /**
@@ -32,7 +32,7 @@ final class GreaterThanFilter extends AbstractFilter
         return $this->group([
             'Property' => $this->property,
             'Operator' => Operator::GREATER_THAN->value,
-            'Value'    => $this->value,
+            'Value' => $this->value,
         ]);
     }
 }

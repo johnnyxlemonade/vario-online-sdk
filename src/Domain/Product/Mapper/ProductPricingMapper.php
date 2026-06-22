@@ -42,7 +42,7 @@ use Lemonade\Vario\Domain\Product\ValueObject\ProductPricing;
 final class ProductPricingMapper extends AbstractProductSectionMapper
 {
     public function __construct(
-        private readonly ProductPricingMapping $mapping
+        private readonly ProductPricingMapping $mapping,
     ) {}
 
     public function map(DatasetRow $row): ?ProductPricing
@@ -64,12 +64,12 @@ final class ProductPricingMapper extends AbstractProductSectionMapper
                 value: $price,
                 includesVat: $includesVat ?? false,
                 vatRate: $vatRate,
-                currency: Currency::CZK
+                currency: Currency::CZK,
             );
         }
 
         return new ProductPricing(
-            price: $priceObject
+            price: $priceObject,
         );
     }
 }

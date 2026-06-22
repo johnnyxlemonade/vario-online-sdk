@@ -33,19 +33,19 @@ final class DatasetViewQuery extends AbstractPagedQuery
             $pageIndex,
             $pageLength,
             $sortColumn,
-            $filters
+            $filters,
         );
     }
 
     public static function for(
         DatasetViewInterface $view,
         int $pageIndex = 0,
-        int $pageLength = 100
+        int $pageLength = 100,
     ): self {
         return new self(
             pageIndex: $pageIndex,
             pageLength: $pageLength,
-            datasetView: $view
+            datasetView: $view,
         );
     }
 
@@ -62,14 +62,14 @@ final class DatasetViewQuery extends AbstractPagedQuery
         int $pageIndex,
         int $pageLength,
         ?string $sortColumn,
-        ?QueryFilterCollection $filters
+        ?QueryFilterCollection $filters,
     ): static {
         return new static(
             pageIndex: $pageIndex,
             pageLength: $pageLength,
             sortColumn: $sortColumn,
             filters: $filters,
-            datasetView: $this->datasetView
+            datasetView: $this->datasetView,
         );
     }
 

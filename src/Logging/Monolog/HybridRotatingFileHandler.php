@@ -49,7 +49,7 @@ class HybridRotatingFileHandler extends StreamHandler
         private readonly string $channel,
         private readonly int $maxFileSizeBytes = 10485760, // 10MB
         Level|string|int $level = Level::Debug,
-        bool $bubble = true
+        bool $bubble = true,
     ) {
         $date = date('Y-m-d');
 

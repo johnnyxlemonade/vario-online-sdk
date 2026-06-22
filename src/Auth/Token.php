@@ -25,7 +25,7 @@ final class Token
     public function __construct(
         public readonly string $value,
         private readonly ?\DateTimeImmutable $expiresAtUtc = null,
-        private readonly ?string $configHash = null
+        private readonly ?string $configHash = null,
     ) {}
 
     /**
@@ -59,7 +59,7 @@ final class Token
         return new self(
             value: $value,
             expiresAtUtc: $expiresAt,
-            configHash: $configHash
+            configHash: $configHash,
         );
     }
 
@@ -69,7 +69,7 @@ final class Token
     }
 
     public function isExpired(
-        \DateTimeImmutable $nowUtc = new \DateTimeImmutable('now', new \DateTimeZone('UTC'))
+        \DateTimeImmutable $nowUtc = new \DateTimeImmutable('now', new \DateTimeZone('UTC')),
     ): bool {
         return $this->expiresAtUtc !== null && $nowUtc >= $this->expiresAtUtc;
     }
@@ -96,7 +96,7 @@ final class Token
         return sha1(
             $config->getBaseUrl()
             . '|' . $config->getLoginName()
-            . '|' . $config->getCompanyNumber()
+            . '|' . $config->getCompanyNumber(),
         );
     }
 }

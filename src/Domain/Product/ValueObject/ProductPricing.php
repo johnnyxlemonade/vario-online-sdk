@@ -22,7 +22,7 @@ use Lemonade\Vario\Domain\Product\Pricing\Price;
 final class ProductPricing implements ProductSection
 {
     public function __construct(
-        private readonly ?Price $price
+        private readonly ?Price $price,
     ) {}
 
     public function getPrice(): ?Price

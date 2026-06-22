@@ -90,20 +90,20 @@ final class IncomingOrderMapper
 
         /** ---------- Totals ---------- */
         $monetaryTotal = $this->mapMonetaryTotal(
-            $this->arrayOrNull($data['MonetaryTotal'] ?? null)
+            $this->arrayOrNull($data['MonetaryTotal'] ?? null),
         );
 
         $taxExchangeRate = $this->mapTaxExchangeRate(
-            $this->arrayOrNull($data['TaxExchangeRate'] ?? null)
+            $this->arrayOrNull($data['TaxExchangeRate'] ?? null),
         );
 
         $taxTotal = $this->mapTaxTotal(
-            $this->arrayOrNull($data['TaxTotal'] ?? null)
+            $this->arrayOrNull($data['TaxTotal'] ?? null),
         );
 
         /** ---------- Delivery detail ---------- */
         $deliveryDetail = $this->mapDeliveryDetail(
-            $this->arrayOrNull($data['DeliveryDetail'] ?? null)
+            $this->arrayOrNull($data['DeliveryDetail'] ?? null),
         );
 
         /** ---------- Top-level textual attributes ---------- */
@@ -168,7 +168,7 @@ final class IncomingOrderMapper
         }
 
         $address = $this->mapAddress(
-            $this->arrayOrNull($data['PostalAddress'] ?? null)
+            $this->arrayOrNull($data['PostalAddress'] ?? null),
         );
 
         $identificationsRaw = $data['Identifications'] ?? null;
@@ -222,19 +222,19 @@ final class IncomingOrderMapper
     private function mapLine(array $data): IncomingOrderLine
     {
         $lineItem = $this->mapLineItem(
-            $this->arrayOrNull($data['LineItem'] ?? null)
+            $this->arrayOrNull($data['LineItem'] ?? null),
         );
 
         $lineQuantity = $this->mapQuantity(
-            $this->arrayOrNull($data['LineQuantity'] ?? null)
+            $this->arrayOrNull($data['LineQuantity'] ?? null),
         );
 
         $taxSubTotal = $this->mapTaxSubTotal(
-            $this->arrayOrNull($data['TaxSubTotal'] ?? null)
+            $this->arrayOrNull($data['TaxSubTotal'] ?? null),
         );
 
         $unitPrice = $this->mapUnitPrice(
-            $this->arrayOrNull($data['UnitPrice'] ?? null)
+            $this->arrayOrNull($data['UnitPrice'] ?? null),
         );
 
         /** @var array<string,mixed> $extra */
@@ -362,11 +362,11 @@ final class IncomingOrderMapper
             }
 
             $kind = IncomingOrderTextualAttributeKind::tryFrom(
-                $this->stringOrNull($row['AttributeKind'] ?? null) ?? 'ExtendedID'
+                $this->stringOrNull($row['AttributeKind'] ?? null) ?? 'ExtendedID',
             ) ?? IncomingOrderTextualAttributeKind::ExtendedID;
 
             $scheme = IncomingOrderUnitOfMeasureScheme::tryFrom(
-                $this->stringOrNull($row['Scheme'] ?? null) ?? ''
+                $this->stringOrNull($row['Scheme'] ?? null) ?? '',
             );
 
             /** @var array<string,mixed> $extra */
@@ -403,7 +403,7 @@ final class IncomingOrderMapper
 
         foreach ($rows as $row) {
             $kind = IncomingOrderTextualAttributeKind::tryFrom(
-                $this->stringOrNull($row['AttributeKind'] ?? null) ?? ''
+                $this->stringOrNull($row['AttributeKind'] ?? null) ?? '',
             );
 
             if ($kind === null) {
@@ -440,7 +440,7 @@ final class IncomingOrderMapper
 
         foreach ($rows as $row) {
             $kind = IncomingOrderNumericAttributeKind::tryFrom(
-                $this->stringOrNull($row['AttributeKind'] ?? null) ?? ''
+                $this->stringOrNull($row['AttributeKind'] ?? null) ?? '',
             );
 
             if ($kind === null) {
@@ -484,7 +484,7 @@ final class IncomingOrderMapper
             }
 
             $scheme = IncomingOrderUnitOfMeasureScheme::tryFrom(
-                $this->stringOrNull($row['Scheme'] ?? null) ?? 'Unknown'
+                $this->stringOrNull($row['Scheme'] ?? null) ?? 'Unknown',
             ) ?? IncomingOrderUnitOfMeasureScheme::Unknown;
 
             $mapped[] = new IncomingOrderUnitConversionFactor(
@@ -514,7 +514,7 @@ final class IncomingOrderMapper
         }
 
         $scheme = IncomingOrderUnitOfMeasureScheme::tryFrom(
-            $this->stringOrNull($data['Scheme'] ?? null) ?? 'Unknown'
+            $this->stringOrNull($data['Scheme'] ?? null) ?? 'Unknown',
         ) ?? IncomingOrderUnitOfMeasureScheme::Unknown;
 
         return new IncomingOrderQuantity(
@@ -565,11 +565,11 @@ final class IncomingOrderMapper
         }
 
         $calculationMethod = IncomingOrderTaxCalculationMethod::tryFrom(
-            $this->stringOrNull($data['CalculationMethod'] ?? null) ?? ''
+            $this->stringOrNull($data['CalculationMethod'] ?? null) ?? '',
         );
 
         $scheme = IncomingOrderTaxScheme::tryFrom(
-            $this->stringOrNull($data['Scheme'] ?? null) ?? ''
+            $this->stringOrNull($data['Scheme'] ?? null) ?? '',
         );
 
         $taxableAmount = $this->floatOrNull($data['TaxableAmount'] ?? null);
@@ -606,7 +606,7 @@ final class IncomingOrderMapper
         }
 
         $quantity = $this->mapQuantity(
-            $this->arrayOrNull($data['Quantity'] ?? null)
+            $this->arrayOrNull($data['Quantity'] ?? null),
         );
 
         /** @var array<string,mixed> $extra */
@@ -705,7 +705,7 @@ final class IncomingOrderMapper
         }
 
         $taxCurrency = Currency::tryFromNullable(
-            $this->stringOrNull($data['TaxCurrency'] ?? null)
+            $this->stringOrNull($data['TaxCurrency'] ?? null),
         );
 
         $referenceCurrencyRate = $this->floatOrNull($data['ReferenceCurrencyRate'] ?? null);
@@ -810,7 +810,7 @@ final class IncomingOrderMapper
 
         if ($value === null) {
             throw new UnexpectedValueException(
-                sprintf('IncomingOrder payload missing required field "%s".', $key)
+                sprintf('IncomingOrder payload missing required field "%s".', $key),
             );
         }
 
@@ -884,7 +884,6 @@ final class IncomingOrderMapper
     }
 
     /**
-     * @param mixed $value
      * @return array<string,mixed>|null
      */
     private function arrayOrNull(mixed $value): ?array

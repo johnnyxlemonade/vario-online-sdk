@@ -7,7 +7,6 @@ namespace Lemonade\Vario;
 use Lemonade\Vario\Api\DatasetViewApi;
 use Lemonade\Vario\Api\IncomingOrderApi;
 use Lemonade\Vario\Api\KnownPartyApi;
-use Lemonade\Vario\Api\OutgoingInvoiceApi;
 use Lemonade\Vario\Auth\Authenticator;
 use Lemonade\Vario\Auth\Storage\TokenStorageInterface;
 use Lemonade\Vario\Client\Http\RequestAuthenticator;
@@ -57,13 +56,13 @@ final class VarioApiFactory
     public static function create(
         VarioClientConfig $config,
         HttpAdapterInterface $httpAdapter,
-        TokenStorageInterface $tokenStorage
+        TokenStorageInterface $tokenStorage,
     ): VarioApi {
 
         $authenticator = self::createAuthenticator(
             $config,
             $httpAdapter,
-            $tokenStorage
+            $tokenStorage,
         );
 
         $logger = $config->getLogger();
@@ -100,9 +99,7 @@ final class VarioApiFactory
                     new IncomingOrderMapper(),
                     new IncomingOrderInputNormalizer(),
                 ),
-                OutgoingInvoiceApi::class => fn() =>
-                    new OutgoingInvoiceApi($client),
-            ]
+            ],
         );
     }
 
@@ -112,14 +109,14 @@ final class VarioApiFactory
     private static function createAuthenticator(
         VarioClientConfig $config,
         HttpAdapterInterface $httpAdapter,
-        TokenStorageInterface $tokenStorage
+        TokenStorageInterface $tokenStorage,
     ): Authenticator {
         return new Authenticator(
             httpClient: $httpAdapter->httpClient(),
             requestFactory: $httpAdapter->requestFactory(),
             streamFactory: $httpAdapter->streamFactory(),
             storage: $tokenStorage,
-            config: $config
+            config: $config,
         );
     }
 

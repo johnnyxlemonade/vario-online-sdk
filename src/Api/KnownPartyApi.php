@@ -67,7 +67,7 @@ final class KnownPartyApi extends AbstractApi
         $result = $this->sendJson(
             HttpMethod::QUERY,
             VarioEndpoint::KnownParty,
-            $query->toArray()
+            $query->toArray(),
         );
 
         /** @var list<array<string,mixed>> $result */
@@ -100,7 +100,7 @@ final class KnownPartyApi extends AbstractApi
         $result = $this->sendJson(
             HttpMethod::PUT,
             VarioEndpoint::KnownParty,
-            $payload
+            $payload,
         );
 
         /** @var list<array<string,mixed>> $result */

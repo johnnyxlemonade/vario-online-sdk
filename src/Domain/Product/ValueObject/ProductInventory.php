@@ -24,7 +24,7 @@ final class ProductInventory implements ProductSection
         private readonly ?int $deliveryTime,
         private readonly ?string $unit,
         private readonly ?int $warrantyMonths,
-        private readonly ?string $packaging
+        private readonly ?string $packaging,
     ) {}
 
     public function getStock(): ?int

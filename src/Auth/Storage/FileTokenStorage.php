@@ -28,7 +28,7 @@ final class FileTokenStorage implements TokenStorageInterface
     private ?Token $token = null;
 
     public function __construct(
-        private readonly string $file
+        private readonly string $file,
     ) {}
 
     public function get(): ?Token
@@ -61,7 +61,7 @@ final class FileTokenStorage implements TokenStorageInterface
 
         file_put_contents(
             $this->file,
-            json_encode($token->toArray(), JSON_THROW_ON_ERROR)
+            json_encode($token->toArray(), JSON_THROW_ON_ERROR),
         );
     }
 

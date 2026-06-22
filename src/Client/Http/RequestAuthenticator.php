@@ -11,12 +11,12 @@ final class RequestAuthenticator
 {
     public function authenticate(
         RequestInterface $request,
-        TokenStorageInterface $tokenStorage
+        TokenStorageInterface $tokenStorage,
     ): RequestInterface {
 
         $request = $request->withHeader(
             'X-Requested-With',
-            'XMLHttpRequest'
+            'XMLHttpRequest',
         );
 
         if ($request->hasHeader('Authorization')) {
@@ -31,7 +31,7 @@ final class RequestAuthenticator
 
         return $request->withHeader(
             'Authorization',
-            'Bearer ' . $token->value
+            'Bearer ' . $token->value,
         );
     }
 }

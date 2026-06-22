@@ -21,7 +21,7 @@ final class StartsWithFilter extends AbstractFilter
 {
     public function __construct(
         private readonly string $property,
-        private readonly string $value
+        private readonly string $value,
     ) {}
 
     /**
@@ -32,7 +32,7 @@ final class StartsWithFilter extends AbstractFilter
         return $this->group([
             'Property' => $this->property,
             'Operator' => Operator::STARTS_WITH->value,
-            'Value'    => $this->value,
+            'Value' => $this->value,
         ]);
     }
 }

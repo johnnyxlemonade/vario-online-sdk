@@ -405,7 +405,7 @@ final class IncomingOrderInputNormalizer
     {
         return array_filter(
             $data,
-            static fn($v): bool => $v !== null && $v !== '' && $v !== []
+            static fn($v): bool => $v !== null && $v !== '' && $v !== [],
         );
     }
 }

@@ -64,7 +64,7 @@ final class QueryFilters
     public static function between(
         string $column,
         int|float|string $from,
-        int|float|string $to
+        int|float|string $to,
     ): BetweenFilter {
         return new BetweenFilter($column, $from, $to);
     }

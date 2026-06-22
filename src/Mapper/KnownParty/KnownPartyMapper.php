@@ -127,7 +127,7 @@ final class KnownPartyMapper
             city: $city,
             postalCode: $postalCode,
             countryIso: $countryIso,
-            buildingNumber: $buildingNumber
+            buildingNumber: $buildingNumber,
         );
     }
 
@@ -179,7 +179,7 @@ final class KnownPartyMapper
 
         if ($value === null) {
             throw new UnexpectedValueException(
-                sprintf('KnownParty payload missing required field "%s".', $key)
+                sprintf('KnownParty payload missing required field "%s".', $key),
             );
         }
 

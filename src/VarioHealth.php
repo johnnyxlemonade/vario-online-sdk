@@ -57,27 +57,27 @@ final class VarioHealth
                     reason: 'server_error',
                     message: 'Server responded with HTTP ' . $statusCode,
                     durationMs: $this->durationMs($startedAt),
-                    statusCode: $statusCode
+                    statusCode: $statusCode,
                 );
             }
 
             return VarioHealthResult::available(
                 durationMs: $this->durationMs($startedAt),
-                statusCode: $statusCode
+                statusCode: $statusCode,
             );
         } catch (ClientExceptionInterface $e) {
             return VarioHealthResult::unavailable(
                 reason: $e::class,
                 message: $e->getMessage(),
                 durationMs: $this->durationMs($startedAt),
-                previous: $e
+                previous: $e,
             );
         } catch (Throwable $e) {
             return VarioHealthResult::unavailable(
                 reason: $e::class,
                 message: $e->getMessage(),
                 durationMs: $this->durationMs($startedAt),
-                previous: $e
+                previous: $e,
             );
         }
     }

@@ -11,5 +11,5 @@ parameters:
 
     tmpDir: build/phpstan
 
-    treatPhpDocTypesAsCertain: true
+    treatPhpDocTypesAsCertain: false
     reportUnmatchedIgnoredErrors: true

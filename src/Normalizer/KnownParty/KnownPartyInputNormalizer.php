@@ -98,7 +98,7 @@ final class KnownPartyInputNormalizer
         ]);
 
         $identifications = $this->normalizeIdentifications(
-            $input->getIdentifications()
+            $input->getIdentifications(),
         );
 
         if ($identifications !== []) {
@@ -196,7 +196,7 @@ final class KnownPartyInputNormalizer
     {
         return array_filter(
             $data,
-            static fn($v): bool => $v !== null && $v !== ''
+            static fn($v): bool => $v !== null && $v !== '',
         );
     }
 

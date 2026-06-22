@@ -52,9 +52,9 @@ final class GuzzleHttpAdapter implements HttpAdapterInterface
     {
         $this->client = new Client([
             'base_uri' => $config->getBaseUrl(),
-            'timeout'  => $config->getTimeout(),
-            'verify'   => $config->isVerifySsl(),
-            'headers'  => [
+            'timeout' => $config->getTimeout(),
+            'verify' => $config->isVerifySsl(),
+            'headers' => [
                 'Accept' => 'application/json',
             ],
         ]);

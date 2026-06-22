@@ -1,4 +1,4 @@
-name: PHPUnit Test Suite
+name: PHP Lint
 
 on:
   push:
@@ -6,30 +6,30 @@ on:
     paths:
       - 'src/**'
       - 'tests/**'
+      - 'tools/**'
       - 'composer.json'
-      - 'phpunit.xml.dist'
-      - '.github/workflows/phpunit.yml'
+      - '.github/workflows/lint.yml'
 
   pull_request:
     paths:
       - 'src/**'
       - 'tests/**'
+      - 'tools/**'
       - 'composer.json'
-      - 'phpunit.xml.dist'
-      - '.github/workflows/phpunit.yml'
+      - '.github/workflows/lint.yml'
 
   workflow_dispatch:
 
 concurrency:
-  group: phpunit-${{ github.ref }}
+  group: lint-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
 
 jobs:
-  tests:
-    name: PHPUnit (PHP ${{ matrix.php }})
+  lint:
+    name: PHP Lint (PHP ${{ matrix.php }})
     runs-on: ubuntu-latest
 
     strategy:
@@ -60,11 +60,11 @@ jobs:
         uses: actions/cache@v5
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: composer-${{ runner.os }}-php-${{ matrix.php }}-phpunit-${{ hashFiles('composer.lock') }}
-          restore-keys: composer-${{ runner.os }}-php-${{ matrix.php }}-phpunit-
+          key: composer-${{ runner.os }}-php-${{ matrix.php }}-lint-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ runner.os }}-php-${{ matrix.php }}-lint-
 
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
 
-      - name: Run PHPUnit
-        run: composer test:ci
+      - name: Lint PHP files
+        run: composer lint

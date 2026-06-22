@@ -38,7 +38,7 @@ final class KnownPartyUpsertResult
 {
     public function __construct(
         private readonly string $uuid,
-        private readonly ?string $recipientObjectId = null
+        private readonly ?string $recipientObjectId = null,
     ) {}
 
     public function getUuid(): string
@@ -66,7 +66,7 @@ final class KnownPartyUpsertResult
 
         if (!is_string($uuid) || $uuid === '') {
             throw new UnexpectedValueException(
-                'KnownPartyUpsertResult payload missing valid UUID.'
+                'KnownPartyUpsertResult payload missing valid UUID.',
             );
         }
 
@@ -74,7 +74,7 @@ final class KnownPartyUpsertResult
 
         return new self(
             uuid: $uuid,
-            recipientObjectId: is_string($objectId) ? $objectId : null
+            recipientObjectId: is_string($objectId) ? $objectId : null,
         );
     }
 

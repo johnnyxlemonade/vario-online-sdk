@@ -1,4 +1,4 @@
-name: PHPUnit Test Suite
+name: Coding Standards
 
 on:
   push:
@@ -7,35 +7,30 @@ on:
       - 'src/**'
       - 'tests/**'
       - 'composer.json'
-      - 'phpunit.xml.dist'
-      - '.github/workflows/phpunit.yml'
+      - '.php-cs-fixer.dist.php'
+      - '.github/workflows/coding-standards.yml'
 
   pull_request:
     paths:
       - 'src/**'
       - 'tests/**'
       - 'composer.json'
-      - 'phpunit.xml.dist'
-      - '.github/workflows/phpunit.yml'
+      - '.php-cs-fixer.dist.php'
+      - '.github/workflows/coding-standards.yml'
 
   workflow_dispatch:
 
 concurrency:
-  group: phpunit-${{ github.ref }}
+  group: cs-${{ github.ref }}
   cancel-in-progress: true
 
 permissions:
   contents: read
 
 jobs:
-  tests:
-    name: PHPUnit (PHP ${{ matrix.php }})
+  cs:
+    name: PHP CS Fixer
     runs-on: ubuntu-latest
-
-    strategy:
-      fail-fast: false
-      matrix:
-        php: ['8.5', '8.4', '8.3', '8.2', '8.1']
 
     steps:
       - name: Checkout
@@ -44,7 +39,7 @@ jobs:
       - name: Setup PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: ${{ matrix.php }}
+          php-version: '8.1'
           coverage: none
           tools: composer:v2
           extensions: fileinfo, mbstring
@@ -60,11 +55,11 @@ jobs:
         uses: actions/cache@v5
         with:
           path: ${{ steps.composer-cache.outputs.dir }}
-          key: composer-${{ runner.os }}-php-${{ matrix.php }}-phpunit-${{ hashFiles('composer.lock') }}
-          restore-keys: composer-${{ runner.os }}-php-${{ matrix.php }}-phpunit-
+          key: composer-${{ runner.os }}-cs-${{ hashFiles('composer.lock') }}
+          restore-keys: composer-${{ runner.os }}-cs-
 
       - name: Install dependencies
         run: composer install --no-interaction --prefer-dist --no-progress
 
-      - name: Run PHPUnit
-        run: composer test:ci
+      - name: Check coding standards
+        run: composer cs:check

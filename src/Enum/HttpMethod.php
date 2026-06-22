@@ -6,10 +6,10 @@ namespace Lemonade\Vario\Enum;
 
 enum HttpMethod: string
 {
-    case GET    = 'GET';
-    case POST   = 'POST';
-    case PUT    = 'PUT';
-    case PATCH  = 'PATCH';
+    case GET = 'GET';
+    case POST = 'POST';
+    case PUT = 'PUT';
+    case PATCH = 'PATCH';
     case DELETE = 'DELETE';
-    case QUERY  = 'QUERY';
+    case QUERY = 'QUERY';
 }

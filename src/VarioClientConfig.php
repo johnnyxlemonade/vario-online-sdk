@@ -103,7 +103,7 @@ final class VarioClientConfig
 
         if (!is_string($value) || $value === '') {
             throw new ConfigurationException(
-                sprintf('Missing environment variable "%s".', $key)
+                sprintf('Missing environment variable "%s".', $key),
             );
         }
 

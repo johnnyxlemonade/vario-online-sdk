@@ -39,7 +39,7 @@ use Lemonade\Vario\Domain\Product\ValueObject\ProductInventory;
 final class ProductInventoryMapper extends AbstractProductSectionMapper
 {
     public function __construct(
-        private readonly ProductInventoryMapping $mapping
+        private readonly ProductInventoryMapping $mapping,
     ) {}
 
     public function map(DatasetRow $row): ?ProductInventory

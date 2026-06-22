@@ -30,7 +30,7 @@ final class ProductAttributesMapping implements ProductSectionMapping
      * @param array<string,string> $attributes attributeName => datasetColumn
      */
     public function __construct(
-        private readonly array $attributes = []
+        private readonly array $attributes = [],
     ) {}
 
     /**

@@ -51,7 +51,7 @@ interface VarioClientInterface
     public function sendJson(
         HttpMethod $method,
         string $uri,
-        ?array $payload = null
+        ?array $payload = null,
     ): array;
 
     /**
@@ -63,6 +63,6 @@ interface VarioClientInterface
     public function sendQuery(
         HttpMethod $method,
         string $uri,
-        array $query
+        array $query,
     ): array;
 }
