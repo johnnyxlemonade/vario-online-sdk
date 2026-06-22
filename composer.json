@@ -83,7 +83,7 @@
       "@php vendor/bin/phpstan analyse --memory-limit=32G"
     ],
     "stan:ci": [
-      "@php vendor/bin/phpstan analyse --no-progress --error-format=github --memory-limit=1G"
+      "@php vendor/bin/phpstan analyse --no-progress --memory-limit=1G"
     ],
     "cs:check": [
       "@php vendor/bin/php-cs-fixer fix --dry-run --diff --allow-risky=yes"
@@ -126,8 +126,8 @@
   "license": "MIT",
   "support": {
     "email": "honzamudrak@gmail.com",
-    "source": "https://github.com/johnnyxlemonade/framework",
-    "issues": "https://github.com/johnnyxlemonade/framework/issues"
+    "source": "https://github.com/johnnyxlemonade/vario-online-sdk",
+    "issues": "https://github.com/johnnyxlemonade/vario-online-sdk/issues"
   },
   "minimum-stability": "dev",
   "prefer-stable": true,
