@@ -1,5 +1,5 @@
 {
-  "name": "johnnyxlemonade/vario-online-sdk",
+  "name": "lemonade/vario-online-sdk",
   "description": "PHP SDK for the Vario Online API providing typed dataset queries, domain models and PSR-18 HTTP integration for Vario ERP systems.",
   "type": "library",
   "keywords": [
