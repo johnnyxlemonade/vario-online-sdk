@@ -1,201 +1,179 @@
 # Vario Online API PHP SDK (Community Vario ERP Integration Library)
 
-[![PHP
-Version](https://img.shields.io/packagist/php-v/lemonade/vario-online-sdk)](https://packagist.org/packages/lemonade/vario-online-sdk)
-[![Packagist
-Version](https://img.shields.io/packagist/v/lemonade/vario-online-sdk)](https://packagist.org/packages/lemonade/vario-online-sdk)
+[![PHP Version](https://img.shields.io/packagist/php-v/lemonade/vario-online-sdk)](https://packagist.org/packages/lemonade/vario-online-sdk)
+[![Packagist Version](https://img.shields.io/packagist/v/lemonade/vario-online-sdk)](https://packagist.org/packages/lemonade/vario-online-sdk)
 [![Downloads](https://img.shields.io/packagist/dt/lemonade/vario-online-sdk)](https://packagist.org/packages/lemonade/vario-online-sdk)
 [![PHPStan](https://img.shields.io/badge/PHPStan-level%2010-brightgreen.svg)](https://phpstan.org/)
 [![Tests](https://github.com/johnnyxlemonade/vario-online-sdk/actions/workflows/phpunit.yml/badge.svg)](https://github.com/johnnyxlemonade/vario-online-sdk/actions/workflows/phpunit.yml)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 
-A stronglyâ€‘typed **PHP SDK for the Vario Online API**, designed for
-building custom integrations with **Vario ERP systems**.
+A strongly typed PHP SDK for the Vario Online API, designed for building custom integrations with Vario ERP systems.
 
-This project is an **independent communityâ€‘maintained client library**
-for developers who want to integrate PHP applications with the **Vario
-ERP platform**. It is **not officially affiliated with Vario Software**.
+This project is an independent community-maintained client library for developers who want to integrate PHP applications with the Vario ERP platform. It is not officially affiliated with Vario Software.
 
-The SDK provides a modern domainâ€‘oriented abstraction layer over the
-Vario Online API including dataset queries, authentication handling,
-domain mapping and transportâ€‘agnostic HTTP communication.
+The SDK provides a modern domain-oriented abstraction layer over the Vario Online API including dataset queries, authentication handling, domain mapping, and transport-agnostic HTTP communication.
 
-It is designed for building **stable ERP integrations** where API
-payload structures may vary between installations.
+It is designed for building stable ERP integrations where API payload structures may vary between installations.
 
-More information about Vario ERP:\
+More information about Vario ERP:
 https://vario.cz/
 
-
 ---
+
 ## Typical Use Cases
 
 This SDK is commonly used for:
 
--   integrating **Vario ERP with eâ€‘commerce platforms**
--   synchronizing **products, customers and orders**
--   building **data pipelines from Vario datasets**
--   exporting ERP data into BI or analytics systems
--   creating **custom ERP dashboards or integrations**
--   automating ERP workflows
+- integrating Vario ERP with e-commerce platforms
+- synchronizing products, customers, and orders
+- building data pipelines from Vario datasets
+- exporting ERP data into BI or analytics systems
+- creating custom ERP dashboards or integrations
+- automating ERP workflows
 
 ---
 
 ## Why this SDK exists
 
-The official **Vario Online API** exposes data primarily as loosely
-structured array responses tied directly to backend fields.
+This SDK exists to provide a more structured integration layer for PHP applications that work with Vario dataset rows and endpoint payloads.
 
-While flexible, this creates several challenges:
+At the transport boundary, integrations often still need to deal with low-level request payloads, decoded response arrays, and mapping decisions between ERP data and application code.
 
--   dataset column names may differ between installations
--   integrations require manual array parsing
--   business logic becomes tightly coupled to API payload structure
+This SDK adds a domain-oriented layer on top of that workflow.
 
-This SDK introduces a **domainâ€‘oriented integration layer**.
+Instead of keeping those concerns spread across application code, developers can work with typed domain models such as:
 
-Instead of working with raw arrays, developers interact with **typed
-domain models** such as:
+- `KnownParty`
+- `Product`
+- `IncomingOrder`
 
--   `KnownParty`
--   `Product`
--   `IncomingOrder`
+These models are backed by immutable value objects, normalizers, mappers, and a shared document foundation for document-like endpoints.
 
-These models are backed by immutable value objects and a configurable
-mapping layer that isolates application logic from the underlying API
-schema.
+For write flows, document-oriented modules such as `IncomingOrder` and `OutgoingQuotation` share common primitives for calculated lines, price mode, descriptions, quantities, tax totals, monetary totals, tax exchange rates, and line/total calculators.
 
 Goals of the SDK:
 
--   stable integration surface
--   strong typing and IDE support
--   separation between API payloads and application logic
--   maintainable ERP integrations
+- stable integration surface
+- strong typing and IDE support
+- separation between API payloads and application logic
+- maintainable ERP integrations
 
 ---
 
 ## Features
 
-- **Typed API facade** (`VarioApi`)
-- **Domain-driven read models** (KnownParty, Product)
+- Typed API facade (`VarioApi`)
+- Domain-driven read models (`KnownParty`, `Product`)
 - Immutable value objects
-- **DatasetView â†’ Domain mapping layer**
-- **Streaming dataset processing** (`iterate()`, lazy pipelines)
-- **IncomingOrder builder** with shared document calculated lines and automatic line/total calculation
-- **OutgoingQuotation builder/write flow** with payload preview and upsert support
-- **Shared document primitives and calculators** for document-like endpoints (`Domain\Shared\Document`)
-- **Automatic authentication & token refresh**
-- **PSR-18 transport layer** (replaceable HTTP client, no vendor lock-in)
+- DatasetView -> Domain mapping layer
+- Streaming dataset processing (`iterate()`, lazy pipelines)
+- IncomingOrder builder with shared document calculated lines and automatic line/total calculation
+- OutgoingQuotation builder/write flow with payload preview and upsert support
+- Shared document primitives and calculators for document-like endpoints (`Domain\Shared\Document`)
+- Automatic authentication and token refresh
+- PSR-18 transport layer (replaceable HTTP client, no vendor lock-in)
 - PSR-3 logging support
 - Structured request/response logging with duration metrics
 - Configurable token storage (memory, session, custom)
 - Lazy-loaded API modules
 - Unified exception model
-- **PHPStan level 10 compliant**
+- PHPStan level 10 compliant
 
 ---
+
 ## Supported Vario API Areas
 
 The SDK provides abstractions for several Vario Online API modules:
 
--   DatasetView API
--   KnownParty API
--   Product catalog datasets
--   Incoming orders (query, mapping, payload preview, builder-based upsert flow)
--   Outgoing quotations (payload preview, builder-based upsert flow)
+- DatasetView API
+- KnownParty API
+- Product catalog datasets
+- Incoming orders: query, mapping, payload preview, builder-based upsert flow
+- Outgoing quotations: payload preview, builder-based upsert flow
 
-Additional integrations can be built through the generic DatasetView
-layer.
+Additional integrations can be built through the generic DatasetView layer.
 
 ---
+
 ## Architecture Overview
 
-The SDK is designed as a **layered architecture** that separates application usage, API modules, domain mapping, and transport infrastructure.
+The SDK uses a layered architecture that separates application usage, API modules, domain mapping, and transport infrastructure.
 
-Each layer has a clearly defined responsibility, which allows the SDK to remain stable even when the underlying API or HTTP client implementation changes.
+Main goals:
 
-The main architectural goals are:
+- keep application code independent from transport details
+- provide typed domain models instead of raw API arrays
+- isolate API schema volatility behind a mapping layer
+- allow replaceable HTTP clients through PSR-18
 
-- keep **application code independent from transport details**
-- provide **typed domain models instead of raw API arrays**
-- isolate **API schema volatility behind a mapping layer**
-- allow **replaceable HTTP clients through PSR-18**
-
-```
+```text
 Application
-  â”‚
-  â–Ľ
+  |
+  v
 VarioApiFactory
-  â”‚
-  â”śâ”€ VarioClientConfig
-  â”śâ”€ TokenStorageInterface
-  â””â”€ PSR-18 Client Discovery
-  â”‚
-  â–Ľ
+  |
+  +- VarioClientConfig
+  +- TokenStorageInterface
+  +- PSR-18 Client Discovery
+  |
+  v
 VarioApi (Facade)
-  â”‚
-  â–Ľ
+  |
+  v
 API Modules
-  â”‚
-  â”śâ”€ Dataset APIs (Queries)
-  â”‚     â–Ľ
-  â”‚   Mapper / Normalizer Layer
-  â”‚     â–Ľ
-  â”‚   Domain Read Models (Product, KnownPartyâ€¦)
-  â”‚
-  â””â”€ Endpoint APIs (Actions)
-        â–Ľ
-      Domain Entities / Responses
-  â”‚
-  â–Ľ
+  |
+  +- Dataset APIs (Queries)
+  |    v
+  |  Mapper / Normalizer Layer
+  |    v
+  |  Domain Read Models (Product, KnownParty, ...)
+  |
+  +- Endpoint APIs (Actions)
+       v
+     Domain Entities / Responses
+  |
+  v
 VarioClient (Transport Orchestrator)
-  â”‚
-  â”śâ”€ RequestAuthenticator
-  â”śâ”€ RequestLogger
-  â””â”€ ResponseHandler
-  â”‚
-  â–Ľ
+  |
+  +- RequestAuthenticator
+  +- RequestLogger
+  +- ResponseHandler
+  |
+  v
 PSR-18 HTTP Client Interface
-  â”‚
-  â–Ľ
+  |
+  v
 External HTTP Client
 (Guzzle / Symfony HttpClient / Nyholm PSR-7 / Laminas Diactoros / custom)
-
 ```
-The diagram illustrates the logical architecture layers of the SDK rather than the exact runtime request flow.
 
-Applications interact with the SDK through the `VarioApi` facade created by the `VarioApiFactory`.
-The factory assembles the complete client stack including configuration,
-token storage and HTTP transport.
+Applications interact with the SDK through the `VarioApi` facade created by the `VarioApiFactory`. The factory assembles the complete client stack including configuration, token storage, and HTTP transport.
 
 ### API Modules
 
-The SDK exposes functionality through **API modules**, each responsible for a specific area of the Vario API.
+The SDK exposes functionality through API modules, each responsible for a specific area of the Vario API.
 
 Two integration styles are supported:
 
 **Dataset APIs (Queries)**  
-These APIs retrieve data from Vario datasets. The responses are normalized and mapped into **domain read models**.  
-This layer isolates application logic from dataset column naming and schema changes.
+These APIs retrieve data from Vario datasets. The responses are normalized and mapped into domain read models. This layer isolates application logic from dataset column naming and schema changes.
 
-**Endpoint APIs (Actions)**
-These APIs interact with specific Vario endpoints such as order creation,
-entity updates or other write operations.
-They typically return domain entities or response objects directly without passing through the dataset mapping layer.
+**Endpoint APIs (Actions)**  
+These APIs interact with specific Vario endpoints such as document creation or entity updates. They typically return domain entities or response objects directly without passing through the dataset mapping layer.
 
 ### Shared document model
 
-Document-like endpoints share a common foundation under
-`Lemonade\Vario\Domain\Shared\Document`.
+Document-like endpoints share a common foundation under `Lemonade\Vario\Domain\Shared\Document`.
 
 This shared layer includes:
 
 - `DocumentCalculatedLineInput`
 - `DocumentPriceMode`
 - `DocumentDescription`
-- monetary totals
-- tax totals
-- tax exchange rate
+- `DocumentQuantity`
+- `DocumentMonetaryTotal`
+- `DocumentTaxTotal`
+- `DocumentTaxExchangeRate`
 - line and totals calculators
 
 Endpoint-specific root models remain separate where they represent actual endpoint semantics:
@@ -207,7 +185,7 @@ Endpoint-specific root models remain separate where they represent actual endpoi
 
 ### Mapping Layer
 
-For dataset-based integrations the SDK introduces a **mapping and normalization layer**.
+For dataset-based integrations the SDK introduces a mapping and normalization layer.
 
 This layer transforms raw DatasetView rows into stable domain models such as:
 
@@ -227,55 +205,63 @@ The client coordinates:
 - request logging
 - response handling and error conversion
 
-The transport boundary follows the **PSR-18 HTTP Client standard**, allowing developers to use any compatible HTTP client implementation such as Guzzle or Symfony HttpClient.
+The transport boundary follows the PSR-18 HTTP Client standard, allowing developers to use any compatible HTTP client implementation such as Guzzle or Symfony HttpClient.
 
-This design ensures that **transport concerns never leak into domain logic**, keeping integrations maintainable and testable.
+This design keeps transport concerns out of domain logic.
 
 ---
 
 ## Strategic Design Decisions (ADR)
 
-The development of this SDK was guided by specific architectural principles to ensure enterprise-grade stability and developer experience:
+The development of this SDK was guided by several architectural principles.
 
 ### 1. Zero-Mixed Policy (PHPStan Level 10)
-Unlike most SDKs that rely on `array<mixed>` and "hope for the best", this library enforces **Level 10 static analysis** with `strict-rules` and `bleedingEdge`. Every API response is mapped through strict **Array Shapes**. This shifts 90% of potential integration bugs from *runtime* to the *static analysis* phase. If the code passes `composer stan`, the data structure is guaranteed.
 
-### 2. Memory-First Streaming & Lazy Pipelines
-Vario datasets often contain tens of thousands of records. Most integrations fail here due to `Memory Exhausted` errors. This SDK implements **Streaming Generators** (`iterate()`) and **Lazy Pipelines** as first-class citizens. You can process a 100k+ product catalog on a server with minimal RAM, as only one domain record exists in memory at any given time during iteration.
+The library enforces Level 10 static analysis with strict rules. API responses are mapped through strict array shapes so structural problems are caught during analysis instead of at runtime.
+
+### 2. Memory-First Streaming and Lazy Pipelines
+
+Vario datasets can contain tens of thousands of records. The SDK implements streaming generators (`iterate()`) and lazy pipelines so large catalogs can be processed with minimal memory overhead.
 
 ### 3. Domain-Oriented Mapping Layer
-The Vario API schema is volatile and often varies between installations. This SDK solves this by introducing a **Mapping Layer**. Your application logic stays coupled to stable, immutable **Domain Models** (`Product`, `KnownParty`, `Inventory`), while the SDK handles the translation from Vario's backend fields. Changing a column name in Vario requires only a 1-line change in the mapper, not a rewrite of your business logic.
+
+The Vario API schema can vary between installations. The mapping layer keeps application code coupled to stable immutable domain models while the SDK handles translation from backend fields.
 
 ### 4. Transport Agnostic (PSR-18)
-By strictly following **PSR-18** and **PSR-17**, the SDK eliminates vendor lock-in. Whether your project uses Guzzle, Symfony HttpClient, or a custom wrapper, the SDK remains stable. This boundary ensures that transport-level concerns (like SSL issues or proxy settings) never leak into your domain mapping logic.
+
+By following PSR-18 and PSR-17, the SDK avoids vendor lock-in. Transport-level concerns remain isolated from domain logic.
 
 ---
 
 ## Roadmap
 
-The SDK will continue evolving with improvements focused on
-extensibility, performance and maintainability.
+The SDK will continue evolving with improvements focused on extensibility, performance, and maintainability.
 
 ### Middleware Pipeline
 
-Introduce a **request/response middleware pipeline** to reduce
-responsibilities currently handled inside `VarioClient`.
+Introduce a request/response middleware pipeline to reduce responsibilities currently handled inside `VarioClient`.
 
 Planned processing flow:
 
-```
+```text
 Request
-  â†“
+  |
+  v
 AuthenticationMiddleware
-  â†“
+  |
+  v
 LoggingMiddleware
-  â†“
+  |
+  v
 RetryMiddleware
-  â†“
+  |
+  v
 HTTP Client
-  â†“
+  |
+  v
 ResponseMiddleware
-  â†“
+  |
+  v
 Result
 ```
 
@@ -307,11 +293,11 @@ Future domain abstractions may include:
 
 ## Requirements
 
--   PHP 8.1+
--   Composer
--   Access to Vario Online API (VPN + credentials)
--   PSRâ€‘18 HTTP client implementation
--   PSRâ€‘3 compatible logger
+- PHP 8.1+
+- Composer
+- Access to Vario Online API (VPN + credentials)
+- PSR-18 HTTP client implementation
+- PSR-3 compatible logger
 
 ---
 
@@ -319,18 +305,17 @@ Future domain abstractions may include:
 
 Install the SDK via Composer:
 
-``` bash
+```bash
 composer require lemonade/vario-online-sdk
 ```
 
-The SDK itself does **not ship with a builtâ€‘in HTTP client**.
+The SDK does not ship with a built-in HTTP client.
 
-Instead, it follows the **PSRâ€‘18 HTTP Client standard**, which allows
-you to use any compatible HTTP client implementation.
+Instead, it follows the PSR-18 HTTP Client standard, which allows you to use any compatible HTTP client implementation.
 
-Example using **Guzzle**:
+Example using Guzzle:
 
-``` bash
+```bash
 composer require guzzlehttp/guzzle guzzlehttp/psr7
 ```
 
@@ -338,7 +323,7 @@ composer require guzzlehttp/guzzle guzzlehttp/psr7
 
 ## Quick Start
 
-``` php
+```php
 use Lemonade\Vario\VarioApiFactory;
 use Lemonade\Vario\VarioClientConfig;
 use Lemonade\Vario\ValueObject\DatasetViewQuery;
@@ -353,8 +338,6 @@ $config = new VarioClientConfig(
     companyNumber: 'COMPANY'
 );
 
-// Example uses Guzzle as the HTTP transport.
-// Any PSR-18 compatible HTTP client can be used instead.
 $vario = VarioApiFactory::create(
     config: $config,
     httpAdapter: new GuzzleHttpAdapter($config),
@@ -366,18 +349,17 @@ $query = DatasetViewQuery::for(
     pageLength: 100
 );
 
-// Stream dataset rows directly from the Vario API:
 foreach ($vario->datasetView()->iterate($query) as $row) {
     print_r($row);
 }
 ```
+
 ### Mapping dataset rows to domain models
 
 The mapping layer converts raw dataset rows into strongly typed domain objects.
 
 ```php
 foreach ($mapper->iterate($vario->datasetView()->iterate($productQuery)) as $product) {
-
     $identity = $product->identity();
     $price = $product->pricing()?->getPrice();
 
@@ -391,9 +373,9 @@ Full examples are available in the `examples/` directory.
 
 ---
 
-## Domain Example â€” Incoming Orders
+## Domain Example - Incoming Orders
 
-The SDK provides a typed **IncomingOrder module** for both reading and writing incoming order documents.
+The SDK provides a typed `IncomingOrder` module for both reading and writing incoming order documents.
 
 For write operations, the recommended entry point is `IncomingOrderBuilder`.
 
@@ -404,8 +386,6 @@ It allows developers to define order lines using a simplified high-level input a
 - tax subtotals
 - document monetary total
 - document tax total
-
-This reduces the amount of manual low-level payload construction needed for integrations.
 
 ### Recommended write flow
 
@@ -445,15 +425,20 @@ $order = $builder->build(
 );
 
 $preview = $vario->incomingOrders()->previewUpsert([$order]);
-
-print_r($preview);
 ```
 
-## Domain Example — Outgoing Quotations
+### Low-level write API
 
-`OutgoingQuotationBuilder` uses the same shared document model.
-You define high-level calculated lines, the builder derives line amounts,
-monetary totals and tax totals, and `previewUpsert()` returns the exact payload.
+For advanced integrations, the SDK still exposes low-level write models such as:
+
+- `IncomingOrderInput`
+- `IncomingOrderLineInput`
+
+These are useful when the integration already calculates all monetary and tax values externally and needs full control over the outgoing payload.
+
+## Domain Example - Outgoing Quotations
+
+`OutgoingQuotationBuilder` uses the same shared document model. You define high-level calculated lines, the builder derives line amounts, monetary totals, and tax totals, and `previewUpsert()` returns the exact payload.
 
 ```php
 use DateTimeImmutable;
@@ -485,7 +470,7 @@ $quotation = (new OutgoingQuotationBuilder())->build(
             uuid: 'd4b5b29c-d658-4568-aaa9-839f11ce1446',
             lineItem: (new OutgoingQuotationLineItemInput())
                 ->withCatalogueItemIdentification('A25882')
-                ->addDescription(new DocumentDescription('Adam křeslo - skládačka')),
+                ->addDescription(new DocumentDescription('Adam kreslo - skladacka')),
             quantity: 1.0,
             unitCode: 'Ks',
             unitPrice: 95.0,
@@ -504,19 +489,9 @@ $preview = $vario->outgoingQuotations()->previewUpsert([$quotation]);
 
 The real `upsert()` write flow is also available, but it is not shown as the default example path here.
 
-### Low-level write API
-
-For advanced integrations, the SDK still exposes low-level write models such as:
-
-- `IncomingOrderInput`
-- `IncomingOrderLineInput`
-
-These are useful when the integration already calculates all monetary and tax values externally and needs full control over the outgoing payload.
-
 ### Read and write model structure
 
-Endpoint modules keep endpoint-specific read/write/API/result classes,
-while shared document concepts now live in `Domain\Shared\Document`.
+Endpoint modules keep endpoint-specific read/write/API/result classes, while shared document concepts now live in `Domain\Shared\Document`.
 
 For example, IncomingOrder still keeps dedicated endpoint layers such as:
 
@@ -526,9 +501,7 @@ For example, IncomingOrder still keeps dedicated endpoint layers such as:
 - `Result`
 - `Builder`
 
-Generic document value objects and calculators such as descriptions,
-quantities, calculated lines, tax totals, monetary totals and document
-calculators are shared across document-like endpoints through:
+Generic document value objects and calculators such as descriptions, quantities, calculated lines, tax totals, monetary totals, and document calculators are shared across document-like endpoints through:
 
 - `Lemonade\Vario\Domain\Shared\Document\Enum`
 - `Lemonade\Vario\Domain\Shared\Document\ValueObject`
@@ -568,32 +541,32 @@ Key documentation pages:
 
 ## Development
 
-Run development commands from the `sdk/` package root.
+Run development commands from the SDK repository root.
 
-Available quality gates:
+Common checks:
 
-- Composer validation: `composer composer:validate`
-- Platform requirements: `composer check:platform`
+- Composer validation: `composer validate --strict`
 - PHP lint: `composer lint`
 - Coding standards check: `composer cs:check`
-- Coding standards fix: `composer cs:fix`
 - PHPStan: `composer stan`
 - PHPUnit: `composer test`
-- Full QA suite: `composer qa`
 - Full project check: `composer check`
 
-Typical workflow:
+Code style fixes:
 
-``` bash
-cd sdk
+- `composer cs:fix`
+
+Additional Composer scripts are defined in `composer.json`.
+
+```bash
 composer check
 ```
 
 ---
+
 ## Disclaimer
 
-This project is an independent open‑source initiative and is not
-affiliated with or endorsed by Vario Software.
+This project is an independent open-source initiative and is not affiliated with or endorsed by Vario Software.
 
 ---
 
@@ -601,4 +574,4 @@ affiliated with or endorsed by Vario Software.
 
 MIT License
 
-Copyright (c) 2026 Honza Mudrak
+Copyright (c) 2026 Jan Mudrak
