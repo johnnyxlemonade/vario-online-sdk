@@ -55,7 +55,7 @@
   },
   "scripts": {
     "post-autoload-dump": [
-      "@php -r \"echo 'Autoload refreshed'.PHP_EOL;\""
+      "@php tools/autoload-notice.php"
     ],
     "lint": "@php tools/lint.php",
     "autoload:dev": [
