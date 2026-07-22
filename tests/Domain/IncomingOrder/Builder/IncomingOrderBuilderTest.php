@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Lemonade\Vario\Tests\Domain\IncomingOrder\Builder;
 
 use DateTimeImmutable;
+use LogicException;
 use Lemonade\Vario\Domain\Common\Currency;
 use Lemonade\Vario\Domain\IncomingOrder\Builder\IncomingOrderBuildInput;
 use Lemonade\Vario\Domain\IncomingOrder\Builder\IncomingOrderBuilder;
@@ -12,6 +13,7 @@ use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderPaymentMeansCode;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderPartiesInput;
 use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
+use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationLineItemInput;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentPriceMode;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxCalculationMethod;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxScheme;
@@ -23,6 +25,7 @@ use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLinePriceInput
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineQuantityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineTaxInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentIdentityInput;
+use ReflectionClass;
 use PHPUnit\Framework\TestCase;
 
 final class IncomingOrderBuilderTest extends TestCase
@@ -211,5 +214,54 @@ final class IncomingOrderBuilderTest extends TestCase
         ));
 
         self::assertSame($customTaxExchangeRate, $order->getTaxExchangeRate());
+    }
+
+    public function test_build_rejects_wrong_line_item_type(): void
+    {
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage(IncomingOrderLineItemInput::class);
+
+        (new IncomingOrderBuilder())->build(
+            $this->createBuildInputWithWrongLineItemType()
+        );
+    }
+
+    private function createBuildInputWithWrongLineItemType(): IncomingOrderBuildInput
+    {
+        $reflection = new ReflectionClass(IncomingOrderBuildInput::class);
+
+        /** @var IncomingOrderBuildInput $input */
+        $input = $reflection->newInstanceWithoutConstructor();
+
+        $reflection->getProperty('identity')->setValue($input, new DocumentIdentityInput(
+            uuid: 'order-uuid-3',
+        ));
+        $reflection->getProperty('issueDate')->setValue($input, new DateTimeImmutable('2024-04-02T00:00:00+02:00'));
+        $reflection->getProperty('currency')->setValue($input, Currency::CZK);
+        $reflection->getProperty('parties')->setValue($input, new IncomingOrderPartiesInput(
+            buyerCustomerParty: new KnownPartyInput('Buyer'),
+            sellerSupplierParty: new KnownPartyInput('Seller'),
+        ));
+        $reflection->getProperty('lines')->setValue($input, [
+            new DocumentCalculatedLineInput(
+                identity: new DocumentCalculatedLineIdentityInput(
+                    uuid: 'line-1',
+                ),
+                lineItem: new OutgoingQuotationLineItemInput(),
+                quantity: new DocumentCalculatedLineQuantityInput(
+                    value: 1.0,
+                    unitCode: 'Ks',
+                ),
+                price: new DocumentCalculatedLinePriceInput(
+                    unitPrice: 100.0,
+                    vatRate: 21.0,
+                ),
+            ),
+        ]);
+        $reflection->getProperty('partialDeliveryIndicator')->setValue($input, false);
+        $reflection->getProperty('paymentMeansCode')->setValue($input, null);
+        $reflection->getProperty('taxExchangeRate')->setValue($input, null);
+
+        return $input;
     }
 }

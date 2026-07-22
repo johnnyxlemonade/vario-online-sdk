@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace Lemonade\Vario\Tests\Domain\OutgoingQuotation\Builder;
 
 use DateTimeImmutable;
+use LogicException;
 use Lemonade\Vario\Domain\Common\Currency;
+use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
 use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
 use Lemonade\Vario\Domain\OutgoingQuotation\Builder\OutgoingQuotationBuildInput;
 use Lemonade\Vario\Domain\OutgoingQuotation\Builder\OutgoingQuotationBuilder;
@@ -22,6 +24,7 @@ use Lemonade\Vario\Domain\Shared\Document\Write\DocumentIdentityInput;
 use Lemonade\Vario\Normalizer\OutgoingQuotation\OutgoingQuotationInputNormalizer;
 use Lemonade\Vario\Domain\Shared\Identification;
 use Lemonade\Vario\Domain\Shared\IdentificationScheme;
+use ReflectionClass;
 use PHPUnit\Framework\TestCase;
 
 final class OutgoingQuotationBuilderTest extends TestCase
@@ -244,5 +247,54 @@ final class OutgoingQuotationBuilderTest extends TestCase
         $firstLine = $documentLines[0];
         self::assertIsArray($firstLine);
         self::assertArrayNotHasKey('LineAllowanceAmount', $firstLine);
+    }
+
+    public function test_build_rejects_wrong_line_item_type(): void
+    {
+        $this->expectException(LogicException::class);
+        $this->expectExceptionMessage(OutgoingQuotationLineItemInput::class);
+
+        (new OutgoingQuotationBuilder())->build(
+            $this->createBuildInputWithWrongLineItemType()
+        );
+    }
+
+    private function createBuildInputWithWrongLineItemType(): OutgoingQuotationBuildInput
+    {
+        $reflection = new ReflectionClass(OutgoingQuotationBuildInput::class);
+
+        /** @var OutgoingQuotationBuildInput $input */
+        $input = $reflection->newInstanceWithoutConstructor();
+
+        $reflection->getProperty('identity')->setValue($input, new DocumentIdentityInput(
+            uuid: 'quotation-uuid',
+        ));
+        $reflection->getProperty('issueDate')->setValue($input, new DateTimeImmutable('2026-06-18T00:00:00+02:00'));
+        $reflection->getProperty('currency')->setValue($input, Currency::CZK);
+        $reflection->getProperty('parties')->setValue($input, new OutgoingQuotationPartiesInput(
+            buyerCustomerParty: new KnownPartyInput('Buyer'),
+            sellerSupplierParty: new KnownPartyInput('Seller'),
+        ));
+        $reflection->getProperty('lines')->setValue($input, [
+            new DocumentCalculatedLineInput(
+                identity: new DocumentCalculatedLineIdentityInput(
+                    uuid: 'line-uuid',
+                ),
+                lineItem: new IncomingOrderLineItemInput(),
+                quantity: new DocumentCalculatedLineQuantityInput(
+                    value: 1.0,
+                    unitCode: 'Ks',
+                ),
+                price: new DocumentCalculatedLinePriceInput(
+                    unitPrice: 100.0,
+                    vatRate: 21.0,
+                ),
+            ),
+        ]);
+        $reflection->getProperty('paymentMeansCode')->setValue($input, null);
+        $reflection->getProperty('taxExchangeRate')->setValue($input, null);
+        $reflection->getProperty('payableRoundingAmount')->setValue($input, 0.0);
+
+        return $input;
     }
 }

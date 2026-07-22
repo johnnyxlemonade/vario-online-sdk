@@ -6,11 +6,13 @@ namespace Lemonade\Vario\Domain\IncomingOrder\Builder;
 
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderInput;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineInput;
+use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
 use Lemonade\Vario\Domain\Shared\Document\Calculator\DocumentLineCalculator;
 use Lemonade\Vario\Domain\Shared\Document\Calculator\DocumentTotalsCalculator;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxExchangeRate;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentTotalsInput;
+use LogicException;
 
 /**
  * Class IncomingOrderBuilder
@@ -50,12 +52,21 @@ final class IncomingOrderBuilder
 
         foreach ($lines as $line) {
             $calculated = $this->lineCalculator->calculate($line);
+            $lineItem = $line->getLineItem();
+
+            if (!$lineItem instanceof IncomingOrderLineItemInput) {
+                throw new LogicException(sprintf(
+                    'IncomingOrderBuilder expects %s, %s given.',
+                    IncomingOrderLineItemInput::class,
+                    $lineItem::class,
+                ));
+            }
 
             $documentLines[] = new IncomingOrderLineInput(
                 uuid: $line->getUuid(),
                 lineExtensionAmount: $calculated['lineExtensionAmount'],
                 lineExtensionAmountTaxInclusive: $calculated['lineExtensionAmountTaxInclusive'],
-                lineItem: $line->getLineItem(),
+                lineItem: $lineItem,
                 lineQuantity: $calculated['lineQuantity'],
                 taxSubTotal: $calculated['taxSubTotal'],
                 lineAllowanceAmount: $line->getLineAllowanceAmount(),

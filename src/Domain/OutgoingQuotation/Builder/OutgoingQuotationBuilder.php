@@ -6,6 +6,7 @@ namespace Lemonade\Vario\Domain\OutgoingQuotation\Builder;
 
 use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationInput;
 use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationLineInput;
+use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationLineItemInput;
 use Lemonade\Vario\Domain\Shared\Document\Calculator\DocumentLineCalculator;
 use Lemonade\Vario\Domain\Shared\Document\Calculator\DocumentTotalsCalculator;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxCalculationMethod;
@@ -13,6 +14,7 @@ use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxExchangeRate;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxSubTotal;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxTotal;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentTotalsInput;
+use LogicException;
 
 final class OutgoingQuotationBuilder
 {
@@ -39,12 +41,21 @@ final class OutgoingQuotationBuilder
 
         foreach ($lines as $line) {
             $calculated = $this->lineCalculator->calculate($line);
+            $lineItem = $line->getLineItem();
+
+            if (!$lineItem instanceof OutgoingQuotationLineItemInput) {
+                throw new LogicException(sprintf(
+                    'OutgoingQuotationBuilder expects %s, %s given.',
+                    OutgoingQuotationLineItemInput::class,
+                    $lineItem::class,
+                ));
+            }
 
             $documentLines[] = new OutgoingQuotationLineInput(
                 uuid: $line->getUuid(),
                 lineExtensionAmount: $calculated['lineExtensionAmount'],
                 lineExtensionAmountTaxInclusive: $calculated['lineExtensionAmountTaxInclusive'],
-                lineItem: $line->getLineItem(),
+                lineItem: $lineItem,
                 lineQuantity: $calculated['lineQuantity'],
                 taxSubTotal: $calculated['taxSubTotal'],
                 lineAllowanceAmount: $line->getLineAllowanceAmount(),
