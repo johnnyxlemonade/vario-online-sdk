@@ -14,8 +14,8 @@ declare(strict_types=1);
  */
 
 use Lemonade\Vario\Domain\Common\Currency;
-use Lemonade\Vario\Domain\IncomingOrder\Builder\IncomingOrderBuildInput;
 use Lemonade\Vario\Domain\IncomingOrder\Builder\IncomingOrderBuilder;
+use Lemonade\Vario\Domain\IncomingOrder\Builder\IncomingOrderBuildInput;
 use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderPaymentMeansCode;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderPartiesInput;
@@ -25,16 +25,16 @@ use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTextualAttributeKind;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentUnitConversionFactor;
-use Lemonade\Vario\Domain\Shared\Document\Write\DocumentIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentAdditionalAttributeInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentAdditionalAttributeValueInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLinePriceInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineQuantityInput;
-use Lemonade\Vario\VarioApi;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentIdentityInput;
 use Lemonade\Vario\Domain\Shared\Identification;
 use Lemonade\Vario\Domain\Shared\IdentificationScheme;
+use Lemonade\Vario\VarioApi;
 
 /** @var VarioApi $vario */
 

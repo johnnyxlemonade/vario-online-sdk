@@ -26,7 +26,7 @@ final class StartsWithFilterTest extends TestCase
                     ],
                 ],
             ],
-            $result
+            $result,
         );
     }
 }

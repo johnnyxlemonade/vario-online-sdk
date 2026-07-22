@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Tests\Domain\IncomingOrder\Read;
 
-use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTextualAttributeKind;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrderTextualAttribute;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTextualAttributeKind;
 use PHPUnit\Framework\TestCase;
 
 final class IncomingOrderTextualAttributeTest extends TestCase
@@ -24,7 +24,7 @@ final class IncomingOrderTextualAttributeTest extends TestCase
 
         self::assertSame(
             DocumentTextualAttributeKind::ExtendedID,
-            $attribute->getAttributeKind()
+            $attribute->getAttributeKind(),
         );
         self::assertSame('Cislo_dokladu', $attribute->getName());
         self::assertSame('D-25-02102', $attribute->getValue());
@@ -42,7 +42,7 @@ final class IncomingOrderTextualAttributeTest extends TestCase
 
         self::assertSame(
             DocumentTextualAttributeKind::FreeText,
-            $attribute->getAttributeKind()
+            $attribute->getAttributeKind(),
         );
         self::assertNull($attribute->getName());
         self::assertNull($attribute->getValue());

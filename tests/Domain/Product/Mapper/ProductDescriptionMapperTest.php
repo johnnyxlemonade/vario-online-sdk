@@ -16,7 +16,7 @@ final class ProductDescriptionMapperTest extends TestCase
     {
         $mapping = new ProductDescriptionMapping(
             shortDescription: 'short',
-            description: 'description'
+            description: 'description',
         );
 
         $row = new DatasetRow([
@@ -37,7 +37,7 @@ final class ProductDescriptionMapperTest extends TestCase
     {
         $mapping = new ProductDescriptionMapping(
             shortDescription: 'short',
-            description: 'description'
+            description: 'description',
         );
 
         $row = new DatasetRow([]);
@@ -51,7 +51,7 @@ final class ProductDescriptionMapperTest extends TestCase
     {
         $mapping = new ProductDescriptionMapping(
             shortDescription: 'short',
-            description: 'description'
+            description: 'description',
         );
 
         $row = new DatasetRow([

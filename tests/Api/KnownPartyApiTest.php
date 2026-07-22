@@ -31,7 +31,7 @@ final class KnownPartyApiTest extends TestCase
             ->with(
                 HttpMethod::QUERY,
                 VarioEndpoint::KnownParty->value,
-                $query->toArray()
+                $query->toArray(),
             )
             ->willReturn([
                 ['UUID' => '12345678-1234-1234-1234-1234567890ab'],
@@ -80,7 +80,7 @@ final class KnownPartyApiTest extends TestCase
             ->with(
                 HttpMethod::PUT,
                 VarioEndpoint::KnownParty->value,
-                $payload
+                $payload,
             )
             ->willReturn([
                 [
@@ -94,7 +94,7 @@ final class KnownPartyApiTest extends TestCase
         self::assertCount(1, $result);
         self::assertSame(
             '12345678-1234-1234-1234-1234567890ab',
-            $result[0]->getUuid()
+            $result[0]->getUuid(),
         );
     }
 }

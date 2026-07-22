@@ -35,7 +35,7 @@ final class QueryFilterCollectionTest extends TestCase
         $collection = QueryFilterCollection::empty();
 
         $newCollection = $collection->withFilter(
-            QueryFilters::equals('Name', 'John')
+            QueryFilters::equals('Name', 'John'),
         );
 
         self::assertNotSame($collection, $newCollection);
@@ -47,7 +47,7 @@ final class QueryFilterCollectionTest extends TestCase
     {
         $collection = QueryFilterCollection::from(
             QueryFilters::equals('Name', 'John'),
-            QueryFilters::equals('Age', 30)
+            QueryFilters::equals('Age', 30),
         );
 
         $result = $collection->toArray();
@@ -59,7 +59,7 @@ final class QueryFilterCollectionTest extends TestCase
     {
         $collection = QueryFilterCollection::from(
             QueryFilters::equals('Name', 'John'),
-            QueryFilters::equals('Age', 30)
+            QueryFilters::equals('Age', 30),
         );
 
         $count = 0;

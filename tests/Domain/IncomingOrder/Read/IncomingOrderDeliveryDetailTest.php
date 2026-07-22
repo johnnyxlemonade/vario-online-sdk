@@ -27,7 +27,7 @@ final class IncomingOrderDeliveryDetailTest extends TestCase
 
         self::assertSame(
             ['raben 7.5.2025', 'liftgate'],
-            $detail->getOptionCodes()
+            $detail->getOptionCodes(),
         );
         self::assertTrue($detail->hasOptionCodes());
         self::assertSame($requestedDeliveryDate, $detail->getRequestedDeliveryDate());

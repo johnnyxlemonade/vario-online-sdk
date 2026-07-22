@@ -9,25 +9,25 @@ use Lemonade\Vario\Api\IncomingOrderApi;
 use Lemonade\Vario\Client\VarioClientInterface;
 use Lemonade\Vario\Domain\Common\Currency;
 use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderPaymentMeansCode;
-use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxCalculationMethod;
-use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxScheme;
-use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrder;
-use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
 use Lemonade\Vario\Domain\IncomingOrder\Result\IncomingOrderUpsertResult;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderInput;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineInput;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderPartiesInput;
 use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxCalculationMethod;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxScheme;
+use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
+use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentMonetaryTotal;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentQuantity;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxExchangeRate;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxSubTotal;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxTotal;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentLineAmountsInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentLineIdentityInput;
-use Lemonade\Vario\Domain\Shared\Document\Write\DocumentIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentTotalsInput;
 use Lemonade\Vario\Enum\HttpMethod;
 use Lemonade\Vario\Enum\VarioEndpoint;
@@ -49,7 +49,7 @@ final class IncomingOrderApiTest extends TestCase
             ->with(
                 HttpMethod::QUERY,
                 VarioEndpoint::IncomingOrder->value,
-                $query->toArray()
+                $query->toArray(),
             )
             ->willReturn([
                 [
@@ -93,7 +93,7 @@ final class IncomingOrderApiTest extends TestCase
         self::assertInstanceOf(IncomingOrder::class, $result[0]);
         self::assertSame(
             'e4daf94d-fd98-4f7d-a7c6-93cd21dee5f8',
-            $result[0]->getUuid()
+            $result[0]->getUuid(),
         );
         self::assertSame('CZK', $result[0]->getCurrency()?->value);
     }
@@ -127,7 +127,7 @@ final class IncomingOrderApiTest extends TestCase
             ->with(
                 HttpMethod::PUT,
                 VarioEndpoint::IncomingOrder->value,
-                $expectedPayload
+                $expectedPayload,
             )
             ->willReturn($response);
 
@@ -154,7 +154,7 @@ final class IncomingOrderApiTest extends TestCase
             ->withCatalogueItemIdentification('SKU-001')
             ->withSellersItemIdentification('SKU-001')
             ->addDescription(
-                new DocumentDescription('Test item')
+                new DocumentDescription('Test item'),
             );
 
         $line = new IncomingOrderLineInput(

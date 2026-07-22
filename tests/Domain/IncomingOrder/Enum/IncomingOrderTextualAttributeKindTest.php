@@ -20,17 +20,17 @@ final class IncomingOrderTextualAttributeKindTest extends TestCase
     {
         self::assertSame(
             'FreeText',
-            DocumentTextualAttributeKind::FreeText->toApiValue()
+            DocumentTextualAttributeKind::FreeText->toApiValue(),
         );
 
         self::assertSame(
             'ExtendedID',
-            DocumentTextualAttributeKind::ExtendedID->toApiValue()
+            DocumentTextualAttributeKind::ExtendedID->toApiValue(),
         );
 
         self::assertSame(
             'BarcodeSymbologyID',
-            DocumentTextualAttributeKind::BarcodeSymbologyID->toApiValue()
+            DocumentTextualAttributeKind::BarcodeSymbologyID->toApiValue(),
         );
     }
 
@@ -38,17 +38,17 @@ final class IncomingOrderTextualAttributeKindTest extends TestCase
     {
         self::assertSame(
             DocumentTextualAttributeKind::FreeText,
-            DocumentTextualAttributeKind::tryFrom('FreeText')
+            DocumentTextualAttributeKind::tryFrom('FreeText'),
         );
 
         self::assertSame(
             DocumentTextualAttributeKind::ExtendedID,
-            DocumentTextualAttributeKind::tryFrom('ExtendedID')
+            DocumentTextualAttributeKind::tryFrom('ExtendedID'),
         );
 
         self::assertSame(
             DocumentTextualAttributeKind::BarcodeSymbologyID,
-            DocumentTextualAttributeKind::tryFrom('BarcodeSymbologyID')
+            DocumentTextualAttributeKind::tryFrom('BarcodeSymbologyID'),
         );
     }
 

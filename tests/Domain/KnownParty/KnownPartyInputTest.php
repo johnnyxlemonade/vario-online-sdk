@@ -27,7 +27,7 @@ final class KnownPartyInputTest extends TestCase
             city: 'Prague',
             postalCode: '11000',
             countryIso: 'CZ',
-            buildingNumber: '10'
+            buildingNumber: '10',
         );
 
         $input = (new KnownPartyInput('Company'))
@@ -53,7 +53,7 @@ final class KnownPartyInputTest extends TestCase
         $id = new Identification(
             scheme: IdentificationScheme::VAT,
             id: 'CZ12345678',
-            originCountry: 'CZ'
+            originCountry: 'CZ',
         );
 
         $input = (new KnownPartyInput('Company'))
@@ -68,7 +68,7 @@ final class KnownPartyInputTest extends TestCase
         $id = new Identification(
             scheme: IdentificationScheme::VAT,
             id: 'CZ12345678',
-            originCountry: 'CZ'
+            originCountry: 'CZ',
         );
 
         $input = (new KnownPartyInput('Company'))

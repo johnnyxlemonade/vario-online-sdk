@@ -14,7 +14,7 @@ final class ApiExceptionTest extends TestCase
         $exception = new ApiException(
             message: 'API request failed',
             statusCode: 500,
-            responseBody: '{"error":"internal"}'
+            responseBody: '{"error":"internal"}',
         );
 
         self::assertSame('API request failed', $exception->getMessage());
@@ -33,7 +33,7 @@ final class ApiExceptionTest extends TestCase
             message: 'API request failed',
             statusCode: 400,
             responseBody: 'Bad request',
-            previous: $previous
+            previous: $previous,
         );
 
         self::assertSame($previous, $exception->getPrevious());

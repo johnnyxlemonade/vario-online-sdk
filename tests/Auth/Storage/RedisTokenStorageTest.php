@@ -58,7 +58,7 @@ final class RedisTokenStorageTest extends TestCase
 
         $expired = new Token(
             'abc',
-            new \DateTimeImmutable('2000-01-01T00:00:00Z')
+            new \DateTimeImmutable('2000-01-01T00:00:00Z'),
         );
 
         $redis->method('get')
@@ -78,7 +78,7 @@ final class RedisTokenStorageTest extends TestCase
 
         $token = new Token(
             'abc',
-            new \DateTimeImmutable('+1 hour')
+            new \DateTimeImmutable('+1 hour'),
         );
 
         $redis
@@ -102,7 +102,7 @@ final class RedisTokenStorageTest extends TestCase
             ->with(
                 '_lemonade_vario_auth_token',
                 self::anything(),
-                3600
+                3600,
             );
 
         $storage = new RedisTokenStorage($redis);

@@ -26,7 +26,7 @@ final class GreaterThanFilterTest extends TestCase
                     ],
                 ],
             ],
-            $result
+            $result,
         );
     }
 
@@ -46,7 +46,7 @@ final class GreaterThanFilterTest extends TestCase
                     ],
                 ],
             ],
-            $result
+            $result,
         );
     }
 }

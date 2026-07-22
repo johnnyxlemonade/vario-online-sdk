@@ -34,7 +34,7 @@ final class InFilterTest extends TestCase
                     'Value' => 3,
                 ]],
             ],
-            $result
+            $result,
         );
     }
 

@@ -22,7 +22,7 @@ final class IncomingOrderUnitConversionFactorTest extends TestCase
         self::assertSame('m2', $factor->getUnitCode());
         self::assertSame(
             DocumentUnitOfMeasureScheme::SI,
-            $factor->getScheme()
+            $factor->getScheme(),
         );
     }
 
@@ -37,7 +37,7 @@ final class IncomingOrderUnitConversionFactorTest extends TestCase
         self::assertSame('Ks', $factor->getUnitCode());
         self::assertSame(
             DocumentUnitOfMeasureScheme::Unknown,
-            $factor->getScheme()
+            $factor->getScheme(),
         );
     }
 }

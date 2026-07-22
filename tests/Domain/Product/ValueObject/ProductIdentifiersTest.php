@@ -14,7 +14,7 @@ final class ProductIdentifiersTest extends TestCase
         $identifiers = new ProductIdentifiers(
             ean: '1234567890123',
             mpn: 'MPN-001',
-            supplierCode: 'SUP-42'
+            supplierCode: 'SUP-42',
         );
 
         self::assertSame('1234567890123', $identifiers->getEan());
@@ -27,7 +27,7 @@ final class ProductIdentifiersTest extends TestCase
         $identifiers = new ProductIdentifiers(
             ean: null,
             mpn: null,
-            supplierCode: null
+            supplierCode: null,
         );
 
         self::assertNull($identifiers->getEan());
@@ -40,7 +40,7 @@ final class ProductIdentifiersTest extends TestCase
         $identifiers = new ProductIdentifiers(
             ean: '1234567890123',
             mpn: 'MPN-001',
-            supplierCode: 'SUP-42'
+            supplierCode: 'SUP-42',
         );
 
         self::assertSame([

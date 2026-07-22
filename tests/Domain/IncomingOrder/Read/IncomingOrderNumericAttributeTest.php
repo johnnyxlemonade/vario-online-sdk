@@ -24,7 +24,7 @@ final class IncomingOrderNumericAttributeTest extends TestCase
 
         self::assertSame(
             IncomingOrderNumericAttributeKind::FreeNumeric,
-            $attribute->getAttributeKind()
+            $attribute->getAttributeKind(),
         );
         self::assertSame('Pocet_polozky_1', $attribute->getName());
         self::assertSame(5.0, $attribute->getValue());
@@ -42,7 +42,7 @@ final class IncomingOrderNumericAttributeTest extends TestCase
 
         self::assertSame(
             IncomingOrderNumericAttributeKind::MeasurementDimension,
-            $attribute->getAttributeKind()
+            $attribute->getAttributeKind(),
         );
         self::assertNull($attribute->getName());
         self::assertNull($attribute->getValue());

@@ -18,7 +18,7 @@ final class ProductInventoryMapperTest extends TestCase
             stock: 'stock',
             deliveryTime: 'delivery',
             unit: 'unit',
-            warrantyMonths: 'warranty'
+            warrantyMonths: 'warranty',
         );
 
         $row = new DatasetRow([
@@ -45,7 +45,7 @@ final class ProductInventoryMapperTest extends TestCase
             stock: 'stock',
             deliveryTime: 'delivery',
             unit: 'unit',
-            warrantyMonths: 'warranty'
+            warrantyMonths: 'warranty',
         );
 
         $row = new DatasetRow([]);
@@ -61,7 +61,7 @@ final class ProductInventoryMapperTest extends TestCase
             stock: 'stock',
             deliveryTime: 'delivery',
             unit: 'unit',
-            warrantyMonths: 'warranty'
+            warrantyMonths: 'warranty',
         );
 
         $row = new DatasetRow([

@@ -31,7 +31,7 @@ final class BetweenFilterTest extends TestCase
                     ],
                 ],
             ],
-            $result
+            $result,
         );
     }
 
@@ -56,7 +56,7 @@ final class BetweenFilterTest extends TestCase
                     ],
                 ],
             ],
-            $result
+            $result,
         );
     }
 }

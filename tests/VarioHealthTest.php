@@ -106,7 +106,7 @@ final class VarioHealthTest extends TestCase
         self::assertNotNull($client->lastRequest);
         self::assertSame(
             'https://vpn.example.test:444/authentication/GetAccessToken',
-            (string) $client->lastRequest->getUri()
+            (string) $client->lastRequest->getUri(),
         );
     }
 
@@ -118,13 +118,13 @@ final class VarioHealthTest extends TestCase
             baseUrl: 'https://vpn.example.test:444/',
             loginName: 'user',
             password: 'password',
-            companyNumber: '1'
+            companyNumber: '1',
         );
 
         $health = new VarioHealth(
             config: $config,
             httpClient: $client,
-            requestFactory: new HttpFactory()
+            requestFactory: new HttpFactory(),
         );
 
         $health->checkServer('authentication/GetAccessToken');
@@ -132,7 +132,7 @@ final class VarioHealthTest extends TestCase
         self::assertNotNull($client->lastRequest);
         self::assertSame(
             'https://vpn.example.test:444/authentication/GetAccessToken',
-            (string) $client->lastRequest->getUri()
+            (string) $client->lastRequest->getUri(),
         );
     }
 
@@ -146,7 +146,7 @@ final class VarioHealthTest extends TestCase
         self::assertNotNull($client->lastRequest);
         self::assertSame(
             'XMLHttpRequest',
-            $client->lastRequest->getHeaderLine('X-Requested-With')
+            $client->lastRequest->getHeaderLine('X-Requested-With'),
         );
     }
 
@@ -156,13 +156,13 @@ final class VarioHealthTest extends TestCase
             baseUrl: 'https://vpn.example.test:444',
             loginName: 'user',
             password: 'password',
-            companyNumber: '1'
+            companyNumber: '1',
         );
 
         return new VarioHealth(
             config: $config,
             httpClient: $client,
-            requestFactory: new HttpFactory()
+            requestFactory: new HttpFactory(),
         );
     }
 }
@@ -172,7 +172,7 @@ final class FakeHttpClient implements ClientInterface
     public ?RequestInterface $lastRequest = null;
 
     public function __construct(
-        private readonly ResponseInterface|\Throwable $result
+        private readonly ResponseInterface|\Throwable $result,
     ) {}
 
     public function sendRequest(RequestInterface $request): ResponseInterface

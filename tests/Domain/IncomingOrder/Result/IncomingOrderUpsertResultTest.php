@@ -127,7 +127,7 @@ final class IncomingOrderUpsertResultTest extends TestCase
     {
         $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage(
-            'IncomingOrderUpsertResult field "IssueDate" must be a valid datetime string or null.'
+            'IncomingOrderUpsertResult field "IssueDate" must be a valid datetime string or null.',
         );
 
         IncomingOrderUpsertResult::fromArray([
@@ -140,7 +140,7 @@ final class IncomingOrderUpsertResultTest extends TestCase
     {
         $this->expectException(UnexpectedValueException::class);
         $this->expectExceptionMessage(
-            'IncomingOrderUpsertResult field "ReceiveDate" contains invalid datetime value "not-a-date".'
+            'IncomingOrderUpsertResult field "ReceiveDate" contains invalid datetime value "not-a-date".',
         );
 
         IncomingOrderUpsertResult::fromArray([

@@ -26,7 +26,7 @@ final class NotEqualsFilterTest extends TestCase
                     ],
                 ],
             ],
-            $result
+            $result,
         );
     }
 
@@ -46,7 +46,7 @@ final class NotEqualsFilterTest extends TestCase
                     ],
                 ],
             ],
-            $result
+            $result,
         );
     }
 }

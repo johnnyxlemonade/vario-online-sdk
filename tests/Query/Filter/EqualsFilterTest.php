@@ -26,7 +26,7 @@ final class EqualsFilterTest extends TestCase
                     ],
                 ],
             ],
-            $result
+            $result,
         );
     }
 
@@ -46,7 +46,7 @@ final class EqualsFilterTest extends TestCase
                     ],
                 ],
             ],
-            $result
+            $result,
         );
     }
 
@@ -66,7 +66,7 @@ final class EqualsFilterTest extends TestCase
                     ],
                 ],
             ],
-            $result
+            $result,
         );
     }
 }

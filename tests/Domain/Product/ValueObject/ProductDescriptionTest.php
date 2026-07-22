@@ -13,7 +13,7 @@ final class ProductDescriptionTest extends TestCase
     {
         $description = new ProductDescription(
             shortDescription: 'Short text',
-            description: 'Long description'
+            description: 'Long description',
         );
 
         self::assertSame('Short text', $description->getShortDescription());
@@ -24,7 +24,7 @@ final class ProductDescriptionTest extends TestCase
     {
         $description = new ProductDescription(
             shortDescription: null,
-            description: null
+            description: null,
         );
 
         self::assertNull($description->getShortDescription());
@@ -35,7 +35,7 @@ final class ProductDescriptionTest extends TestCase
     {
         $description = new ProductDescription(
             shortDescription: 'Short text',
-            description: 'Long description'
+            description: 'Long description',
         );
 
         self::assertSame([

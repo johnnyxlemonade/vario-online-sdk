@@ -19,7 +19,7 @@ final class GuzzleHttpAdapterTest extends TestCase
             baseUrl: 'https://example.com',
             loginName: 'user',
             password: 'pass',
-            companyNumber: '1'
+            companyNumber: '1',
         );
 
         $adapter = new GuzzleHttpAdapter($config);
@@ -35,14 +35,14 @@ final class GuzzleHttpAdapterTest extends TestCase
             baseUrl: 'https://example.com',
             loginName: 'user',
             password: 'pass',
-            companyNumber: '1'
+            companyNumber: '1',
         );
 
         $adapter = new GuzzleHttpAdapter($config);
 
         self::assertSame(
             $adapter->requestFactory(),
-            $adapter->streamFactory()
+            $adapter->streamFactory(),
         );
     }
 
@@ -52,14 +52,14 @@ final class GuzzleHttpAdapterTest extends TestCase
             baseUrl: 'https://example.com',
             loginName: 'user',
             password: 'pass',
-            companyNumber: '1'
+            companyNumber: '1',
         );
 
         $adapter = new GuzzleHttpAdapter($config);
 
         self::assertSame(
             $adapter->httpClient(),
-            $adapter->httpClient()
+            $adapter->httpClient(),
         );
     }
 }

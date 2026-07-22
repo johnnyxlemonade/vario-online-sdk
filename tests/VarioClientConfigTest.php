@@ -18,7 +18,7 @@ final class VarioClientConfigTest extends TestCase
             password: 'pass',
             companyNumber: '123',
             timeout: 10,
-            verifySsl: true
+            verifySsl: true,
         );
 
         self::assertSame('https://example.com', $config->getBaseUrl());
@@ -50,7 +50,7 @@ final class VarioClientConfigTest extends TestCase
             $_ENV['VARIO_URL'],
             $_ENV['VARIO_LOGIN'],
             $_ENV['VARIO_PASSWORD'],
-            $_ENV['VARIO_COMPANY']
+            $_ENV['VARIO_COMPANY'],
         );
 
         $this->expectException(ConfigurationException::class);

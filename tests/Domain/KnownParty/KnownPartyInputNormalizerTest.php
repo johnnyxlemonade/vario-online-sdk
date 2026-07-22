@@ -55,7 +55,7 @@ final class KnownPartyInputNormalizerTest extends TestCase
             street: 'Main 10',
             city: 'Prague',
             postalCode: '11000',
-            countryIso: 'CZ'
+            countryIso: 'CZ',
         );
 
         $input = (new KnownPartyInput('Test Company'))
@@ -82,8 +82,8 @@ final class KnownPartyInputNormalizerTest extends TestCase
                 new Identification(
                     IdentificationScheme::VAT,
                     'CZ12345678',
-                    'CZ'
-                )
+                    'CZ',
+                ),
             );
 
         /** @var KnownPartyPayload $payload */
@@ -98,7 +98,7 @@ final class KnownPartyInputNormalizerTest extends TestCase
 
         self::assertSame(
             IdentificationScheme::VAT->toApiValue(),
-            $ids[0]['Scheme']
+            $ids[0]['Scheme'],
         );
 
         self::assertSame('CZ12345678', $ids[0]['ID']);

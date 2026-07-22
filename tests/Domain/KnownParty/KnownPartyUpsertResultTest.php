@@ -14,7 +14,7 @@ final class KnownPartyUpsertResultTest extends TestCase
     {
         $result = new KnownPartyUpsertResult(
             uuid: 'abc-123',
-            recipientObjectId: '42'
+            recipientObjectId: '42',
         );
 
         self::assertSame('abc-123', $result->getUuid());
@@ -26,7 +26,7 @@ final class KnownPartyUpsertResultTest extends TestCase
     {
         $result = new KnownPartyUpsertResult(
             uuid: 'abc-123',
-            recipientObjectId: null
+            recipientObjectId: null,
         );
 
         self::assertFalse($result->hasRecipientObjectId());
@@ -36,7 +36,7 @@ final class KnownPartyUpsertResultTest extends TestCase
     {
         $result = new KnownPartyUpsertResult(
             uuid: 'abc-123',
-            recipientObjectId: ''
+            recipientObjectId: '',
         );
 
         self::assertFalse($result->hasRecipientObjectId());
@@ -76,7 +76,7 @@ final class KnownPartyUpsertResultTest extends TestCase
     {
         $result = new KnownPartyUpsertResult(
             uuid: 'abc-123',
-            recipientObjectId: '55'
+            recipientObjectId: '55',
         );
 
         self::assertSame([

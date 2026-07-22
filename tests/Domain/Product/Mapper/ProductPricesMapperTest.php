@@ -21,7 +21,7 @@ final class ProductPricesMapperTest extends TestCase
             basePrice: 'price',
             vatRate: 'vat',
             priceIncludesVat: 'includesVat',
-            currency: 'currency'
+            currency: 'currency',
         );
 
         $row = new DatasetRow([
@@ -54,7 +54,7 @@ final class ProductPricesMapperTest extends TestCase
     public function testReturnsNullWhenPriceMissing(): void
     {
         $mapping = new ProductPricesMapping(
-            basePrice: 'price'
+            basePrice: 'price',
         );
 
         $row = new DatasetRow([]);
@@ -69,7 +69,7 @@ final class ProductPricesMapperTest extends TestCase
     public function testMapsPriceWithoutOptionalFields(): void
     {
         $mapping = new ProductPricesMapping(
-            basePrice: 'price'
+            basePrice: 'price',
         );
 
         $row = new DatasetRow([
@@ -97,7 +97,7 @@ final class ProductPricesMapperTest extends TestCase
     public function testReturnsNullWhenBasePriceColumnNotConfigured(): void
     {
         $mapping = new ProductPricesMapping(
-            basePrice: null
+            basePrice: null,
         );
 
         $row = new DatasetRow([
@@ -115,7 +115,7 @@ final class ProductPricesMapperTest extends TestCase
     {
         $mapping = new ProductPricesMapping(
             basePrice: 'price',
-            vatRate: null
+            vatRate: null,
         );
 
         $row = new DatasetRow([
@@ -137,7 +137,7 @@ final class ProductPricesMapperTest extends TestCase
     {
         $mapping = new ProductPricesMapping(
             basePrice: 'price',
-            priceIncludesVat: null
+            priceIncludesVat: null,
         );
 
         $row = new DatasetRow([
@@ -157,7 +157,7 @@ final class ProductPricesMapperTest extends TestCase
     {
         $mapping = new ProductPricesMapping(
             basePrice: 'price',
-            currency: null
+            currency: null,
         );
 
         $row = new DatasetRow([

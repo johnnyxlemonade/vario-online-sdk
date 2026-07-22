@@ -18,7 +18,7 @@ final class ProductDimensionsMapperTest extends TestCase
             width: 'width',
             height: 'height',
             depth: 'depth',
-            weightKg: 'weight'
+            weightKg: 'weight',
         );
 
         $row = new DatasetRow([
@@ -45,7 +45,7 @@ final class ProductDimensionsMapperTest extends TestCase
             width: 'width',
             height: 'height',
             depth: 'depth',
-            weightKg: 'weight'
+            weightKg: 'weight',
         );
 
         $row = new DatasetRow([]);
@@ -61,7 +61,7 @@ final class ProductDimensionsMapperTest extends TestCase
             width: 'width',
             height: 'height',
             depth: 'depth',
-            weightKg: 'weight'
+            weightKg: 'weight',
         );
 
         $row = new DatasetRow([

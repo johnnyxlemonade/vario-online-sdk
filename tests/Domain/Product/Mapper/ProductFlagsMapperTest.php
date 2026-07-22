@@ -20,7 +20,7 @@ final class ProductFlagsMapperTest extends TestCase
             discount: 'discount',
             clearance: 'clearance',
             recommended: 'recommended',
-            preparing: 'preparing'
+            preparing: 'preparing',
         );
 
         $row = new DatasetRow([
@@ -46,7 +46,7 @@ final class ProductFlagsMapperTest extends TestCase
             discount: 'discount',
             clearance: 'clearance',
             recommended: 'recommended',
-            preparing: 'preparing'
+            preparing: 'preparing',
         );
 
         $row = new DatasetRow([]);

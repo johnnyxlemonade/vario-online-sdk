@@ -18,12 +18,12 @@ final class PriceLevelTest extends TestCase
             value: 150.0,
             includesVat: false,
             vatRate: VatRate::STANDARD,
-            currency: Currency::CZK
+            currency: Currency::CZK,
         );
 
         $level = new PriceLevel(
             code: 'B2B',
-            price: $price
+            price: $price,
         );
 
         self::assertSame('B2B', $level->getCode());
@@ -36,12 +36,12 @@ final class PriceLevelTest extends TestCase
             value: 150.0,
             includesVat: false,
             vatRate: VatRate::STANDARD,
-            currency: Currency::CZK
+            currency: Currency::CZK,
         );
 
         $level = new PriceLevel(
             code: 'B2B',
-            price: $price
+            price: $price,
         );
 
         self::assertSame([

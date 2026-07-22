@@ -63,8 +63,12 @@ use Psr\Log\LoggerInterface;
  */
 final class VarioClient implements VarioClientInterface
 {
+    /** @var Closure(): void */
     private readonly Closure $reauthCallback;
 
+    /**
+     * @param callable(): void $reauthCallback
+     */
     public function __construct(
         private readonly ClientInterface $httpClient,
         private readonly TokenStorageInterface $tokenStorage,
@@ -288,6 +292,8 @@ final class VarioClient implements VarioClientInterface
                 previous: $e,
             );
         }
+
+        return;
     }
 
     private function calculateDurationMs(float $start): float

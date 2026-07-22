@@ -10,7 +10,7 @@ use PHPUnit\Framework\TestCase;
 
 final class FileTokenStorageTest extends TestCase
 {
-    private string $file;
+    private ?string $file = null;
 
     protected function setUp(): void
     {
@@ -19,21 +19,23 @@ final class FileTokenStorageTest extends TestCase
 
     protected function tearDown(): void
     {
-        if (is_file($this->file)) {
-            unlink($this->file);
+        $file = $this->file;
+
+        if ($file !== null && is_file($file)) {
+            unlink($file);
         }
     }
 
     public function test_get_returns_null_when_file_missing(): void
     {
-        $storage = new FileTokenStorage($this->file);
+        $storage = new FileTokenStorage($this->getFile());
 
         self::assertNull($storage->get());
     }
 
     public function test_store_and_get_token(): void
     {
-        $storage = new FileTokenStorage($this->file);
+        $storage = new FileTokenStorage($this->getFile());
 
         $token = new Token('abc');
 
@@ -47,9 +49,9 @@ final class FileTokenStorageTest extends TestCase
 
     public function test_get_returns_null_for_invalid_file_content(): void
     {
-        file_put_contents($this->file, json_encode(['invalid' => true]));
+        file_put_contents($this->getFile(), json_encode(['invalid' => true]));
 
-        $storage = new FileTokenStorage($this->file);
+        $storage = new FileTokenStorage($this->getFile());
 
         self::assertNull($storage->get());
     }
@@ -58,31 +60,38 @@ final class FileTokenStorageTest extends TestCase
     {
         $expired = new Token(
             'abc',
-            new \DateTimeImmutable('2000-01-01T00:00:00Z')
+            new \DateTimeImmutable('2000-01-01T00:00:00Z'),
         );
 
         file_put_contents(
-            $this->file,
-            json_encode($expired->toArray(), JSON_THROW_ON_ERROR)
+            $this->getFile(),
+            json_encode($expired->toArray(), JSON_THROW_ON_ERROR),
         );
 
-        $storage = new FileTokenStorage($this->file);
+        $storage = new FileTokenStorage($this->getFile());
 
         self::assertNull($storage->get());
 
-        self::assertFalse(is_file($this->file));
+        self::assertFalse(is_file($this->getFile()));
     }
 
     public function test_clear_removes_file(): void
     {
-        $storage = new FileTokenStorage($this->file);
+        $storage = new FileTokenStorage($this->getFile());
 
         $storage->store(new Token('abc'));
 
-        self::assertFileExists($this->file);
+        self::assertFileExists($this->getFile());
 
         $storage->clear();
 
-        self::assertFileDoesNotExist($this->file);
+        self::assertFileDoesNotExist($this->getFile());
+    }
+
+    private function getFile(): string
+    {
+        self::assertNotNull($this->file);
+
+        return $this->file;
     }
 }

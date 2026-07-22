@@ -17,7 +17,7 @@ final class ProductClassificationMapperTest extends TestCase
         $mapping = new ProductClassificationMapping(
             categoryId: 'cat_id',
             categoryName: 'cat_name',
-            brand: 'brand'
+            brand: 'brand',
         );
 
         $row = new DatasetRow([
@@ -41,7 +41,7 @@ final class ProductClassificationMapperTest extends TestCase
         $mapping = new ProductClassificationMapping(
             categoryId: 'cat_id',
             categoryName: 'cat_name',
-            brand: 'brand'
+            brand: 'brand',
         );
 
         $row = new DatasetRow([]);
@@ -56,7 +56,7 @@ final class ProductClassificationMapperTest extends TestCase
         $mapping = new ProductClassificationMapping(
             categoryId: 'cat_id',
             categoryName: 'cat_name',
-            brand: 'brand'
+            brand: 'brand',
         );
 
         $row = new DatasetRow([

@@ -26,7 +26,7 @@ final class IsNullFilterTest extends TestCase
                     ],
                 ],
             ],
-            $result
+            $result,
         );
     }
 }

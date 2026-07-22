@@ -15,7 +15,7 @@ final class ProductClassificationTest extends TestCase
             categoryId: 'cat-1',
             categoryName: 'Electronics',
             brand: 'Acme',
-            priceLevelCode: 'AAA'
+            priceLevelCode: 'AAA',
         );
 
         self::assertSame('cat-1', $classification->getCategoryId());

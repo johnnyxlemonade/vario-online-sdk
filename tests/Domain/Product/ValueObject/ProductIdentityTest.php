@@ -15,7 +15,7 @@ final class ProductIdentityTest extends TestCase
             uuid: 'abc-123',
             sku: 'SKU-1',
             catalogNumber: 'CAT-1',
-            name: 'Test Product'
+            name: 'Test Product',
         );
 
         self::assertSame('abc-123', $identity->getUuid());
@@ -30,7 +30,7 @@ final class ProductIdentityTest extends TestCase
             uuid: 'abc-123',
             sku: null,
             catalogNumber: null,
-            name: null
+            name: null,
         );
 
         self::assertSame('abc-123', $identity->getUuid());
@@ -45,7 +45,7 @@ final class ProductIdentityTest extends TestCase
             uuid: 'abc-123',
             sku: 'SKU-1',
             catalogNumber: 'CAT-1',
-            name: 'Test Product'
+            name: 'Test Product',
         );
 
         self::assertSame([

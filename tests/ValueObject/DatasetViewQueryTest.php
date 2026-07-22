@@ -110,7 +110,7 @@ final class DatasetViewQueryTest extends TestCase
         $query = DatasetViewQuery::for($view);
 
         $newQuery = $query->withFilter(
-            QueryFilters::equals('Id', 10)
+            QueryFilters::equals('Id', 10),
         );
 
         self::assertNotSame($query, $newQuery);

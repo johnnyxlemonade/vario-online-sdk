@@ -22,7 +22,7 @@ final class VarioApiFactoryTest extends TestCase
             baseUrl: 'https://example.com',
             loginName: 'test',
             password: 'test',
-            companyNumber: '1'
+            companyNumber: '1',
         );
 
         $adapter = new class implements HttpAdapterInterface {
@@ -47,7 +47,7 @@ final class VarioApiFactoryTest extends TestCase
         VarioApiFactory::create(
             $config,
             $adapter,
-            new InMemoryTokenStorage()
+            new InMemoryTokenStorage(),
         );
     }
 }

@@ -15,7 +15,7 @@ final class ProductDimensionsTest extends TestCase
             width: 10.5,
             height: 20.0,
             depth: 5.5,
-            weightGrams: 1500
+            weightGrams: 1500,
         );
 
         self::assertSame(10.5, $dimensions->getWidth());
@@ -30,7 +30,7 @@ final class ProductDimensionsTest extends TestCase
             width: 10,
             height: 20,
             depth: 30,
-            weightKg: 1.5
+            weightKg: 1.5,
         );
 
         self::assertSame(1500.0, $dimensions->getWeightGrams());
@@ -42,7 +42,7 @@ final class ProductDimensionsTest extends TestCase
             width: 10,
             height: 20,
             depth: 30,
-            weightKg: null
+            weightKg: null,
         );
 
         self::assertNull($dimensions->getWeightGrams());
@@ -54,7 +54,7 @@ final class ProductDimensionsTest extends TestCase
             width: null,
             height: null,
             depth: null,
-            weightGrams: null
+            weightGrams: null,
         );
 
         self::assertNull($dimensions->getWidth());
@@ -69,7 +69,7 @@ final class ProductDimensionsTest extends TestCase
             width: 1,
             height: 2,
             depth: 3,
-            weightGrams: 400
+            weightGrams: 400,
         );
 
         self::assertSame([

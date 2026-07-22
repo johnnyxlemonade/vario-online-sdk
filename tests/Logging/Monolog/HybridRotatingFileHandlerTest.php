@@ -12,18 +12,24 @@ use PHPUnit\Framework\TestCase;
 
 final class HybridRotatingFileHandlerTest extends TestCase
 {
-    private string $logDir;
+    private ?string $logDir = null;
 
     protected function setUp(): void
     {
         $this->logDir = sys_get_temp_dir() . '/vario_logs_' . uniqid('', true);
 
-        mkdir($this->logDir);
+        mkdir($this->getLogDir());
     }
 
     protected function tearDown(): void
     {
-        $files = glob($this->logDir . '/*');
+        $logDir = $this->logDir;
+
+        if ($logDir === null) {
+            return;
+        }
+
+        $files = glob($logDir . '/*');
 
         if (is_array($files)) {
             foreach ($files as $file) {
@@ -31,15 +37,15 @@ final class HybridRotatingFileHandlerTest extends TestCase
             }
         }
 
-        rmdir($this->logDir);
+        rmdir($logDir);
     }
 
     public function test_log_file_is_created(): void
     {
         $handler = new HybridRotatingFileHandler(
-            $this->logDir,
+            $this->getLogDir(),
             'test',
-            1024
+            1024,
         );
 
         $record = new LogRecord(
@@ -48,7 +54,7 @@ final class HybridRotatingFileHandlerTest extends TestCase
             level: Level::Info,
             message: 'hello world',
             context: [],
-            extra: []
+            extra: [],
         );
 
         $handler->handle($record);
@@ -56,7 +62,7 @@ final class HybridRotatingFileHandlerTest extends TestCase
 
         $date = date('Y-m-d');
 
-        $file = $this->logDir . "/test_{$date}.log";
+        $file = $this->getLogDir() . "/test_{$date}.log";
 
         self::assertFileExists($file);
     }
@@ -64,9 +70,9 @@ final class HybridRotatingFileHandlerTest extends TestCase
     public function test_log_rotation_when_size_exceeded(): void
     {
         $handler = new HybridRotatingFileHandler(
-            $this->logDir,
+            $this->getLogDir(),
             'test',
-            1 // velmi malý limit pro test
+            1, // velmi malĂ˝ limit pro test
         );
 
         $record = new LogRecord(
@@ -75,7 +81,7 @@ final class HybridRotatingFileHandlerTest extends TestCase
             level: Level::Info,
             message: str_repeat('A', 200),
             context: [],
-            extra: []
+            extra: [],
         );
 
         $handler->handle($record);
@@ -86,9 +92,16 @@ final class HybridRotatingFileHandlerTest extends TestCase
 
         $date = date('Y-m-d');
 
-        $files = glob($this->logDir . "/test_{$date}*.log");
+        $files = glob($this->getLogDir() . "/test_{$date}*.log");
 
         self::assertIsArray($files);
         self::assertGreaterThanOrEqual(2, count($files));
+    }
+
+    private function getLogDir(): string
+    {
+        self::assertNotNull($this->logDir);
+
+        return $this->logDir;
     }
 }

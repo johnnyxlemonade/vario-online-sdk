@@ -15,7 +15,7 @@ final class PostalAddressTest extends TestCase
             street: 'Main Street 10',
             city: 'Prague',
             postalCode: '11000',
-            countryIso: 'CZ'
+            countryIso: 'CZ',
         );
 
         self::assertSame('Main Street 10', $address->getStreetLine());
@@ -44,7 +44,7 @@ final class PostalAddressTest extends TestCase
 
         self::assertSame(
             'Main 10, 11000 Prague, CZ',
-            $address->getDisplayAddress()
+            $address->getDisplayAddress(),
         );
     }
 
@@ -54,12 +54,12 @@ final class PostalAddressTest extends TestCase
             street: 'Street',
             city: '',
             postalCode: '',
-            countryIso: ''
+            countryIso: '',
         );
 
         self::assertSame(
             'Street',
-            $address->getDisplayAddress()
+            $address->getDisplayAddress(),
         );
     }
 
@@ -93,7 +93,7 @@ final class PostalAddressTest extends TestCase
 
         self::assertSame(
             'Main 10, 11000 Prague, CZ',
-            (string) $address
+            (string) $address,
         );
     }
 
@@ -120,7 +120,7 @@ final class PostalAddressTest extends TestCase
 
         self::assertSame(
             'Main Street 10',
-            $address->getStreetLine()
+            $address->getStreetLine(),
         );
     }
 }

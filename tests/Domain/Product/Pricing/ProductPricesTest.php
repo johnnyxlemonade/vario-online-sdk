@@ -22,12 +22,12 @@ final class ProductPricesTest extends TestCase
             value: 199.9,
             includesVat: true,
             vatRate: VatRate::STANDARD,
-            currency: Currency::CZK
+            currency: Currency::CZK,
         );
 
         $productPrices = new ProductPrices(
             levels: $levels,
-            basePrice: $price
+            basePrice: $price,
         );
 
         self::assertTrue($productPrices->hasBasePrice());
@@ -40,7 +40,7 @@ final class ProductPricesTest extends TestCase
         $levels = new PriceCollection();
 
         $productPrices = new ProductPrices(
-            levels: $levels
+            levels: $levels,
         );
 
         self::assertFalse($productPrices->hasBasePrice());
@@ -56,24 +56,24 @@ final class ProductPricesTest extends TestCase
             value: 150.0,
             includesVat: false,
             vatRate: VatRate::STANDARD,
-            currency: Currency::CZK
+            currency: Currency::CZK,
         );
 
         $levels->add(new PriceLevel(
             code: 'B2B',
-            price: $levelPrice
+            price: $levelPrice,
         ));
 
         $basePrice = new Price(
             value: 199.9,
             includesVat: true,
             vatRate: VatRate::STANDARD,
-            currency: Currency::CZK
+            currency: Currency::CZK,
         );
 
         $productPrices = new ProductPrices(
             levels: $levels,
-            basePrice: $basePrice
+            basePrice: $basePrice,
         );
 
         $array = $productPrices->toArray();

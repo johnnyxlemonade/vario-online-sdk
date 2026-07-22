@@ -5,12 +5,11 @@ declare(strict_types=1);
 namespace Lemonade\Vario\Tests\Domain\OutgoingQuotation\Builder;
 
 use DateTimeImmutable;
-use LogicException;
 use Lemonade\Vario\Domain\Common\Currency;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
 use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
-use Lemonade\Vario\Domain\OutgoingQuotation\Builder\OutgoingQuotationBuildInput;
 use Lemonade\Vario\Domain\OutgoingQuotation\Builder\OutgoingQuotationBuilder;
+use Lemonade\Vario\Domain\OutgoingQuotation\Builder\OutgoingQuotationBuildInput;
 use Lemonade\Vario\Domain\OutgoingQuotation\Enum\OutgoingQuotationPaymentMeansCode;
 use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationLineItemInput;
 use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationPartiesInput;
@@ -21,11 +20,12 @@ use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLinePriceInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineQuantityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentIdentityInput;
-use Lemonade\Vario\Normalizer\OutgoingQuotation\OutgoingQuotationInputNormalizer;
 use Lemonade\Vario\Domain\Shared\Identification;
 use Lemonade\Vario\Domain\Shared\IdentificationScheme;
-use ReflectionClass;
+use Lemonade\Vario\Normalizer\OutgoingQuotation\OutgoingQuotationInputNormalizer;
+use LogicException;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 
 final class OutgoingQuotationBuilderTest extends TestCase
 {
@@ -255,7 +255,7 @@ final class OutgoingQuotationBuilderTest extends TestCase
         $this->expectExceptionMessage(OutgoingQuotationLineItemInput::class);
 
         (new OutgoingQuotationBuilder())->build(
-            $this->createBuildInputWithWrongLineItemType()
+            $this->createBuildInputWithWrongLineItemType(),
         );
     }
 

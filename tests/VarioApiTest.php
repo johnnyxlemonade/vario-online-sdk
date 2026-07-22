@@ -30,7 +30,7 @@ final class VarioApiTest extends TestCase
             $client,
             [
                 $api::class => fn() => $api,
-            ]
+            ],
         );
 
         $result = $vario->api($api::class);
@@ -51,7 +51,7 @@ final class VarioApiTest extends TestCase
                     $factoryCalls++;
                     return new class ($client) extends AbstractApi {};
                 },
-            ]
+            ],
         );
 
         $a = $vario->api(AbstractApi::class);
@@ -90,7 +90,7 @@ final class VarioApiTest extends TestCase
             $client,
             [
                 DatasetViewApi::class => fn() => $api,
-            ]
+            ],
         );
 
         self::assertSame($api, $vario->datasetView());
@@ -109,7 +109,7 @@ final class VarioApiTest extends TestCase
             $client,
             [
                 IncomingOrderApi::class => fn() => $api,
-            ]
+            ],
         );
 
         self::assertSame($api, $vario->incomingOrders());
@@ -128,7 +128,7 @@ final class VarioApiTest extends TestCase
             $client,
             [
                 KnownPartyApi::class => fn() => $api,
-            ]
+            ],
         );
 
         self::assertSame($api, $vario->knownParties());
@@ -146,7 +146,7 @@ final class VarioApiTest extends TestCase
             $client,
             [
                 OutgoingQuotationApi::class => fn() => $api,
-            ]
+            ],
         );
 
         self::assertSame($api, $vario->outgoingQuotations());

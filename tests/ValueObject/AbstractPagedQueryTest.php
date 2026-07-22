@@ -67,7 +67,7 @@ final class AbstractPagedQueryTest extends TestCase
         $query = $this->createQuery();
 
         $new = $query->withFilter(
-            QueryFilters::equals('Id', 10)
+            QueryFilters::equals('Id', 10),
         );
 
         self::assertInstanceOf(QueryFilterCollection::class, $new->getFilters());

@@ -30,7 +30,7 @@ final class TokenTest extends TestCase
         self::assertSame('abc', $token->value);
         self::assertSame(
             '2030-01-01T00:00:00+00:00',
-            $token->getExpiresAtUtc()?->format('c')
+            $token->getExpiresAtUtc()?->format('c'),
         );
     }
 
@@ -72,8 +72,8 @@ final class TokenTest extends TestCase
 
         self::assertTrue(
             $token->isExpired(
-                new \DateTimeImmutable('2030-01-01T00:00:00Z')
-            )
+                new \DateTimeImmutable('2030-01-01T00:00:00Z'),
+            ),
         );
     }
 
@@ -85,8 +85,8 @@ final class TokenTest extends TestCase
 
         self::assertFalse(
             $token->isExpired(
-                new \DateTimeImmutable('2020-01-01T00:00:00Z')
-            )
+                new \DateTimeImmutable('2020-01-01T00:00:00Z'),
+            ),
         );
     }
 
@@ -127,7 +127,7 @@ final class TokenTest extends TestCase
         $token = new Token(
             value: 'abc',
             expiresAtUtc: $expires,
-            configHash: 'hash123'
+            configHash: 'hash123',
         );
 
         $array = $token->toArray();

@@ -17,7 +17,7 @@ final class IdentificationCollectionTest extends TestCase
             new Identification(
                 IdentificationScheme::UIN,
                 '12345678',
-                'CZ'
+                'CZ',
             ),
         ]);
 
@@ -30,7 +30,7 @@ final class IdentificationCollectionTest extends TestCase
             new Identification(
                 IdentificationScheme::UIN,
                 'CZ12345678',
-                'CZ'
+                'CZ',
             ),
         ]);
 
@@ -43,7 +43,7 @@ final class IdentificationCollectionTest extends TestCase
             new Identification(
                 IdentificationScheme::VAT,
                 'CZ12345678',
-                'CZ'
+                'CZ',
             ),
         ]);
 
@@ -56,7 +56,7 @@ final class IdentificationCollectionTest extends TestCase
             new Identification(
                 IdentificationScheme::UIN,
                 'CZ12345678',
-                'CZ'
+                'CZ',
             ),
         ]);
 
@@ -68,14 +68,14 @@ final class IdentificationCollectionTest extends TestCase
         $id = new Identification(
             IdentificationScheme::VAT,
             'CZ123',
-            'CZ'
+            'CZ',
         );
 
         $collection = new IdentificationCollection([$id]);
 
         self::assertSame(
             $id,
-            $collection->firstByScheme(IdentificationScheme::VAT)
+            $collection->firstByScheme(IdentificationScheme::VAT),
         );
     }
 
@@ -102,7 +102,7 @@ final class IdentificationCollectionTest extends TestCase
             new Identification(
                 IdentificationScheme::VAT,
                 'CZ12345678',
-                'CZ'
+                'CZ',
             ),
         ]);
 

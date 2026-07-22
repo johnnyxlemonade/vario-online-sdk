@@ -26,7 +26,7 @@ final class CustomHttpAdapterTest extends TestCase
             baseUrl: 'https://example.com',
             loginName: 'user',
             password: 'pass',
-            companyNumber: '1'
+            companyNumber: '1',
         );
 
         $adapter = new class implements HttpAdapterInterface {
@@ -48,7 +48,7 @@ final class CustomHttpAdapterTest extends TestCase
                         return new Response(
                             200,
                             [],
-                            $body
+                            $body,
                         );
                     }
                 };
@@ -68,7 +68,7 @@ final class CustomHttpAdapterTest extends TestCase
         $vario = VarioApiFactory::create(
             $config,
             $adapter,
-            new InMemoryTokenStorage()
+            new InMemoryTokenStorage(),
         );
 
         self::assertInstanceOf(VarioApi::class, $vario);

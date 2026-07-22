@@ -22,7 +22,7 @@ final class FlatJsonFormatterTest extends TestCase
             level: Level::Info,
             message: 'Hello world',
             context: ['userId' => 123],
-            extra: ['requestId' => 'abc']
+            extra: ['requestId' => 'abc'],
         );
 
         $json = $formatter->format($record);
@@ -53,7 +53,7 @@ final class FlatJsonFormatterTest extends TestCase
                 level: Level::Info,
                 message: 'first',
                 context: [],
-                extra: []
+                extra: [],
             ),
             new LogRecord(
                 datetime: new DateTimeImmutable(),
@@ -61,7 +61,7 @@ final class FlatJsonFormatterTest extends TestCase
                 level: Level::Info,
                 message: 'second',
                 context: [],
-                extra: []
+                extra: [],
             ),
         ];
 
@@ -69,7 +69,7 @@ final class FlatJsonFormatterTest extends TestCase
 
         $lines = array_filter(
             explode("\n", $output),
-            static fn(string $line): bool => $line !== ''
+            static fn(string $line): bool => $line !== '',
         );
 
         self::assertCount(2, $lines);

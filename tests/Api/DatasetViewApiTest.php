@@ -19,7 +19,7 @@ final class DatasetViewApiTest extends TestCase
         $client = $this->createMock(VarioClientInterface::class);
 
         $query = DatasetViewQuery::for(
-            new CustomDatasetView('Test/View')
+            new CustomDatasetView('Test/View'),
         );
 
         $client
@@ -28,7 +28,7 @@ final class DatasetViewApiTest extends TestCase
             ->with(
                 HttpMethod::GET,
                 VarioEndpoint::DatasetView->value,
-                $query->toArray()
+                $query->toArray(),
             )
             ->willReturn([
                 'Data' => [['id' => 1]],
@@ -47,7 +47,7 @@ final class DatasetViewApiTest extends TestCase
         $client = $this->createMock(VarioClientInterface::class);
 
         $query = DatasetViewQuery::for(
-            new CustomDatasetView('Test/View')
+            new CustomDatasetView('Test/View'),
         );
 
         $client
@@ -66,13 +66,13 @@ final class DatasetViewApiTest extends TestCase
                         ['id' => 3],
                     ],
                     'Pager' => ['PageCount' => 2],
-                ]
+                ],
             );
 
         $api = new DatasetViewApi($client);
 
         $rows = iterator_to_array(
-            $api->iterate($query, 2)
+            $api->iterate($query, 2),
         );
 
         self::assertCount(3, $rows);

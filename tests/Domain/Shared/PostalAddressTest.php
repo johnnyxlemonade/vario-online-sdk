@@ -16,7 +16,7 @@ final class PostalAddressTest extends TestCase
             buildingNumber: '10',
             city: 'Prague',
             postalCode: '11000',
-            countryIso: 'CZ'
+            countryIso: 'CZ',
         );
 
         self::assertSame('Main', $address->getStreet());
@@ -46,7 +46,7 @@ final class PostalAddressTest extends TestCase
             street: null,
             buildingNumber: null,
             city: 'Prague',
-            postalCode: '11000'
+            postalCode: '11000',
         );
 
         self::assertSame('11000 Prague', $address->getCityLine());
@@ -66,12 +66,12 @@ final class PostalAddressTest extends TestCase
             buildingNumber: '10',
             city: 'Prague',
             postalCode: '11000',
-            countryIso: 'CZ'
+            countryIso: 'CZ',
         );
 
         self::assertSame(
             'Main 10, 11000 Prague, CZ',
-            $address->getDisplayAddress()
+            $address->getDisplayAddress(),
         );
     }
 
@@ -89,7 +89,7 @@ final class PostalAddressTest extends TestCase
             buildingNumber: '10',
             city: 'Prague',
             postalCode: '11000',
-            countryIso: 'CZ'
+            countryIso: 'CZ',
         );
 
         $data = $address->toArray();
@@ -110,7 +110,7 @@ final class PostalAddressTest extends TestCase
             street: 'Main',
             buildingNumber: '10',
             city: 'Prague',
-            postalCode: '11000'
+            postalCode: '11000',
         );
 
         self::assertSame('Main 10, 11000 Prague', (string) $address);
@@ -122,7 +122,7 @@ final class PostalAddressTest extends TestCase
             street: 'Main',
             buildingNumber: '10',
             city: 'Prague',
-            postalCode: '11000'
+            postalCode: '11000',
         );
 
         $json = $address->jsonSerialize();
@@ -137,7 +137,7 @@ final class PostalAddressTest extends TestCase
             street: "  Main\tStreet  ",
             buildingNumber: '  10 ',
             city: '  Prague ',
-            postalCode: ' 11000 '
+            postalCode: ' 11000 ',
         );
 
         self::assertSame('Main Street 10', $address->getStreetLine());

@@ -38,30 +38,30 @@ final class ProductMapperTest extends TestCase
                         uuid: 'uuid',
                         sku: 'sku',
                         catalogNumber: null,
-                        name: 'name'
-                    )
-                )
+                        name: 'name',
+                    ),
+                ),
             )
             ->add(
                 new ProductPricingMapper(
                     new ProductPricingMapping(
-                        price: 'price'
-                    )
-                )
+                        price: 'price',
+                    ),
+                ),
             )
             ->add(
                 new ProductInventoryMapper(
                     new ProductInventoryMapping(
-                        stock: 'stock'
-                    )
-                )
+                        stock: 'stock',
+                    ),
+                ),
             )
             ->add(
                 new ProductFlagsMapper(
                     new ProductFlagsMapping(
-                        sale: 'sale'
-                    )
-                )
+                        sale: 'sale',
+                    ),
+                ),
             );
 
         $row = new DatasetRow([
@@ -110,9 +110,9 @@ final class ProductMapperTest extends TestCase
                 new ProductIdentityMapper(
                     new ProductIdentityMapping(
                         uuid: 'uuid',
-                        sku: 'sku'
-                    )
-                )
+                        sku: 'sku',
+                    ),
+                ),
             );
 
         $row = new DatasetRow([
@@ -136,16 +136,16 @@ final class ProductMapperTest extends TestCase
         $mapping = (new ProductDatasetMapping())
             ->add(
                 new ProductIdentityMapper(
-                    new ProductIdentityMapping(uuid: 'uuid')
-                )
+                    new ProductIdentityMapping(uuid: 'uuid'),
+                ),
             )
             ->add(
                 new ProductAttributesMapper(
                     new ProductAttributesMapping([
                         'color' => 'color',
                         'invalid' => 'invalid',
-                    ])
-                )
+                    ]),
+                ),
             );
 
         $row = new DatasetRow([
@@ -170,8 +170,8 @@ final class ProductMapperTest extends TestCase
         $mapping = (new ProductDatasetMapping())
             ->add(
                 new ProductIdentityMapper(
-                    new ProductIdentityMapping(uuid: 'uuid')
-                )
+                    new ProductIdentityMapping(uuid: 'uuid'),
+                ),
             )
             ->add(
                 new class extends AbstractProductSectionMapper {
@@ -185,7 +185,7 @@ final class ProductMapperTest extends TestCase
 
                         return new class ($value) implements ProductSection {
                             public function __construct(
-                                private readonly string $value
+                                private readonly string $value,
                             ) {}
 
                             public function getValue(): string
@@ -200,7 +200,7 @@ final class ProductMapperTest extends TestCase
                         };
                     }
 
-                }
+                },
             );
 
         $row = new DatasetRow([
@@ -222,8 +222,8 @@ final class ProductMapperTest extends TestCase
         $mapping = (new ProductDatasetMapping())
             ->add(
                 new ProductIdentityMapper(
-                    new ProductIdentityMapping(uuid: 'uuid')
-                )
+                    new ProductIdentityMapping(uuid: 'uuid'),
+                ),
             );
 
         $rows = [
@@ -245,8 +245,8 @@ final class ProductMapperTest extends TestCase
         $mapping = (new ProductDatasetMapping())
             ->add(
                 new ProductIdentityMapper(
-                    new ProductIdentityMapping(uuid: 'uuid')
-                )
+                    new ProductIdentityMapping(uuid: 'uuid'),
+                ),
             );
 
         $rows = [
@@ -266,8 +266,8 @@ final class ProductMapperTest extends TestCase
         $mapping = (new ProductDatasetMapping())
             ->add(
                 new ProductIdentityMapper(
-                    new ProductIdentityMapping(uuid: 'uuid')
-                )
+                    new ProductIdentityMapping(uuid: 'uuid'),
+                ),
             );
 
         $rows = [

@@ -18,7 +18,7 @@ final class KnownPartyTest extends TestCase
             street: 'Main 10',
             city: 'Prague',
             postalCode: '11000',
-            countryIso: 'CZ'
+            countryIso: 'CZ',
         );
 
         $identifications = new IdentificationCollection([]);
@@ -33,7 +33,7 @@ final class KnownPartyTest extends TestCase
             telephone: '123456',
             postalAddress: $address,
             identifications: $identifications,
-            extra: ['foo' => 'bar']
+            extra: ['foo' => 'bar'],
         );
 
         self::assertSame('abc-123', $party->getUuid());
@@ -53,13 +53,13 @@ final class KnownPartyTest extends TestCase
             city: 'Prague',
             postalCode: '11000',
             countryIso: 'CZ',
-            buildingNumber: '10'
+            buildingNumber: '10',
         );
 
         $party = new KnownParty(
             kind: KnownPartyKind::Organization,
             uuid: 'abc',
-            postalAddress: $address
+            postalAddress: $address,
         );
 
         self::assertTrue($party->hasAddress());
@@ -75,7 +75,7 @@ final class KnownPartyTest extends TestCase
     {
         $party = new KnownParty(
             kind: KnownPartyKind::Organization,
-            uuid: 'abc'
+            uuid: 'abc',
         );
 
         self::assertFalse($party->hasAddress());
@@ -94,7 +94,7 @@ final class KnownPartyTest extends TestCase
         $party = new KnownParty(
             kind: KnownPartyKind::Organization,
             uuid: 'abc',
-            identifications: $ids
+            identifications: $ids,
         );
 
         self::assertFalse($party->hasIdentifications());
@@ -105,7 +105,7 @@ final class KnownPartyTest extends TestCase
     {
         $party = new KnownParty(
             kind: KnownPartyKind::Organization,
-            uuid: 'abc'
+            uuid: 'abc',
         );
 
         self::assertNull($party->getCompanyNumber());
@@ -116,7 +116,7 @@ final class KnownPartyTest extends TestCase
     {
         $party = new KnownParty(
             kind: KnownPartyKind::Person,
-            uuid: 'abc'
+            uuid: 'abc',
         );
 
         self::assertSame(KnownPartyKind::Person, $party->getKind());
@@ -129,7 +129,7 @@ final class KnownPartyTest extends TestCase
         $party = new KnownParty(
             kind: KnownPartyKind::Organization,
             uuid: 'abc',
-            identifications: $ids
+            identifications: $ids,
         );
 
         self::assertSame($ids, $party->getIdentifications());
@@ -139,7 +139,7 @@ final class KnownPartyTest extends TestCase
     {
         $party = new KnownParty(
             kind: KnownPartyKind::Organization,
-            uuid: 'abc'
+            uuid: 'abc',
         );
 
         self::assertNull($party->getIdentifications());

@@ -27,7 +27,7 @@ final class AuthenticatorTest extends TestCase
             loginName: 'user',
             password: 'pass',
             companyNumber: '123',
-            logger: $logger
+            logger: $logger,
         );
     }
 
@@ -44,7 +44,7 @@ final class AuthenticatorTest extends TestCase
         $token = new Token(
             value: 'existing',
             expiresAtUtc: null,
-            configHash: Token::buildConfigHash($config)
+            configHash: Token::buildConfigHash($config),
         );
 
         $storage->method('get')->willReturn($token);
@@ -59,7 +59,7 @@ final class AuthenticatorTest extends TestCase
             $requestFactory,
             $streamFactory,
             $storage,
-            $config
+            $config,
         );
 
         $auth->authenticate();
@@ -101,7 +101,7 @@ final class AuthenticatorTest extends TestCase
             $requestFactory,
             $streamFactory,
             $storage,
-            $config
+            $config,
         );
 
         $this->expectException(AuthenticationException::class);
@@ -124,7 +124,7 @@ final class AuthenticatorTest extends TestCase
         $token = new Token(
             value: 'existing',
             expiresAtUtc: null,
-            configHash: 'different_hash'
+            configHash: 'different_hash',
         );
 
         $storage->method('get')->willReturn($token);
@@ -166,7 +166,7 @@ final class AuthenticatorTest extends TestCase
             $requestFactory,
             $streamFactory,
             $storage,
-            $config
+            $config,
         );
 
         $auth->authenticate();

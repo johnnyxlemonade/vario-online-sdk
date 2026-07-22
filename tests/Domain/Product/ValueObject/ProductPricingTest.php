@@ -16,7 +16,7 @@ final class ProductPricingTest extends TestCase
         $price = new Price(
             value: 199.9,
             includesVat: true,
-            vatRate: VatRate::STANDARD
+            vatRate: VatRate::STANDARD,
         );
 
         $pricing = new ProductPricing($price);
@@ -46,7 +46,7 @@ final class ProductPricingTest extends TestCase
         $price = new Price(
             value: 100.0,
             includesVat: false,
-            vatRate: VatRate::STANDARD
+            vatRate: VatRate::STANDARD,
         );
 
         $pricing = new ProductPricing($price);

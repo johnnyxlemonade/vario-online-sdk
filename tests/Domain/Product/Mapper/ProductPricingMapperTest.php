@@ -17,7 +17,7 @@ final class ProductPricingMapperTest extends TestCase
         $mapping = new ProductPricingMapping(
             price: 'price',
             vatRate: 'vat',
-            priceIncludesVat: 'includesVat'
+            priceIncludesVat: 'includesVat',
         );
 
         $row = new DatasetRow([
@@ -46,7 +46,7 @@ final class ProductPricingMapperTest extends TestCase
         $mapping = new ProductPricingMapping(
             price: 'price',
             vatRate: 'vat',
-            priceIncludesVat: 'includesVat'
+            priceIncludesVat: 'includesVat',
         );
 
         $row = new DatasetRow([]);
@@ -61,7 +61,7 @@ final class ProductPricingMapperTest extends TestCase
         $mapping = new ProductPricingMapping(
             price: 'price',
             vatRate: 'vat',
-            priceIncludesVat: 'includesVat'
+            priceIncludesVat: 'includesVat',
         );
 
         $row = new DatasetRow([

@@ -33,12 +33,12 @@ $input = (new KnownPartyInput('Example Company s.r.o.'))
         buildingNumber: '10',
         city: 'Prague',
         postalCode: '11000',
-        countryIso: 'CZ'
+        countryIso: 'CZ',
     ))
     ->addIdentification(new Identification(
         scheme: IdentificationScheme::UIN,
         id: '12345678',
-        originCountry: 'CZ'
+        originCountry: 'CZ',
     ));
 
 echo '<pre>';
@@ -61,7 +61,6 @@ $preview = $vario->knownParties()->previewUpsert([
 
 print_r($preview);
 
-
 /*
 |--------------------------------------------------------------------------
 | Upsert request
@@ -79,9 +78,8 @@ $result = $vario->knownParties()->upsert([
 
 print_r(array_map(
     fn($r) => $r->toArray(),
-    $result
+    $result,
 ));
-
 
 /*
 |--------------------------------------------------------------------------
@@ -96,7 +94,7 @@ echo "\n=== Query verification ===\n";
 
 $query = (new KnownPartyQuery())
     ->withFilter(
-        QueryFilters::equals('ElectronicMail', 'contact@example.com')
+        QueryFilters::equals('ElectronicMail', 'contact@example.com'),
     );
 
 $items = $vario->knownParties()->query($query);

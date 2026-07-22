@@ -9,7 +9,7 @@ use PHPUnit\Framework\TestCase;
 
 final class ScalarReadersTraitTest extends TestCase
 {
-    private ScalarReadersTraitTester $t;
+    private ?ScalarReadersTraitTester $t = null;
 
     protected function setUp(): void
     {
@@ -18,32 +18,39 @@ final class ScalarReadersTraitTest extends TestCase
 
     public function test_string_or_null(): void
     {
-        self::assertSame('abc', $this->t->stringOrNull('abc'));
-        self::assertSame('123', $this->t->stringOrNull(123));
-        self::assertNull($this->t->stringOrNull(null));
-        self::assertNull($this->t->stringOrNull(''));
-        self::assertNull($this->t->stringOrNull([]));
+        self::assertSame('abc', $this->getTester()->stringOrNull('abc'));
+        self::assertSame('123', $this->getTester()->stringOrNull(123));
+        self::assertNull($this->getTester()->stringOrNull(null));
+        self::assertNull($this->getTester()->stringOrNull(''));
+        self::assertNull($this->getTester()->stringOrNull([]));
     }
 
     public function test_int_or_null(): void
     {
-        self::assertSame(5, $this->t->intOrNull(5));
-        self::assertSame(5, $this->t->intOrNull('5'));
-        self::assertNull($this->t->intOrNull('abc'));
+        self::assertSame(5, $this->getTester()->intOrNull(5));
+        self::assertSame(5, $this->getTester()->intOrNull('5'));
+        self::assertNull($this->getTester()->intOrNull('abc'));
     }
 
     public function test_float_or_null(): void
     {
-        self::assertSame(5.0, $this->t->floatOrNull(5));
-        self::assertSame(5.2, $this->t->floatOrNull('5.2'));
-        self::assertNull($this->t->floatOrNull('abc'));
+        self::assertSame(5.0, $this->getTester()->floatOrNull(5));
+        self::assertSame(5.2, $this->getTester()->floatOrNull('5.2'));
+        self::assertNull($this->getTester()->floatOrNull('abc'));
     }
 
     public function test_nullable_trim(): void
     {
-        self::assertNull($this->t->nullableTrim(null));
-        self::assertNull($this->t->nullableTrim('   '));
-        self::assertSame('abc', $this->t->nullableTrim('  abc  '));
+        self::assertNull($this->getTester()->nullableTrim(null));
+        self::assertNull($this->getTester()->nullableTrim('   '));
+        self::assertSame('abc', $this->getTester()->nullableTrim('  abc  '));
+    }
+
+    private function getTester(): ScalarReadersTraitTester
+    {
+        self::assertNotNull($this->t);
+
+        return $this->t;
     }
 }
 

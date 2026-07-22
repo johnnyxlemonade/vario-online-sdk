@@ -117,7 +117,7 @@ final class QueryFiltersTest extends TestCase
     {
         $group = QueryFilters::orGroup(
             QueryFilters::equals('Name', 'Test'),
-            QueryFilters::like('Name', 'T%')
+            QueryFilters::like('Name', 'T%'),
         );
 
         $array = $group->toArray();
@@ -130,7 +130,7 @@ final class QueryFiltersTest extends TestCase
     {
         $group = QueryFilters::andGroup(
             QueryFilters::equals('Name', 'Test'),
-            QueryFilters::like('Name', 'T%')
+            QueryFilters::like('Name', 'T%'),
         );
 
         $array = $group->toArray();

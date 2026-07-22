@@ -23,7 +23,7 @@ final class InMemoryTokenStorageTest extends TestCase
 
         $expired = new Token(
             'abc',
-            new \DateTimeImmutable('2000-01-01T00:00:00Z')
+            new \DateTimeImmutable('2000-01-01T00:00:00Z'),
         );
 
         $storage->store($expired);
@@ -51,7 +51,7 @@ final class InMemoryTokenStorageTest extends TestCase
 
         $expired = new Token(
             'abc',
-            new \DateTimeImmutable('2000-01-01T00:00:00Z')
+            new \DateTimeImmutable('2000-01-01T00:00:00Z'),
         );
 
         $storage->store($expired);
@@ -70,6 +70,5 @@ final class InMemoryTokenStorageTest extends TestCase
 
         self::assertNull($storage->get());
     }
-
 
 }

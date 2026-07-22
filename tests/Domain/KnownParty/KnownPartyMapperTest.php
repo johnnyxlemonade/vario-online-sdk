@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 
 final class KnownPartyMapperTest extends TestCase
 {
-    private KnownPartyMapper $mapper;
+    private ?KnownPartyMapper $mapper = null;
 
     protected function setUp(): void
     {
@@ -25,7 +25,7 @@ final class KnownPartyMapperTest extends TestCase
             'Name' => 'Test Company',
         ];
 
-        $party = $this->mapper->map($payload);
+        $party = $this->getMapper()->map($payload);
 
         self::assertSame('abc-123', $party->getUuid());
         self::assertSame('Test Company', $party->getName());
@@ -38,7 +38,7 @@ final class KnownPartyMapperTest extends TestCase
             'ContactPerson' => 'John Doe',
         ];
 
-        $party = $this->mapper->map($payload);
+        $party = $this->getMapper()->map($payload);
 
         self::assertSame('John Doe', $party->getName());
     }
@@ -50,7 +50,7 @@ final class KnownPartyMapperTest extends TestCase
             'ID' => 'customer123',
         ];
 
-        $party = $this->mapper->map($payload);
+        $party = $this->getMapper()->map($payload);
 
         self::assertSame('customer123', $party->getName());
     }
@@ -63,7 +63,7 @@ final class KnownPartyMapperTest extends TestCase
             'Telephone' => '123456789',
         ];
 
-        $party = $this->mapper->map($payload);
+        $party = $this->getMapper()->map($payload);
 
         self::assertSame('test@example.com', $party->getEmail());
         self::assertSame('123456789', $party->getTelephone());
@@ -82,7 +82,7 @@ final class KnownPartyMapperTest extends TestCase
             ],
         ];
 
-        $party = $this->mapper->map($payload);
+        $party = $this->getMapper()->map($payload);
         $address = $party->getPostalAddress();
 
         self::assertNotNull($address);
@@ -103,7 +103,7 @@ final class KnownPartyMapperTest extends TestCase
             ],
         ];
 
-        $party = $this->mapper->map($payload);
+        $party = $this->getMapper()->map($payload);
 
         self::assertNull($party->getPostalAddress());
     }
@@ -115,7 +115,7 @@ final class KnownPartyMapperTest extends TestCase
             'PostalAddress' => [],
         ];
 
-        $party = $this->mapper->map($payload);
+        $party = $this->getMapper()->map($payload);
 
         self::assertNull($party->getPostalAddress());
     }
@@ -133,7 +133,7 @@ final class KnownPartyMapperTest extends TestCase
             ],
         ];
 
-        $party = $this->mapper->map($payload);
+        $party = $this->getMapper()->map($payload);
         $ids = $party->getIdentificationsOrEmpty();
 
         self::assertInstanceOf(IdentificationCollection::class, $ids);
@@ -152,10 +152,10 @@ final class KnownPartyMapperTest extends TestCase
             ],
         ];
 
-        $party = $this->mapper->map($payload);
+        $party = $this->getMapper()->map($payload);
 
         self::assertTrue(
-            $party->getIdentificationsOrEmpty()->isEmpty()
+            $party->getIdentificationsOrEmpty()->isEmpty(),
         );
     }
 
@@ -171,7 +171,7 @@ final class KnownPartyMapperTest extends TestCase
             ],
         ];
 
-        $party = $this->mapper->map($payload);
+        $party = $this->getMapper()->map($payload);
 
         self::assertSame('12345678', $party->getCompanyNumber());
     }
@@ -188,7 +188,7 @@ final class KnownPartyMapperTest extends TestCase
             ],
         ];
 
-        $party = $this->mapper->map($payload);
+        $party = $this->getMapper()->map($payload);
 
         self::assertSame('CZ12345678', $party->getVatId());
     }
@@ -197,7 +197,7 @@ final class KnownPartyMapperTest extends TestCase
     {
         $this->expectException(\UnexpectedValueException::class);
 
-        $this->mapper->map([
+        $this->getMapper()->map([
             'Name' => 'Company',
         ]);
     }
@@ -213,7 +213,7 @@ final class KnownPartyMapperTest extends TestCase
             ],
         ];
 
-        $party = $this->mapper->map($payload);
+        $party = $this->getMapper()->map($payload);
         $address = $party->getPostalAddress();
 
         self::assertNotNull($address);
@@ -234,10 +234,10 @@ final class KnownPartyMapperTest extends TestCase
             ],
         ];
 
-        $party = $this->mapper->map($payload);
+        $party = $this->getMapper()->map($payload);
 
         self::assertTrue(
-            $party->getIdentificationsOrEmpty()->isEmpty()
+            $party->getIdentificationsOrEmpty()->isEmpty(),
         );
     }
 
@@ -249,11 +249,11 @@ final class KnownPartyMapperTest extends TestCase
             'CustomField' => 'value',
         ];
 
-        $party = $this->mapper->map($payload);
+        $party = $this->getMapper()->map($payload);
 
         self::assertSame(
             'value',
-            $party->getExtra()['CustomField']
+            $party->getExtra()['CustomField'],
         );
     }
 
@@ -264,7 +264,7 @@ final class KnownPartyMapperTest extends TestCase
             'PostalAddress' => 'invalid',
         ];
 
-        $party = $this->mapper->map($payload);
+        $party = $this->getMapper()->map($payload);
 
         self::assertNull($party->getPostalAddress());
     }
@@ -282,14 +282,21 @@ final class KnownPartyMapperTest extends TestCase
             ],
         ];
 
-        $party = $this->mapper->map($payload);
+        $party = $this->getMapper()->map($payload);
         $address = $party->getPostalAddress();
 
         self::assertNotNull($address);
 
         self::assertSame(
             'Main 10, 11000 Prague, CZ',
-            $address->getDisplayAddress()
+            $address->getDisplayAddress(),
         );
+    }
+
+    private function getMapper(): KnownPartyMapper
+    {
+        self::assertNotNull($this->mapper);
+
+        return $this->mapper;
     }
 }

@@ -17,7 +17,7 @@ final class PriceTest extends TestCase
             value: 199.9,
             includesVat: true,
             vatRate: VatRate::STANDARD,
-            currency: Currency::CZK
+            currency: Currency::CZK,
         );
 
         self::assertSame(199.9, $price->getValue());
@@ -34,7 +34,7 @@ final class PriceTest extends TestCase
     {
         $price = new Price(
             value: 100.0,
-            includesVat: false
+            includesVat: false,
         );
 
         self::assertSame(100.0, $price->getValue());
@@ -52,7 +52,7 @@ final class PriceTest extends TestCase
             value: 150.0,
             includesVat: false,
             vatRate: VatRate::STANDARD,
-            currency: Currency::EUR
+            currency: Currency::EUR,
         );
 
         self::assertSame([

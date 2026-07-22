@@ -18,7 +18,7 @@ final class ProductIdentityMapperTest extends TestCase
             uuid: 'uuid',
             sku: 'sku',
             catalogNumber: 'catalog',
-            name: 'name'
+            name: 'name',
         );
 
         $row = new DatasetRow([
@@ -45,7 +45,7 @@ final class ProductIdentityMapperTest extends TestCase
             uuid: 'uuid',
             sku: 'sku',
             catalogNumber: 'catalog',
-            name: 'name'
+            name: 'name',
         );
 
         $row = new DatasetRow([]);
@@ -61,7 +61,7 @@ final class ProductIdentityMapperTest extends TestCase
             uuid: 'uuid',
             sku: 'sku',
             catalogNumber: 'catalog',
-            name: 'name'
+            name: 'name',
         );
 
         $row = new DatasetRow([

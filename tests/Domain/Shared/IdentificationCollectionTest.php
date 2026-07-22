@@ -50,7 +50,7 @@ final class IdentificationCollectionTest extends TestCase
         $collection = new IdentificationCollection([$uin]);
 
         self::assertNull(
-            $collection->firstByScheme(IdentificationScheme::VAT)
+            $collection->firstByScheme(IdentificationScheme::VAT),
         );
     }
 
@@ -114,7 +114,7 @@ final class IdentificationCollectionTest extends TestCase
         $id = new Identification(
             IdentificationScheme::VAT,
             'CZ12345678',
-            'CZ'
+            'CZ',
         );
 
         $collection = new IdentificationCollection([$id]);

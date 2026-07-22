@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Tests\Client;
 
+use Closure;
 use GuzzleHttp\Psr7\HttpFactory;
 use GuzzleHttp\Psr7\Response;
 use Lemonade\Vario\Auth\Storage\InMemoryTokenStorage;
@@ -47,7 +48,7 @@ final class VarioClientTest extends TestCase
             ->method('sendRequest')
             ->willReturnOnConsecutiveCalls(
                 new Response(401),
-                new Response(200, [], '{"ok":true}')
+                new Response(200, [], '{"ok":true}'),
             );
 
         $reauthCalled = false;
@@ -56,7 +57,7 @@ final class VarioClientTest extends TestCase
             $http,
             function () use (&$reauthCalled) {
                 $reauthCalled = true;
-            }
+            },
         );
 
         $result = $client->sendJson(HttpMethod::GET, '/test');
@@ -91,7 +92,7 @@ final class VarioClientTest extends TestCase
         $result = $client->sendQuery(
             HttpMethod::GET,
             '/test',
-            ['page' => 1]
+            ['page' => 1],
         );
 
         self::assertTrue($result['ok']);
@@ -155,7 +156,7 @@ final class VarioClientTest extends TestCase
             $http,
             function () use (&$reauthCalled) {
                 $reauthCalled = true;
-            }
+            },
         );
 
         try {
@@ -177,7 +178,7 @@ final class VarioClientTest extends TestCase
             $http,
             function () {
                 throw new \RuntimeException('auth failed');
-            }
+            },
         );
 
         $this->expectException(AuthenticationException::class);
@@ -191,7 +192,7 @@ final class VarioClientTest extends TestCase
 
         $http->method('sendRequest')
             ->willThrowException(
-                new class ('HTTP error') extends \RuntimeException implements ClientExceptionInterface {}
+                new class ('HTTP error') extends \RuntimeException implements ClientExceptionInterface {},
             );
 
         $client = $this->createClient($http);
@@ -235,7 +236,7 @@ final class VarioClientTest extends TestCase
         $client->sendJson(
             HttpMethod::POST,
             '/test',
-            ['a' => 1]
+            ['a' => 1],
         );
 
         self::assertNotNull($capturedRequest);
@@ -295,7 +296,7 @@ final class VarioClientTest extends TestCase
         $client->sendJson(
             HttpMethod::POST,
             '/test',
-            ['a' => 1]
+            ['a' => 1],
         );
 
         self::assertCount(2, $calls);
@@ -328,7 +329,7 @@ final class VarioClientTest extends TestCase
 
         self::assertSame(
             'Bearer abc123',
-            $capturedRequest->getHeaderLine('Authorization')
+            $capturedRequest->getHeaderLine('Authorization'),
         );
     }
 
@@ -354,7 +355,7 @@ final class VarioClientTest extends TestCase
             [
                 'page' => 1,
                 'foo' => 'bar',
-            ]
+            ],
         );
 
         self::assertInstanceOf(RequestInterface::class, $capturedRequest);
@@ -369,10 +370,13 @@ final class VarioClientTest extends TestCase
         ], $params);
     }
 
+    /**
+     * @param (Closure(): void)|null $reauthCallback
+     */
     private function createClient(
         ClientInterface $http,
-        ?callable $reauthCallback = null,
-        ?InMemoryTokenStorage $storage = null
+        ?Closure $reauthCallback = null,
+        ?InMemoryTokenStorage $storage = null,
     ): VarioClient {
         $factory = new HttpFactory();
         $logger = new NullLogger();

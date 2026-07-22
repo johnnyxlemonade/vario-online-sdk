@@ -92,7 +92,7 @@ foreach ($items as $order) {
                 'value' => $attribute->getValue(),
                 'langId' => $attribute->getLangId(),
             ],
-            $order->getTextualAttributes()
+            $order->getTextualAttributes(),
         ),
 
         'lines' => array_map(
@@ -107,7 +107,7 @@ foreach ($items as $order) {
                 'lineTotal' => $line->getLineExtensionAmount(),
                 'lineTotalTaxInclusive' => $line->getLineExtensionAmountTaxInclusive(),
             ],
-            $order->getDocumentLines()
+            $order->getDocumentLines(),
         ),
     ];
 }

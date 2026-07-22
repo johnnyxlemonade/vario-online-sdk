@@ -53,7 +53,7 @@ final class SessionTokenStorageTest extends TestCase
 
         $expiredToken = new Token(
             'abc',
-            new \DateTimeImmutable('2000-01-01T00:00:00Z')
+            new \DateTimeImmutable('2000-01-01T00:00:00Z'),
         );
 
         $session->method('get')->willReturn($expiredToken->toArray());

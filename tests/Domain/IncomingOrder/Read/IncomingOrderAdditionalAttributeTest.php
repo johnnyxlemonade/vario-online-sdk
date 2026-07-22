@@ -27,7 +27,7 @@ final class IncomingOrderAdditionalAttributeTest extends TestCase
 
         self::assertSame(
             DocumentTextualAttributeKind::ExtendedID,
-            $attribute->getAttributeKind()
+            $attribute->getAttributeKind(),
         );
         self::assertSame('Varianta', $attribute->getName());
         self::assertSame('velká díra', $attribute->getValue());
@@ -35,7 +35,7 @@ final class IncomingOrderAdditionalAttributeTest extends TestCase
         self::assertSame('Ks', $attribute->getUnitCode());
         self::assertSame(
             DocumentUnitOfMeasureScheme::Unknown,
-            $attribute->getScheme()
+            $attribute->getScheme(),
         );
         self::assertSame([
             'Source' => 'API',
@@ -52,7 +52,7 @@ final class IncomingOrderAdditionalAttributeTest extends TestCase
 
         self::assertSame(
             DocumentTextualAttributeKind::FreeText,
-            $attribute->getAttributeKind()
+            $attribute->getAttributeKind(),
         );
         self::assertSame('Barva', $attribute->getName());
         self::assertSame('černá', $attribute->getValue());

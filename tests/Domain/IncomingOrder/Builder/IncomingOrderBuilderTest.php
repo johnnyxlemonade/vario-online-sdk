@@ -5,10 +5,9 @@ declare(strict_types=1);
 namespace Lemonade\Vario\Tests\Domain\IncomingOrder\Builder;
 
 use DateTimeImmutable;
-use LogicException;
 use Lemonade\Vario\Domain\Common\Currency;
-use Lemonade\Vario\Domain\IncomingOrder\Builder\IncomingOrderBuildInput;
 use Lemonade\Vario\Domain\IncomingOrder\Builder\IncomingOrderBuilder;
+use Lemonade\Vario\Domain\IncomingOrder\Builder\IncomingOrderBuildInput;
 use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderPaymentMeansCode;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderPartiesInput;
@@ -25,8 +24,9 @@ use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLinePriceInput
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineQuantityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineTaxInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentIdentityInput;
-use ReflectionClass;
+use LogicException;
 use PHPUnit\Framework\TestCase;
+use ReflectionClass;
 
 final class IncomingOrderBuilderTest extends TestCase
 {
@@ -222,7 +222,7 @@ final class IncomingOrderBuilderTest extends TestCase
         $this->expectExceptionMessage(IncomingOrderLineItemInput::class);
 
         (new IncomingOrderBuilder())->build(
-            $this->createBuildInputWithWrongLineItemType()
+            $this->createBuildInputWithWrongLineItemType(),
         );
     }
 

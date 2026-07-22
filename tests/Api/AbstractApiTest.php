@@ -27,7 +27,7 @@ final class AbstractApiTest extends TestCase
             ->with(
                 HttpMethod::POST,
                 VarioEndpoint::DatasetView->value,
-                ['a' => 1]
+                ['a' => 1],
             )
             ->willReturn(['ok' => true]);
 
@@ -36,7 +36,7 @@ final class AbstractApiTest extends TestCase
         $result = $api->callSendJson(
             HttpMethod::POST,
             VarioEndpoint::DatasetView,
-            ['a' => 1]
+            ['a' => 1],
         );
 
         self::assertSame(['ok' => true], $result);
@@ -52,7 +52,7 @@ final class AbstractApiTest extends TestCase
             ->with(
                 HttpMethod::GET,
                 VarioEndpoint::DatasetView->value,
-                ['page' => 1]
+                ['page' => 1],
             )
             ->willReturn(['data' => []]);
 
@@ -61,7 +61,7 @@ final class AbstractApiTest extends TestCase
         $result = $api->callSendQuery(
             HttpMethod::GET,
             VarioEndpoint::DatasetView,
-            ['page' => 1]
+            ['page' => 1],
         );
 
         self::assertSame(['data' => []], $result);
@@ -80,7 +80,7 @@ final class TestApi extends AbstractApi
     public function callSendJson(
         HttpMethod $method,
         VarioEndpoint $endpoint,
-        ?array $payload = null
+        ?array $payload = null,
     ): array {
         return $this->sendJson($method, $endpoint, $payload);
     }
@@ -92,7 +92,7 @@ final class TestApi extends AbstractApi
     public function callSendQuery(
         HttpMethod $method,
         VarioEndpoint $endpoint,
-        array $query
+        array $query,
     ): array {
         return $this->sendQuery($method, $endpoint, $query);
     }

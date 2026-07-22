@@ -17,7 +17,7 @@ final class ProductIdentifiersMapperTest extends TestCase
         $mapping = new ProductIdentifiersMapping(
             ean: 'ean',
             mpn: 'mpn',
-            supplierCode: 'supplier'
+            supplierCode: 'supplier',
         );
 
         $row = new DatasetRow([
@@ -41,7 +41,7 @@ final class ProductIdentifiersMapperTest extends TestCase
         $mapping = new ProductIdentifiersMapping(
             ean: 'ean',
             mpn: 'mpn',
-            supplierCode: 'supplier'
+            supplierCode: 'supplier',
         );
 
         $row = new DatasetRow([]);
@@ -56,7 +56,7 @@ final class ProductIdentifiersMapperTest extends TestCase
         $mapping = new ProductIdentifiersMapping(
             ean: 'ean',
             mpn: 'mpn',
-            supplierCode: 'supplier'
+            supplierCode: 'supplier',
         );
 
         $row = new DatasetRow([

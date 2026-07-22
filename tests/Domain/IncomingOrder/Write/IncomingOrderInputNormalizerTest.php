@@ -318,7 +318,7 @@ final class IncomingOrderInputNormalizerTest extends TestCase
     public function test_normalize_keeps_zero_line_allowance_amount(): void
     {
         $payload = (new IncomingOrderInputNormalizer())->normalize(
-            $this->createInputWithAllowance(0.0)
+            $this->createInputWithAllowance(0.0),
         );
 
         $linePayload = $this->requireFirstMapFromList($payload, 'DocumentLine');

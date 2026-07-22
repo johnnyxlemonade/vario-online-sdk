@@ -16,7 +16,7 @@ final class ProductInventoryTest extends TestCase
             deliveryTime: 3,
             unit: 'pcs',
             warrantyMonths: 24,
-            packaging: 'pallete 1'
+            packaging: 'pallete 1',
         );
 
         self::assertSame(10, $inventory->getStock());
@@ -33,7 +33,7 @@ final class ProductInventoryTest extends TestCase
             deliveryTime: null,
             unit: null,
             warrantyMonths: null,
-            packaging: null
+            packaging: null,
         );
 
         self::assertNull($inventory->getStock());
@@ -50,7 +50,7 @@ final class ProductInventoryTest extends TestCase
             deliveryTime: 3,
             unit: 'pcs',
             warrantyMonths: 24,
-            packaging: 'pallete 1'
+            packaging: 'pallete 1',
         );
 
         self::assertSame([

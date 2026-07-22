@@ -25,12 +25,12 @@ final class IncomingOrderPriceModeTest extends TestCase
     {
         self::assertSame(
             DocumentPriceMode::WithoutVat,
-            DocumentPriceMode::tryFrom('WithoutVat')
+            DocumentPriceMode::tryFrom('WithoutVat'),
         );
 
         self::assertSame(
             DocumentPriceMode::WithVat,
-            DocumentPriceMode::tryFrom('WithVat')
+            DocumentPriceMode::tryFrom('WithVat'),
         );
     }
 

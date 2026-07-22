@@ -42,7 +42,7 @@ use Lemonade\Vario\VarioApi;
 
 $productQuery = DatasetViewQuery::for(
     view: new CustomDatasetView('Katalog/KatalogCenikAPI'),
-    pageLength: 1
+    pageLength: 1,
 );
 
 $result = $vario->datasetView()->fetch($productQuery);
@@ -272,7 +272,7 @@ echo "\n=== Lazy pipeline (lazy) ===\n";
 $products = $mapper
     ->lazy($productArray)
     ->filter(
-        fn(Product $p) => $p->identity()?->getUuid() === 'e32a9553-1a2d-4bfd-a32f-000e2e600261'
+        fn(Product $p) => $p->identity()?->getUuid() === 'e32a9553-1a2d-4bfd-a32f-000e2e600261',
     );
 
 foreach ($products as $product) {

@@ -492,7 +492,7 @@ final class IncomingOrderMapperTest extends TestCase
         self::assertCount(1, $taxTotal->getTaxSubTotals());
         self::assertSame(
             DocumentTaxCalculationMethod::Total,
-            $taxTotal->getTaxSubTotals()[0]->getCalculationMethod()
+            $taxTotal->getTaxSubTotals()[0]->getCalculationMethod(),
         );
 
         self::assertTrue($order->hasDeliveryDetail());
@@ -500,11 +500,11 @@ final class IncomingOrderMapperTest extends TestCase
         self::assertNotNull($deliveryDetail);
         self::assertSame(
             ['raben 7.5.2025', '123', 'druhá možnost'],
-            $deliveryDetail->getOptionCodes()
+            $deliveryDetail->getOptionCodes(),
         );
         self::assertSame(
             '2025-05-07T00:00:00+01:00',
-            $deliveryDetail->getRequestedDeliveryDate()?->format(DATE_ATOM)
+            $deliveryDetail->getRequestedDeliveryDate()?->format(DATE_ATOM),
         );
         self::assertSame([
             'Carrier' => 'Raben',
@@ -724,7 +724,7 @@ final class IncomingOrderMapperTest extends TestCase
         self::assertCount(1, $lineItem->getAdditionalAttributes());
         self::assertSame(
             DocumentTextualAttributeKind::ExtendedID,
-            $lineItem->getAdditionalAttributes()[0]->getAttributeKind()
+            $lineItem->getAdditionalAttributes()[0]->getAttributeKind(),
         );
         self::assertSame('Fallback', $lineItem->getAdditionalAttributes()[0]->getName());
         self::assertSame('yes', $lineItem->getAdditionalAttributes()[0]->getValue());
