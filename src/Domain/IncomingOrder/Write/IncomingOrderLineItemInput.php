@@ -7,6 +7,7 @@ namespace Lemonade\Vario\Domain\IncomingOrder\Write;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentUnitConversionFactor;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentAdditionalAttributeInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineItemInputInterface;
 
 /**
  * Class IncomingOrderLineItemInput
@@ -23,7 +24,7 @@ use Lemonade\Vario\Domain\Shared\Document\Write\DocumentAdditionalAttributeInput
  * @license     MIT
  * @since       1.0
  */
-final class IncomingOrderLineItemInput
+final class IncomingOrderLineItemInput implements DocumentCalculatedLineItemInputInterface
 {
     /** @var list<DocumentDescription> */
     private array $descriptions = [];

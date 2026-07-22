@@ -4,14 +4,13 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\Shared\Document\Write;
 
-use InvalidArgumentException;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentPriceMode;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxCalculationMethod;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxScheme;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
 
 /**
- * @template TLineItem of object
+ * @template TLineItem of DocumentCalculatedLineItemInputInterface
  */
 final class DocumentCalculatedLineInput
 {
@@ -19,96 +18,83 @@ final class DocumentCalculatedLineInput
      * @param TLineItem $lineItem
      */
     public function __construct(
-        private readonly string $uuid,
-        private readonly object $lineItem,
-        private readonly float $quantity,
-        private readonly string $unitCode,
-        private readonly float $unitPrice,
-        private readonly float $vatRate,
-        private readonly DocumentPriceMode $priceMode = DocumentPriceMode::WithoutVat,
-        private readonly ?float $lineAllowanceAmount = null,
-        private readonly DocumentUnitOfMeasureScheme $unitScheme = DocumentUnitOfMeasureScheme::Unknown,
-        private readonly ?string $id = null,
-        private readonly ?string $note = null,
-        private readonly DocumentTaxCalculationMethod $taxCalculationMethod = DocumentTaxCalculationMethod::Add,
-        private readonly DocumentTaxScheme $taxScheme = DocumentTaxScheme::Vat,
-        private readonly ?string $taxSchemeExtensionCode = null,
-    ) {
-        if ($lineAllowanceAmount !== null && $lineAllowanceAmount < 0.0) {
-            throw new InvalidArgumentException('Line allowance amount must not be negative.');
-        }
-    }
+        private readonly DocumentCalculatedLineIdentityInput $identity,
+        private readonly DocumentCalculatedLineItemInputInterface $lineItem,
+        private readonly DocumentCalculatedLineQuantityInput $quantity,
+        private readonly DocumentCalculatedLinePriceInput $price,
+        private readonly DocumentCalculatedLineTaxInput $tax = new DocumentCalculatedLineTaxInput(),
+    ) {}
 
     public function getUuid(): string
     {
-        return $this->uuid;
+        return $this->identity->getUuid();
     }
 
     /**
      * @return TLineItem
      */
-    public function getLineItem(): object
+    public function getLineItem(): DocumentCalculatedLineItemInputInterface
     {
         return $this->lineItem;
     }
 
     public function getQuantity(): float
     {
-        return $this->quantity;
+        return $this->quantity->getValue();
     }
 
     public function getUnitCode(): string
     {
-        return $this->unitCode;
+        return $this->quantity->getUnitCode();
     }
 
     public function getUnitPrice(): float
     {
-        return $this->unitPrice;
+        return $this->price->getUnitPrice();
     }
 
     public function getVatRate(): float
     {
-        return $this->vatRate;
+        return $this->price->getVatRate();
     }
 
     public function getPriceMode(): DocumentPriceMode
     {
-        return $this->priceMode;
+        return $this->price->getPriceMode();
     }
 
     public function getUnitScheme(): DocumentUnitOfMeasureScheme
     {
-        return $this->unitScheme;
+        return $this->quantity->getScheme();
     }
 
     public function getId(): ?string
     {
-        return $this->id;
+        return $this->identity->getId();
     }
 
     public function getNote(): ?string
     {
-        return $this->note;
+        return $this->identity->getNote();
     }
 
     public function getTaxCalculationMethod(): DocumentTaxCalculationMethod
     {
-        return $this->taxCalculationMethod;
+        return $this->tax->getCalculationMethod();
     }
 
     public function getTaxScheme(): DocumentTaxScheme
     {
-        return $this->taxScheme;
+        return $this->tax->getScheme();
     }
 
     public function getTaxSchemeExtensionCode(): ?string
     {
-        return $this->taxSchemeExtensionCode;
+        return $this->tax->getSchemeExtensionCode();
     }
 
     public function getLineAllowanceAmount(): ?float
     {
-        return $this->lineAllowanceAmount;
+        return $this->price->getLineAllowanceAmount();
     }
 }

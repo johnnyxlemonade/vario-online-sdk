@@ -5,14 +5,18 @@ declare(strict_types=1);
 namespace Lemonade\Vario\Tests\Domain\Shared\Document\Calculator;
 
 use InvalidArgumentException;
+use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
 use Lemonade\Vario\Domain\Shared\Document\Calculator\DocumentLineCalculator;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentPriceMode;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxCalculationMethod;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxScheme;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLinePriceInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineQuantityInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineTaxInput;
 use PHPUnit\Framework\TestCase;
-use stdClass;
 
 final class DocumentLineCalculatorTest extends TestCase
 {
@@ -21,19 +25,27 @@ final class DocumentLineCalculatorTest extends TestCase
         $calculator = new DocumentLineCalculator();
 
         $result = $calculator->calculate(new DocumentCalculatedLineInput(
-            uuid: 'line-1',
-            lineItem: new stdClass(),
-            quantity: 2.0,
-            unitCode: 'Ks',
-            unitPrice: 100.0,
-            vatRate: 21.0,
-            priceMode: DocumentPriceMode::WithoutVat,
-            unitScheme: DocumentUnitOfMeasureScheme::Unknown,
-            id: 'ROW-1',
-            note: 'row note',
-            taxCalculationMethod: DocumentTaxCalculationMethod::Add,
-            taxScheme: DocumentTaxScheme::Vat,
-            taxSchemeExtensionCode: 'LOCAL-RC',
+            identity: new DocumentCalculatedLineIdentityInput(
+                uuid: 'line-1',
+                id: 'ROW-1',
+                note: 'row note',
+            ),
+            lineItem: new IncomingOrderLineItemInput(),
+            quantity: new DocumentCalculatedLineQuantityInput(
+                value: 2.0,
+                unitCode: 'Ks',
+                scheme: DocumentUnitOfMeasureScheme::Unknown,
+            ),
+            price: new DocumentCalculatedLinePriceInput(
+                unitPrice: 100.0,
+                vatRate: 21.0,
+                priceMode: DocumentPriceMode::WithoutVat,
+            ),
+            tax: new DocumentCalculatedLineTaxInput(
+                calculationMethod: DocumentTaxCalculationMethod::Add,
+                scheme: DocumentTaxScheme::Vat,
+                schemeExtensionCode: 'LOCAL-RC',
+            ),
         ));
 
         self::assertSame(200.0, $result['lineExtensionAmount']);
@@ -54,13 +66,19 @@ final class DocumentLineCalculatorTest extends TestCase
         $calculator = new DocumentLineCalculator();
 
         $result = $calculator->calculate(new DocumentCalculatedLineInput(
-            uuid: 'line-2',
-            lineItem: new stdClass(),
-            quantity: 2.0,
-            unitCode: 'Ks',
-            unitPrice: 121.0,
-            vatRate: 21.0,
-            priceMode: DocumentPriceMode::WithVat,
+            identity: new DocumentCalculatedLineIdentityInput(
+                uuid: 'line-2',
+            ),
+            lineItem: new IncomingOrderLineItemInput(),
+            quantity: new DocumentCalculatedLineQuantityInput(
+                value: 2.0,
+                unitCode: 'Ks',
+            ),
+            price: new DocumentCalculatedLinePriceInput(
+                unitPrice: 121.0,
+                vatRate: 21.0,
+                priceMode: DocumentPriceMode::WithVat,
+            ),
         ));
 
         self::assertSame(200.0, $result['lineExtensionAmount']);
@@ -73,13 +91,19 @@ final class DocumentLineCalculatorTest extends TestCase
         $calculator = new DocumentLineCalculator(scale: 3);
 
         $result = $calculator->calculate(new DocumentCalculatedLineInput(
-            uuid: 'line-3',
-            lineItem: new stdClass(),
-            quantity: 1.0,
-            unitCode: 'Ks',
-            unitPrice: 100.555,
-            vatRate: 21.0,
-            priceMode: DocumentPriceMode::WithoutVat,
+            identity: new DocumentCalculatedLineIdentityInput(
+                uuid: 'line-3',
+            ),
+            lineItem: new IncomingOrderLineItemInput(),
+            quantity: new DocumentCalculatedLineQuantityInput(
+                value: 1.0,
+                unitCode: 'Ks',
+            ),
+            price: new DocumentCalculatedLinePriceInput(
+                unitPrice: 100.555,
+                vatRate: 21.0,
+                priceMode: DocumentPriceMode::WithoutVat,
+            ),
         ));
 
         self::assertSame(100.555, $result['lineExtensionAmount']);
@@ -92,13 +116,13 @@ final class DocumentLineCalculatorTest extends TestCase
         $calculator = new DocumentLineCalculator();
 
         $this->expectException(InvalidArgumentException::class);
-        $this->expectExceptionMessage('Document line quantity must be greater than zero.');
+        $this->expectExceptionMessage('Line quantity must be greater than zero.');
 
-        $calculator->calculate($this->createInput(
+        $this->createInput(
             quantity: 0.0,
             unitPrice: 100.0,
             vatRate: 21.0,
-        ));
+        );
     }
 
     public function test_calculate_throws_when_unit_price_is_negative(): void
@@ -130,7 +154,7 @@ final class DocumentLineCalculatorTest extends TestCase
     }
 
     /**
-     * @return DocumentCalculatedLineInput<stdClass>
+     * @return DocumentCalculatedLineInput<IncomingOrderLineItemInput>
      */
     private function createInput(
         float $quantity,
@@ -138,12 +162,18 @@ final class DocumentLineCalculatorTest extends TestCase
         float $vatRate,
     ): DocumentCalculatedLineInput {
         return new DocumentCalculatedLineInput(
-            uuid: 'line-test',
-            lineItem: new stdClass(),
-            quantity: $quantity,
-            unitCode: 'Ks',
-            unitPrice: $unitPrice,
-            vatRate: $vatRate,
+            identity: new DocumentCalculatedLineIdentityInput(
+                uuid: 'line-test',
+            ),
+            lineItem: new IncomingOrderLineItemInput(),
+            quantity: new DocumentCalculatedLineQuantityInput(
+                value: $quantity,
+                unitCode: 'Ks',
+            ),
+            price: new DocumentCalculatedLinePriceInput(
+                unitPrice: $unitPrice,
+                vatRate: $vatRate,
+            ),
         );
     }
 }

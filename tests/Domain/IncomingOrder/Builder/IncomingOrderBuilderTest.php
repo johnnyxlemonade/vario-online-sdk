@@ -8,14 +8,18 @@ use DateTimeImmutable;
 use Lemonade\Vario\Domain\Common\Currency;
 use Lemonade\Vario\Domain\IncomingOrder\Builder\IncomingOrderBuilder;
 use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderPaymentMeansCode;
+use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
+use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentPriceMode;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxCalculationMethod;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxScheme;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxExchangeRate;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineInput;
-use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
-use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLinePriceInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineQuantityInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineTaxInput;
 use PHPUnit\Framework\TestCase;
 
 final class IncomingOrderBuilderTest extends TestCase
@@ -32,39 +36,55 @@ final class IncomingOrderBuilderTest extends TestCase
 
         $lines = [
             new DocumentCalculatedLineInput(
-                uuid: 'line-1',
+                identity: new DocumentCalculatedLineIdentityInput(
+                    uuid: 'line-1',
+                    id: 'ROW-1',
+                    note: 'First row',
+                ),
                 lineItem: new IncomingOrderLineItemInput(
                     catalogueItemIdentification: 'SKU-001',
                 ),
-                quantity: 2.0,
-                unitCode: 'Ks',
-                unitPrice: 100.0,
-                vatRate: 21.0,
-                priceMode: DocumentPriceMode::WithoutVat,
-                lineAllowanceAmount: 2400.0,
-                unitScheme: DocumentUnitOfMeasureScheme::Unknown,
-                id: 'ROW-1',
-                note: 'First row',
-                taxCalculationMethod: DocumentTaxCalculationMethod::Add,
-                taxScheme: DocumentTaxScheme::Vat,
-                taxSchemeExtensionCode: null,
+                quantity: new DocumentCalculatedLineQuantityInput(
+                    value: 2.0,
+                    unitCode: 'Ks',
+                    scheme: DocumentUnitOfMeasureScheme::Unknown,
+                ),
+                price: new DocumentCalculatedLinePriceInput(
+                    unitPrice: 100.0,
+                    vatRate: 21.0,
+                    priceMode: DocumentPriceMode::WithoutVat,
+                    lineAllowanceAmount: 2400.0,
+                ),
+                tax: new DocumentCalculatedLineTaxInput(
+                    calculationMethod: DocumentTaxCalculationMethod::Add,
+                    scheme: DocumentTaxScheme::Vat,
+                    schemeExtensionCode: null,
+                ),
             ),
             new DocumentCalculatedLineInput(
-                uuid: 'line-2',
+                identity: new DocumentCalculatedLineIdentityInput(
+                    uuid: 'line-2',
+                    id: 'ROW-2',
+                    note: 'Second row',
+                ),
                 lineItem: new IncomingOrderLineItemInput(
                     catalogueItemIdentification: 'SKU-002',
                 ),
-                quantity: 1.0,
-                unitCode: 'Ks',
-                unitPrice: 121.0,
-                vatRate: 21.0,
-                priceMode: DocumentPriceMode::WithVat,
-                unitScheme: DocumentUnitOfMeasureScheme::Unknown,
-                id: 'ROW-2',
-                note: 'Second row',
-                taxCalculationMethod: DocumentTaxCalculationMethod::Add,
-                taxScheme: DocumentTaxScheme::Vat,
-                taxSchemeExtensionCode: 'LOCAL-RC',
+                quantity: new DocumentCalculatedLineQuantityInput(
+                    value: 1.0,
+                    unitCode: 'Ks',
+                    scheme: DocumentUnitOfMeasureScheme::Unknown,
+                ),
+                price: new DocumentCalculatedLinePriceInput(
+                    unitPrice: 121.0,
+                    vatRate: 21.0,
+                    priceMode: DocumentPriceMode::WithVat,
+                ),
+                tax: new DocumentCalculatedLineTaxInput(
+                    calculationMethod: DocumentTaxCalculationMethod::Add,
+                    scheme: DocumentTaxScheme::Vat,
+                    schemeExtensionCode: 'LOCAL-RC',
+                ),
             ),
         ];
 
@@ -160,14 +180,20 @@ final class IncomingOrderBuilderTest extends TestCase
             sellerSupplierParty: $seller,
             lines: [
                 new DocumentCalculatedLineInput(
-                    uuid: 'line-1',
+                    identity: new DocumentCalculatedLineIdentityInput(
+                        uuid: 'line-1',
+                    ),
                     lineItem: new IncomingOrderLineItemInput(
                         catalogueItemIdentification: 'SKU-001',
                     ),
-                    quantity: 1.0,
-                    unitCode: 'Ks',
-                    unitPrice: 100.0,
-                    vatRate: 21.0,
+                    quantity: new DocumentCalculatedLineQuantityInput(
+                        value: 1.0,
+                        unitCode: 'Ks',
+                    ),
+                    price: new DocumentCalculatedLinePriceInput(
+                        unitPrice: 100.0,
+                        vatRate: 21.0,
+                    ),
                 ),
             ],
             taxExchangeRate: $customTaxExchangeRate,

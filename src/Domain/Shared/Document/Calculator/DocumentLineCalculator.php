@@ -9,6 +9,7 @@ use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentPriceMode;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentQuantity;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxSubTotal;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineItemInputInterface;
 
 final class DocumentLineCalculator
 {
@@ -17,7 +18,7 @@ final class DocumentLineCalculator
     ) {}
 
     /**
-     * @template TLineItem of object
+     * @template TLineItem of DocumentCalculatedLineItemInputInterface
      * @param DocumentCalculatedLineInput<TLineItem> $input
      * @return array{
      *     lineExtensionAmount: float,

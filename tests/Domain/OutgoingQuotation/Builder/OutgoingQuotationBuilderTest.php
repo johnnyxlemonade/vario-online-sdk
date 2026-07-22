@@ -12,10 +12,13 @@ use Lemonade\Vario\Domain\OutgoingQuotation\Enum\OutgoingQuotationPaymentMeansCo
 use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationLineItemInput;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentPriceMode;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLinePriceInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineQuantityInput;
+use Lemonade\Vario\Normalizer\OutgoingQuotation\OutgoingQuotationInputNormalizer;
 use Lemonade\Vario\Domain\Shared\Identification;
 use Lemonade\Vario\Domain\Shared\IdentificationScheme;
-use Lemonade\Vario\Normalizer\OutgoingQuotation\OutgoingQuotationInputNormalizer;
 use PHPUnit\Framework\TestCase;
 
 final class OutgoingQuotationBuilderTest extends TestCase
@@ -47,16 +50,22 @@ final class OutgoingQuotationBuilderTest extends TestCase
             sellerSupplierParty: $seller,
             lines: [
                 new DocumentCalculatedLineInput(
-                    uuid: 'd4b5b29c-d658-4568-aaa9-839f11ce1446',
+                    identity: new DocumentCalculatedLineIdentityInput(
+                        uuid: 'd4b5b29c-d658-4568-aaa9-839f11ce1446',
+                        id: '1',
+                    ),
                     lineItem: (new OutgoingQuotationLineItemInput())
                         ->withCatalogueItemIdentification('A25882')
-                        ->addDescription(new DocumentDescription('Adam křeslo - skládačka')),
-                    quantity: 1.0,
-                    unitCode: 'Ks',
-                    unitPrice: 95.0,
-                    vatRate: 21.0,
-                    priceMode: DocumentPriceMode::WithoutVat,
-                    id: '1',
+                        ->addDescription(new DocumentDescription('Adam kĹ™eslo - sklĂˇdaÄŤka')),
+                    quantity: new DocumentCalculatedLineQuantityInput(
+                        value: 1.0,
+                        unitCode: 'Ks',
+                    ),
+                    price: new DocumentCalculatedLinePriceInput(
+                        unitPrice: 95.0,
+                        vatRate: 21.0,
+                        priceMode: DocumentPriceMode::WithoutVat,
+                    ),
                 ),
             ],
             id: 'ZAKTEST-2026-00002',
@@ -99,7 +108,7 @@ final class OutgoingQuotationBuilderTest extends TestCase
                         'CatalogueItemIdentification' => 'A25882',
                         'Description' => [
                             [
-                                'Text' => 'Adam křeslo - skládačka',
+                                'Text' => 'Adam kĹ™eslo - sklĂˇdaÄŤka',
                             ],
                         ],
                     ],
@@ -153,13 +162,19 @@ final class OutgoingQuotationBuilderTest extends TestCase
             sellerSupplierParty: new KnownPartyInput('Seller'),
             lines: [
                 new DocumentCalculatedLineInput(
-                    uuid: 'line-uuid',
+                    identity: new DocumentCalculatedLineIdentityInput(
+                        uuid: 'line-uuid',
+                    ),
                     lineItem: new OutgoingQuotationLineItemInput(),
-                    quantity: 1.0,
-                    unitCode: 'Ks',
-                    unitPrice: 9600.0,
-                    vatRate: 21.0,
-                    lineAllowanceAmount: 2400.0,
+                    quantity: new DocumentCalculatedLineQuantityInput(
+                        value: 1.0,
+                        unitCode: 'Ks',
+                    ),
+                    price: new DocumentCalculatedLinePriceInput(
+                        unitPrice: 9600.0,
+                        vatRate: 21.0,
+                        lineAllowanceAmount: 2400.0,
+                    ),
                 ),
             ],
         );
@@ -190,12 +205,18 @@ final class OutgoingQuotationBuilderTest extends TestCase
             sellerSupplierParty: new KnownPartyInput('Seller'),
             lines: [
                 new DocumentCalculatedLineInput(
-                    uuid: 'line-uuid',
+                    identity: new DocumentCalculatedLineIdentityInput(
+                        uuid: 'line-uuid',
+                    ),
                     lineItem: new OutgoingQuotationLineItemInput(),
-                    quantity: 1.0,
-                    unitCode: 'Ks',
-                    unitPrice: 100.0,
-                    vatRate: 21.0,
+                    quantity: new DocumentCalculatedLineQuantityInput(
+                        value: 1.0,
+                        unitCode: 'Ks',
+                    ),
+                    price: new DocumentCalculatedLinePriceInput(
+                        unitPrice: 100.0,
+                        vatRate: 21.0,
+                    ),
                 ),
             ],
         );

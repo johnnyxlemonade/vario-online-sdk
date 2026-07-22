@@ -5,8 +5,9 @@ declare(strict_types=1);
 namespace Lemonade\Vario\Domain\OutgoingQuotation\Write;
 
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineItemInputInterface;
 
-final class OutgoingQuotationLineItemInput
+final class OutgoingQuotationLineItemInput implements DocumentCalculatedLineItemInputInterface
 {
     /**
      * @param list<DocumentDescription> $descriptions

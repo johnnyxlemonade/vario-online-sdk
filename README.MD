@@ -396,7 +396,10 @@ use Lemonade\Vario\Domain\IncomingOrder\Builder\IncomingOrderBuilder;
 use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderPaymentMeansCode;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentPriceMode;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLinePriceInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineQuantityInput;
 
 $builder = new IncomingOrderBuilder();
 
@@ -412,14 +415,20 @@ $order = $builder->build(
     sellerSupplierParty: $seller,
     lines: [
         new DocumentCalculatedLineInput(
-            uuid: 'd2045e34-49b4-4238-84e2-950362f2007e',
+            identity: new DocumentCalculatedLineIdentityInput(
+                uuid: 'd2045e34-49b4-4238-84e2-950362f2007e',
+            ),
             lineItem: $lineItem,
-            quantity: 2.0,
-            unitCode: 'Ks',
-            unitPrice: 100.0,
-            vatRate: 21.0,
-            priceMode: DocumentPriceMode::WithoutVat,
-            lineAllowanceAmount: 20.0, // Discount without VAT, not the base price. Base price before discount = 100 * 2 + 20.
+            quantity: new DocumentCalculatedLineQuantityInput(
+                value: 2.0,
+                unitCode: 'Ks',
+            ),
+            price: new DocumentCalculatedLinePriceInput(
+                unitPrice: 100.0,
+                vatRate: 21.0,
+                priceMode: DocumentPriceMode::WithoutVat,
+                lineAllowanceAmount: 20.0,
+            ),
         ),
     ],
     paymentMeansCode: IncomingOrderPaymentMeansCode::BankAccount,
@@ -427,6 +436,8 @@ $order = $builder->build(
 
 $preview = $vario->incomingOrders()->previewUpsert([$order]);
 ```
+
+`unitPrice` is the final unit price without VAT after discount, `lineAllowanceAmount` is the discount without VAT, and Vario derives the base price before discount as `LineExtensionAmount + LineAllowanceAmount`. `LineAllowanceAmount` does not change SDK totals.
 
 ### Low-level write API
 
@@ -450,7 +461,10 @@ use Lemonade\Vario\Domain\OutgoingQuotation\Enum\OutgoingQuotationPaymentMeansCo
 use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationLineItemInput;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentPriceMode;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLinePriceInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineQuantityInput;
 use Lemonade\Vario\Domain\Shared\Identification;
 use Lemonade\Vario\Domain\Shared\IdentificationScheme;
 
@@ -468,17 +482,23 @@ $quotation = (new OutgoingQuotationBuilder())->build(
     sellerSupplierParty: $seller,
     lines: [
         new DocumentCalculatedLineInput(
-            uuid: 'd4b5b29c-d658-4568-aaa9-839f11ce1446',
+            identity: new DocumentCalculatedLineIdentityInput(
+                uuid: 'd4b5b29c-d658-4568-aaa9-839f11ce1446',
+                id: '1',
+            ),
             lineItem: (new OutgoingQuotationLineItemInput())
                 ->withCatalogueItemIdentification('A25882')
                 ->addDescription(new DocumentDescription('Adam kreslo - skladacka')),
-            quantity: 1.0,
-            unitCode: 'Ks',
-            unitPrice: 95.0,
-            vatRate: 21.0,
-            priceMode: DocumentPriceMode::WithoutVat,
-            lineAllowanceAmount: 25.0, // Discount without VAT, not the base price. Base price before discount = 95 + 25.
-            id: '1',
+            quantity: new DocumentCalculatedLineQuantityInput(
+                value: 1.0,
+                unitCode: 'Ks',
+            ),
+            price: new DocumentCalculatedLinePriceInput(
+                unitPrice: 95.0,
+                vatRate: 21.0,
+                priceMode: DocumentPriceMode::WithoutVat,
+                lineAllowanceAmount: 25.0,
+            ),
         ),
     ],
     id: 'ZAKTEST-2026-00002',
@@ -488,6 +508,8 @@ $quotation = (new OutgoingQuotationBuilder())->build(
 
 $preview = $vario->outgoingQuotations()->previewUpsert([$quotation]);
 ```
+
+`unitPrice` is the final unit price without VAT after discount, `lineAllowanceAmount` is the discount without VAT, and Vario derives the base price before discount as `LineExtensionAmount + LineAllowanceAmount`. `LineAllowanceAmount` does not change SDK totals.
 
 The real `upsert()` write flow is also available, but it is not shown as the default example path here.
 
