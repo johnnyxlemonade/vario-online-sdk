@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\IncomingOrder\Write;
 
+use InvalidArgumentException;
 use Lemonade\Vario\Domain\Shared\Document\DocumentLineInterface;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentQuantity;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxSubTotal;
@@ -31,9 +32,12 @@ final class IncomingOrderLineInput implements DocumentLineInterface
         private IncomingOrderLineItemInput $lineItem,
         private DocumentQuantity $lineQuantity,
         private DocumentTaxSubTotal $taxSubTotal,
+        private ?float $lineAllowanceAmount = null,
         private ?string $id = null,
         private ?string $note = null,
-    ) {}
+    ) {
+        $this->assertLineAllowanceAmount($lineAllowanceAmount);
+    }
 
     public function getUuid(): string
     {
@@ -67,6 +71,19 @@ final class IncomingOrderLineInput implements DocumentLineInterface
     public function withLineExtensionAmountTaxInclusive(float $lineExtensionAmountTaxInclusive): self
     {
         $this->lineExtensionAmountTaxInclusive = $lineExtensionAmountTaxInclusive;
+
+        return $this;
+    }
+
+    public function getLineAllowanceAmount(): ?float
+    {
+        return $this->lineAllowanceAmount;
+    }
+
+    public function withLineAllowanceAmount(?float $lineAllowanceAmount): self
+    {
+        $this->assertLineAllowanceAmount($lineAllowanceAmount);
+        $this->lineAllowanceAmount = $lineAllowanceAmount;
 
         return $this;
     }
@@ -129,5 +146,12 @@ final class IncomingOrderLineInput implements DocumentLineInterface
         $this->note = $note;
 
         return $this;
+    }
+
+    private function assertLineAllowanceAmount(?float $lineAllowanceAmount): void
+    {
+        if ($lineAllowanceAmount !== null && $lineAllowanceAmount < 0.0) {
+            throw new InvalidArgumentException('Line allowance amount must not be negative.');
+        }
     }
 }

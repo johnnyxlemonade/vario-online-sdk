@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Tests\Domain\IncomingOrder\Write;
 
+use InvalidArgumentException;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentPriceMode;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxCalculationMethod;
@@ -29,9 +30,10 @@ final class IncomingOrderCalculatedLineInputTest extends TestCase
             unitPrice: 123.45,
             vatRate: 21.0,
             priceMode: DocumentPriceMode::WithVat,
+            lineAllowanceAmount: 2400.0,
             unitScheme: DocumentUnitOfMeasureScheme::SI,
             id: 'line-id-1',
-            note: 'výpočet řádku',
+            note: 'line calculation',
             taxCalculationMethod: DocumentTaxCalculationMethod::Total,
             taxScheme: DocumentTaxScheme::Vat,
             taxSchemeExtensionCode: 'LOCAL-RC',
@@ -44,9 +46,10 @@ final class IncomingOrderCalculatedLineInputTest extends TestCase
         self::assertSame(123.45, $input->getUnitPrice());
         self::assertSame(21.0, $input->getVatRate());
         self::assertSame(DocumentPriceMode::WithVat, $input->getPriceMode());
+        self::assertSame(2400.0, $input->getLineAllowanceAmount());
         self::assertSame(DocumentUnitOfMeasureScheme::SI, $input->getUnitScheme());
         self::assertSame('line-id-1', $input->getId());
-        self::assertSame('výpočet řádku', $input->getNote());
+        self::assertSame('line calculation', $input->getNote());
         self::assertSame(DocumentTaxCalculationMethod::Total, $input->getTaxCalculationMethod());
         self::assertSame(DocumentTaxScheme::Vat, $input->getTaxScheme());
         self::assertSame('LOCAL-RC', $input->getTaxSchemeExtensionCode());
@@ -74,11 +77,28 @@ final class IncomingOrderCalculatedLineInputTest extends TestCase
         self::assertSame(100.0, $input->getUnitPrice());
         self::assertSame(21.0, $input->getVatRate());
         self::assertSame(DocumentPriceMode::WithoutVat, $input->getPriceMode());
+        self::assertNull($input->getLineAllowanceAmount());
         self::assertSame(DocumentUnitOfMeasureScheme::Unknown, $input->getUnitScheme());
         self::assertNull($input->getId());
         self::assertNull($input->getNote());
         self::assertSame(DocumentTaxCalculationMethod::Add, $input->getTaxCalculationMethod());
         self::assertSame(DocumentTaxScheme::Vat, $input->getTaxScheme());
         self::assertNull($input->getTaxSchemeExtensionCode());
+    }
+
+    public function test_it_rejects_negative_line_allowance_amount(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Line allowance amount must not be negative.');
+
+        new DocumentCalculatedLineInput(
+            uuid: 'line-calc-uuid-3',
+            lineItem: new IncomingOrderLineItemInput(),
+            quantity: 1.0,
+            unitCode: 'Ks',
+            unitPrice: 100.0,
+            vatRate: 21.0,
+            lineAllowanceAmount: -1.0,
+        );
     }
 }

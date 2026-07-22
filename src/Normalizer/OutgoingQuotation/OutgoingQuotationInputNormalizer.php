@@ -85,6 +85,12 @@ final class OutgoingQuotationInputNormalizer
 
         $payload['UUID'] = $line->getUuid();
         $payload['LineExtensionAmount'] = $line->getLineExtensionAmount();
+
+        $lineAllowanceAmount = $line->getLineAllowanceAmount();
+        if ($lineAllowanceAmount !== null) {
+            $payload['LineAllowanceAmount'] = $lineAllowanceAmount;
+        }
+
         $payload['LineExtensionAmountTaxInclusive'] = $line->getLineExtensionAmountTaxInclusive();
         $payload['LineItem'] = $this->normalizeLineItem($line->getLineItem());
         $payload['LineQuantity'] = $this->normalizeQuantity($line->getLineQuantity());

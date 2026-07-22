@@ -94,14 +94,14 @@ $seller = (new KnownPartyInput(''))
 */
 $lineItem1 = (new IncomingOrderLineItemInput())
     ->withCatalogueItemIdentification('grosh big')
-    ->withSellersItemIdentification('děravý groš')
+    ->withSellersItemIdentification('deravy grosh')
     ->addDescription(
-        new DocumentDescription('děravý groš')
+        new DocumentDescription('deravy grosh')
     )
     ->addAdditionalAttribute(
         new DocumentAdditionalAttributeInput(
             name: 'Varianta',
-            value: 'velká díra',
+            value: 'velka dira',
             attributeKind: DocumentTextualAttributeKind::ExtendedID,
             langId: null,
             unitCode: null,
@@ -118,9 +118,9 @@ $lineItem1 = (new IncomingOrderLineItemInput())
 
 $lineItem2 = (new IncomingOrderLineItemInput())
     ->withCatalogueItemIdentification('BELA')
-    ->withSellersItemIdentification('stará bela')
+    ->withSellersItemIdentification('stara bela')
     ->addDescription(
-        new DocumentDescription('stará bela')
+        new DocumentDescription('stara bela')
     )
     ->addUnitConversionFactor(
         new DocumentUnitConversionFactor(
@@ -171,6 +171,8 @@ $lines = [
         unitPrice: 1500.0,
         vatRate: 21.0,
         priceMode: DocumentPriceMode::WithoutVat,
+        // Discount without VAT, not the base price. Base price before discount = unitPrice * quantity + lineAllowanceAmount = 1500 + 300.
+        lineAllowanceAmount: 300.0,
     ),
     new DocumentCalculatedLineInput(
         uuid: '935f3ea7-3fda-40d8-af8f-a5582fc81f54',

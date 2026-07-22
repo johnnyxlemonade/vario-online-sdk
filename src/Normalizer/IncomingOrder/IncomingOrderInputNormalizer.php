@@ -101,6 +101,7 @@ final class IncomingOrderInputNormalizer
 
         $payload += $this->filterNullable([
             'ID' => $line->getId(),
+            'LineAllowanceAmount' => $line->getLineAllowanceAmount(),
             'Note' => $line->getNote(),
         ]);
 

@@ -41,6 +41,7 @@ final class IncomingOrderBuilderTest extends TestCase
                 unitPrice: 100.0,
                 vatRate: 21.0,
                 priceMode: DocumentPriceMode::WithoutVat,
+                lineAllowanceAmount: 2400.0,
                 unitScheme: DocumentUnitOfMeasureScheme::Unknown,
                 id: 'ROW-1',
                 note: 'First row',
@@ -104,6 +105,7 @@ final class IncomingOrderBuilderTest extends TestCase
         self::assertSame(242.0, $line1->getLineExtensionAmountTaxInclusive());
         self::assertSame(2.0, $line1->getLineQuantity()->getValue());
         self::assertSame(42.0, $line1->getTaxSubTotal()->getTaxAmount());
+        self::assertSame(2400.0, $line1->getLineAllowanceAmount());
 
         $line2 = $order->getDocumentLines()[1];
         self::assertSame('line-2', $line2->getUuid());
@@ -114,6 +116,7 @@ final class IncomingOrderBuilderTest extends TestCase
         self::assertSame(1.0, $line2->getLineQuantity()->getValue());
         self::assertSame(21.0, $line2->getTaxSubTotal()->getTaxAmount());
         self::assertSame('LOCAL-RC', $line2->getTaxSubTotal()->getTaxSchemeExtensionCode());
+        self::assertNull($line2->getLineAllowanceAmount());
 
         $monetaryTotal = $order->getMonetaryTotal();
         self::assertSame(363.0, $monetaryTotal->getPayableAmount());

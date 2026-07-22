@@ -71,6 +71,7 @@ final class IncomingOrderBuilder
                 lineItem: $line->getLineItem(),
                 lineQuantity: $calculated['lineQuantity'],
                 taxSubTotal: $calculated['taxSubTotal'],
+                lineAllowanceAmount: $line->getLineAllowanceAmount(),
                 id: $line->getId(),
                 note: $line->getNote(),
             );

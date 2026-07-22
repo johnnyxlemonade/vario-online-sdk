@@ -142,4 +142,71 @@ final class OutgoingQuotationBuilderTest extends TestCase
             ],
         ], $normalizer->normalize($quotation));
     }
+
+    public function test_build_transfers_line_allowance_and_immutable_with_method_preserves_it(): void
+    {
+        $quotation = (new OutgoingQuotationBuilder())->build(
+            uuid: 'quotation-uuid',
+            issueDate: new DateTimeImmutable('2026-06-18T00:00:00+02:00'),
+            currency: Currency::CZK,
+            buyerCustomerParty: new KnownPartyInput('Buyer'),
+            sellerSupplierParty: new KnownPartyInput('Seller'),
+            lines: [
+                new DocumentCalculatedLineInput(
+                    uuid: 'line-uuid',
+                    lineItem: new OutgoingQuotationLineItemInput(),
+                    quantity: 1.0,
+                    unitCode: 'Ks',
+                    unitPrice: 9600.0,
+                    vatRate: 21.0,
+                    lineAllowanceAmount: 2400.0,
+                ),
+            ],
+        );
+
+        $line = $quotation->getDocumentLines()[0];
+        self::assertSame(2400.0, $line->getLineAllowanceAmount());
+
+        $changedLine = $line->withNote('Changed note');
+        self::assertSame(2400.0, $changedLine->getLineAllowanceAmount());
+
+        $payload = (new OutgoingQuotationInputNormalizer())->normalize($quotation);
+        /** @var list<array<string, mixed>> $documentLines */
+        $documentLines = $payload['DocumentLine'];
+        self::assertIsArray($documentLines);
+        /** @var array<string, mixed> $firstLine */
+        $firstLine = $documentLines[0];
+        self::assertIsArray($firstLine);
+        self::assertSame(2400.0, $firstLine['LineAllowanceAmount']);
+    }
+
+    public function test_normalizer_omits_line_allowance_amount_when_null(): void
+    {
+        $quotation = (new OutgoingQuotationBuilder())->build(
+            uuid: 'quotation-uuid',
+            issueDate: new DateTimeImmutable('2026-06-18T00:00:00+02:00'),
+            currency: Currency::CZK,
+            buyerCustomerParty: new KnownPartyInput('Buyer'),
+            sellerSupplierParty: new KnownPartyInput('Seller'),
+            lines: [
+                new DocumentCalculatedLineInput(
+                    uuid: 'line-uuid',
+                    lineItem: new OutgoingQuotationLineItemInput(),
+                    quantity: 1.0,
+                    unitCode: 'Ks',
+                    unitPrice: 100.0,
+                    vatRate: 21.0,
+                ),
+            ],
+        );
+
+        $payload = (new OutgoingQuotationInputNormalizer())->normalize($quotation);
+        /** @var list<array<string, mixed>> $documentLines */
+        $documentLines = $payload['DocumentLine'];
+        self::assertIsArray($documentLines);
+        /** @var array<string, mixed> $firstLine */
+        $firstLine = $documentLines[0];
+        self::assertIsArray($firstLine);
+        self::assertArrayNotHasKey('LineAllowanceAmount', $firstLine);
+    }
 }

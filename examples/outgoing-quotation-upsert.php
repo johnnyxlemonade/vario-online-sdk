@@ -72,7 +72,7 @@ $seller = (new KnownPartyInput(''))
 $lineItem = (new OutgoingQuotationLineItemInput())
     ->withCatalogueItemIdentification('A25882')
     ->addDescription(
-        new DocumentDescription('Adam křeslo - skládačka')
+        new DocumentDescription('Adam kreslo - skladacka')
     );
 
 /*
@@ -109,6 +109,8 @@ $lines = [
         unitPrice: 95.0,
         vatRate: 21.0,
         priceMode: DocumentPriceMode::WithoutVat,
+        // Discount without VAT, not the base price. Base price before discount = unitPrice * quantity + lineAllowanceAmount = 95 + 25.
+        lineAllowanceAmount: 25.0,
         id: '1',
     ),
 ];

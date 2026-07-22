@@ -165,6 +165,7 @@ final class IncomingOrderInputNormalizerTest extends TestCase
             lineItem: $lineItem1,
             lineQuantity: $this->createQuantity(1.0, 'Ks', DocumentUnitOfMeasureScheme::Unknown),
             taxSubTotal: $this->createTaxSubTotalAdd(1500.0, 315.0, 21.0),
+            lineAllowanceAmount: 2400.0,
         );
 
         $line2 = new IncomingOrderLineInput(
@@ -281,6 +282,7 @@ final class IncomingOrderInputNormalizerTest extends TestCase
                         'TaxPercentage' => 21.0,
                     ],
                     'UUID' => 'd2045e34-49b4-4238-84e2-950362f2007e',
+                    'LineAllowanceAmount' => 2400.0,
                 ],
                 [
                     'LineExtensionAmount' => 300.0,
@@ -504,6 +506,7 @@ final class IncomingOrderInputNormalizerTest extends TestCase
         self::assertArrayNotHasKey('AdditionalAttribute', $lineItemPayload);
         self::assertArrayNotHasKey('UnitConversionFactor', $lineItemPayload);
         self::assertArrayNotHasKey('ID', $linePayload);
+        self::assertArrayNotHasKey('LineAllowanceAmount', $linePayload);
         self::assertArrayNotHasKey('Note', $linePayload);
         self::assertArrayNotHasKey('RateDate', $taxExchangeRatePayload);
         self::assertArrayNotHasKey('ExchangeMarketBIC', $taxExchangeRatePayload);

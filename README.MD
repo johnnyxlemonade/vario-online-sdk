@@ -419,6 +419,7 @@ $order = $builder->build(
             unitPrice: 100.0,
             vatRate: 21.0,
             priceMode: DocumentPriceMode::WithoutVat,
+            lineAllowanceAmount: 20.0, // Discount without VAT, not the base price. Base price before discount = 100 * 2 + 20.
         ),
     ],
     paymentMeansCode: IncomingOrderPaymentMeansCode::BankAccount,
@@ -476,6 +477,7 @@ $quotation = (new OutgoingQuotationBuilder())->build(
             unitPrice: 95.0,
             vatRate: 21.0,
             priceMode: DocumentPriceMode::WithoutVat,
+            lineAllowanceAmount: 25.0, // Discount without VAT, not the base price. Base price before discount = 95 + 25.
             id: '1',
         ),
     ],

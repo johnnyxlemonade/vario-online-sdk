@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\Shared\Document\Write;
 
+use InvalidArgumentException;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentPriceMode;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxCalculationMethod;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxScheme;
@@ -25,13 +26,18 @@ final class DocumentCalculatedLineInput
         private readonly float $unitPrice,
         private readonly float $vatRate,
         private readonly DocumentPriceMode $priceMode = DocumentPriceMode::WithoutVat,
+        private readonly ?float $lineAllowanceAmount = null,
         private readonly DocumentUnitOfMeasureScheme $unitScheme = DocumentUnitOfMeasureScheme::Unknown,
         private readonly ?string $id = null,
         private readonly ?string $note = null,
         private readonly DocumentTaxCalculationMethod $taxCalculationMethod = DocumentTaxCalculationMethod::Add,
         private readonly DocumentTaxScheme $taxScheme = DocumentTaxScheme::Vat,
         private readonly ?string $taxSchemeExtensionCode = null,
-    ) {}
+    ) {
+        if ($lineAllowanceAmount !== null && $lineAllowanceAmount < 0.0) {
+            throw new InvalidArgumentException('Line allowance amount must not be negative.');
+        }
+    }
 
     public function getUuid(): string
     {
@@ -99,5 +105,10 @@ final class DocumentCalculatedLineInput
     public function getTaxSchemeExtensionCode(): ?string
     {
         return $this->taxSchemeExtensionCode;
+    }
+
+    public function getLineAllowanceAmount(): ?float
+    {
+        return $this->lineAllowanceAmount;
     }
 }
