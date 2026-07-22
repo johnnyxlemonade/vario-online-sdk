@@ -4,16 +4,11 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\IncomingOrder\Builder;
 
-use DateTimeImmutable;
-use Lemonade\Vario\Domain\Common\Currency;
-use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderPaymentMeansCode;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderInput;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineInput;
-use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
 use Lemonade\Vario\Domain\Shared\Document\Calculator\DocumentLineCalculator;
 use Lemonade\Vario\Domain\Shared\Document\Calculator\DocumentTotalsCalculator;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxExchangeRate;
-use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineInput;
 
 /**
  * Class IncomingOrderBuilder
@@ -41,25 +36,15 @@ final class IncomingOrderBuilder
         $this->totalsCalculator = $totalsCalculator ?? new DocumentTotalsCalculator();
     }
 
-    /**
-     * @param list<DocumentCalculatedLineInput<\Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput>> $lines
-     */
-    public function build(
-        string $uuid,
-        DateTimeImmutable $issueDate,
-        Currency $currency,
-        KnownPartyInput $buyerCustomerParty,
-        KnownPartyInput $sellerSupplierParty,
-        array $lines,
-        ?string $id = null,
-        ?KnownPartyInput $accountingCustomerParty = null,
-        ?KnownPartyInput $delivery = null,
-        ?string $note = null,
-        bool $partialDeliveryIndicator = false,
-        ?IncomingOrderPaymentMeansCode $paymentMeansCode = null,
-        ?DocumentTaxExchangeRate $taxExchangeRate = null,
-    ): IncomingOrderInput {
+    public function build(IncomingOrderBuildInput $input): IncomingOrderInput
+    {
         $documentLines = [];
+        $lines = $input->getLines();
+        $currency = $input->getCurrency();
+        $issueDate = $input->getIssueDate();
+        $taxExchangeRate = $input->getTaxExchangeRate();
+        $parties = $input->getParties();
+        $identity = $input->getIdentity();
 
         foreach ($lines as $line) {
             $calculated = $this->lineCalculator->calculate($line);
@@ -90,21 +75,21 @@ final class IncomingOrderBuilder
         }
 
         return (new IncomingOrderInput(
-            uuid: $uuid,
+            uuid: $identity->getUuid(),
             issueDate: $issueDate,
             currency: $currency,
-            buyerCustomerParty: $buyerCustomerParty,
-            sellerSupplierParty: $sellerSupplierParty,
+            buyerCustomerParty: $parties->getBuyerCustomerParty(),
+            sellerSupplierParty: $parties->getSellerSupplierParty(),
             monetaryTotal: $totals['monetaryTotal'],
             taxExchangeRate: $taxExchangeRate,
             taxTotal: $totals['taxTotal'],
         ))
-            ->withId($id)
-            ->withAccountingCustomerParty($accountingCustomerParty)
-            ->withDelivery($delivery)
-            ->withNote($note)
-            ->withPartialDeliveryIndicator($partialDeliveryIndicator)
-            ->withPaymentMeansCode($paymentMeansCode)
+            ->withId($identity->getId())
+            ->withAccountingCustomerParty($parties->getAccountingCustomerParty())
+            ->withDelivery($parties->getDelivery())
+            ->withNote($identity->getNote())
+            ->withPartialDeliveryIndicator($input->isPartialDeliveryIndicator())
+            ->withPaymentMeansCode($input->getPaymentMeansCode())
             ->withDocumentLines($documentLines);
     }
 }

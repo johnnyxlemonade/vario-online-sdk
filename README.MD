@@ -392,10 +392,13 @@ It allows developers to define order lines using a simplified high-level input a
 ```php
 use DateTimeImmutable;
 use Lemonade\Vario\Domain\Common\Currency;
+use Lemonade\Vario\Domain\IncomingOrder\Builder\IncomingOrderBuildInput;
 use Lemonade\Vario\Domain\IncomingOrder\Builder\IncomingOrderBuilder;
+use Lemonade\Vario\Domain\IncomingOrder\Builder\IncomingOrderBuildPartiesInput;
 use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderPaymentMeansCode;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentPriceMode;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentBuildIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLinePriceInput;
@@ -407,12 +410,16 @@ $lineItem = (new IncomingOrderLineItemInput())
     ->withCatalogueItemIdentification('SKU-001')
     ->withSellersItemIdentification('SKU-001');
 
-$order = $builder->build(
-    uuid: 'e4daf94d-fd98-4f7d-a7c6-93cd21dee5f8',
+$order = $builder->build(new IncomingOrderBuildInput(
+    identity: new DocumentBuildIdentityInput(
+        uuid: 'e4daf94d-fd98-4f7d-a7c6-93cd21dee5f8',
+    ),
     issueDate: new DateTimeImmutable('2024-04-02T00:00:00+02:00'),
     currency: Currency::CZK,
-    buyerCustomerParty: $buyer,
-    sellerSupplierParty: $seller,
+    parties: new IncomingOrderBuildPartiesInput(
+        buyerCustomerParty: $buyer,
+        sellerSupplierParty: $seller,
+    ),
     lines: [
         new DocumentCalculatedLineInput(
             identity: new DocumentCalculatedLineIdentityInput(
@@ -432,7 +439,7 @@ $order = $builder->build(
         ),
     ],
     paymentMeansCode: IncomingOrderPaymentMeansCode::BankAccount,
-);
+));
 
 $preview = $vario->incomingOrders()->previewUpsert([$order]);
 ```
@@ -456,11 +463,14 @@ These are useful when the integration already calculates all monetary and tax va
 use DateTimeImmutable;
 use Lemonade\Vario\Domain\Common\Currency;
 use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
+use Lemonade\Vario\Domain\OutgoingQuotation\Builder\OutgoingQuotationBuildInput;
 use Lemonade\Vario\Domain\OutgoingQuotation\Builder\OutgoingQuotationBuilder;
+use Lemonade\Vario\Domain\OutgoingQuotation\Builder\OutgoingQuotationBuildPartiesInput;
 use Lemonade\Vario\Domain\OutgoingQuotation\Enum\OutgoingQuotationPaymentMeansCode;
 use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationLineItemInput;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentPriceMode;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentBuildIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLinePriceInput;
@@ -474,12 +484,17 @@ $buyer = (new KnownPartyInput('A - Storex, v.o.s.'))
 $seller = (new KnownPartyInput(''))
     ->addIdentification(new Identification(IdentificationScheme::VAT, 'CZ61681229', 'CZ'));
 
-$quotation = (new OutgoingQuotationBuilder())->build(
-    uuid: 'c676048c-3789-4228-82b2-9ca6e7b952f7',
+$quotation = (new OutgoingQuotationBuilder())->build(new OutgoingQuotationBuildInput(
+    identity: new DocumentBuildIdentityInput(
+        uuid: 'c676048c-3789-4228-82b2-9ca6e7b952f7',
+        id: 'ZAKTEST-2026-00002',
+    ),
     issueDate: new DateTimeImmutable('2026-06-18T00:00:00+02:00'),
     currency: Currency::CZK,
-    buyerCustomerParty: $buyer,
-    sellerSupplierParty: $seller,
+    parties: new OutgoingQuotationBuildPartiesInput(
+        buyerCustomerParty: $buyer,
+        sellerSupplierParty: $seller,
+    ),
     lines: [
         new DocumentCalculatedLineInput(
             identity: new DocumentCalculatedLineIdentityInput(
@@ -501,10 +516,9 @@ $quotation = (new OutgoingQuotationBuilder())->build(
             ),
         ),
     ],
-    id: 'ZAKTEST-2026-00002',
     paymentMeansCode: OutgoingQuotationPaymentMeansCode::Cash,
     payableRoundingAmount: 0.05,
-);
+));
 
 $preview = $vario->outgoingQuotations()->previewUpsert([$quotation]);
 ```

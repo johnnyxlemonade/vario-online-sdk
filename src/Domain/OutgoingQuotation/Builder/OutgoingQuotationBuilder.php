@@ -4,20 +4,14 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\OutgoingQuotation\Builder;
 
-use DateTimeImmutable;
-use Lemonade\Vario\Domain\Common\Currency;
-use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
-use Lemonade\Vario\Domain\OutgoingQuotation\Enum\OutgoingQuotationPaymentMeansCode;
 use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationInput;
 use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationLineInput;
-use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationLineItemInput;
 use Lemonade\Vario\Domain\Shared\Document\Calculator\DocumentLineCalculator;
 use Lemonade\Vario\Domain\Shared\Document\Calculator\DocumentTotalsCalculator;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxCalculationMethod;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxExchangeRate;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxSubTotal;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxTotal;
-use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineInput;
 
 final class OutgoingQuotationBuilder
 {
@@ -32,23 +26,15 @@ final class OutgoingQuotationBuilder
         $this->totalsCalculator = $totalsCalculator ?? new DocumentTotalsCalculator();
     }
 
-    /**
-     * @param list<DocumentCalculatedLineInput<OutgoingQuotationLineItemInput>> $lines
-     */
-    public function build(
-        string $uuid,
-        DateTimeImmutable $issueDate,
-        Currency $currency,
-        KnownPartyInput $buyerCustomerParty,
-        KnownPartyInput $sellerSupplierParty,
-        array $lines,
-        ?string $id = null,
-        ?string $note = null,
-        ?OutgoingQuotationPaymentMeansCode $paymentMeansCode = null,
-        ?DocumentTaxExchangeRate $taxExchangeRate = null,
-        float $payableRoundingAmount = 0.0,
-    ): OutgoingQuotationInput {
+    public function build(OutgoingQuotationBuildInput $input): OutgoingQuotationInput
+    {
         $documentLines = [];
+        $lines = $input->getLines();
+        $currency = $input->getCurrency();
+        $issueDate = $input->getIssueDate();
+        $taxExchangeRate = $input->getTaxExchangeRate();
+        $identity = $input->getIdentity();
+        $parties = $input->getParties();
 
         foreach ($lines as $line) {
             $calculated = $this->lineCalculator->calculate($line);
@@ -66,7 +52,7 @@ final class OutgoingQuotationBuilder
             );
         }
 
-        $totals = $this->totalsCalculator->calculate($documentLines, $payableRoundingAmount);
+        $totals = $this->totalsCalculator->calculate($documentLines, $input->getPayableRoundingAmount());
         $taxTotal = new DocumentTaxTotal(
             taxAmount: $totals['taxTotal']->getTaxAmount(),
             taxSubTotals: array_map(
@@ -91,18 +77,18 @@ final class OutgoingQuotationBuilder
         }
 
         return new OutgoingQuotationInput(
-            uuid: $uuid,
+            uuid: $identity->getUuid(),
             issueDate: $issueDate,
             currency: $currency,
-            buyerCustomerParty: $buyerCustomerParty,
-            sellerSupplierParty: $sellerSupplierParty,
+            buyerCustomerParty: $parties->getBuyerCustomerParty(),
+            sellerSupplierParty: $parties->getSellerSupplierParty(),
             monetaryTotal: $totals['monetaryTotal'],
             taxExchangeRate: $taxExchangeRate,
             taxTotal: $taxTotal,
             documentLines: $documentLines,
-            id: $id,
-            note: $note,
-            paymentMeansCode: $paymentMeansCode,
+            id: $identity->getId(),
+            note: $identity->getNote(),
+            paymentMeansCode: $input->getPaymentMeansCode(),
         );
     }
 }

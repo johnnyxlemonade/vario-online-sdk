@@ -6,7 +6,9 @@ namespace Lemonade\Vario\Tests\Domain\IncomingOrder\Builder;
 
 use DateTimeImmutable;
 use Lemonade\Vario\Domain\Common\Currency;
+use Lemonade\Vario\Domain\IncomingOrder\Builder\IncomingOrderBuildInput;
 use Lemonade\Vario\Domain\IncomingOrder\Builder\IncomingOrderBuilder;
+use Lemonade\Vario\Domain\IncomingOrder\Builder\IncomingOrderBuildPartiesInput;
 use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderPaymentMeansCode;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
 use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
@@ -15,6 +17,7 @@ use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxCalculationMethod;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxScheme;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxExchangeRate;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentBuildIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLinePriceInput;
@@ -88,20 +91,24 @@ final class IncomingOrderBuilderTest extends TestCase
             ),
         ];
 
-        $order = $builder->build(
-            uuid: 'order-uuid-1',
+        $order = $builder->build(new IncomingOrderBuildInput(
+            identity: new DocumentBuildIdentityInput(
+                uuid: 'order-uuid-1',
+                id: 'ORD-001',
+                note: 'Header note',
+            ),
             issueDate: $issueDate,
             currency: Currency::CZK,
-            buyerCustomerParty: $buyer,
-            sellerSupplierParty: $seller,
+            parties: new IncomingOrderBuildPartiesInput(
+                buyerCustomerParty: $buyer,
+                sellerSupplierParty: $seller,
+                accountingCustomerParty: $accounting,
+                delivery: $delivery,
+            ),
             lines: $lines,
-            id: 'ORD-001',
-            accountingCustomerParty: $accounting,
-            delivery: $delivery,
-            note: 'Header note',
             partialDeliveryIndicator: true,
             paymentMeansCode: IncomingOrderPaymentMeansCode::BankAccount,
-        );
+        ));
 
         self::assertSame('order-uuid-1', $order->getUuid());
         self::assertSame($issueDate, $order->getIssueDate());
@@ -172,12 +179,16 @@ final class IncomingOrderBuilderTest extends TestCase
             exchangeMarketBic: 'CNBACZPP',
         );
 
-        $order = $builder->build(
-            uuid: 'order-uuid-2',
+        $order = $builder->build(new IncomingOrderBuildInput(
+            identity: new DocumentBuildIdentityInput(
+                uuid: 'order-uuid-2',
+            ),
             issueDate: $issueDate,
             currency: Currency::CZK,
-            buyerCustomerParty: $buyer,
-            sellerSupplierParty: $seller,
+            parties: new IncomingOrderBuildPartiesInput(
+                buyerCustomerParty: $buyer,
+                sellerSupplierParty: $seller,
+            ),
             lines: [
                 new DocumentCalculatedLineInput(
                     identity: new DocumentCalculatedLineIdentityInput(
@@ -197,7 +208,7 @@ final class IncomingOrderBuilderTest extends TestCase
                 ),
             ],
             taxExchangeRate: $customTaxExchangeRate,
-        );
+        ));
 
         self::assertSame($customTaxExchangeRate, $order->getTaxExchangeRate());
     }

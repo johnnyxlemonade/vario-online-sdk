@@ -7,11 +7,14 @@ namespace Lemonade\Vario\Tests\Domain\OutgoingQuotation\Builder;
 use DateTimeImmutable;
 use Lemonade\Vario\Domain\Common\Currency;
 use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
+use Lemonade\Vario\Domain\OutgoingQuotation\Builder\OutgoingQuotationBuildInput;
 use Lemonade\Vario\Domain\OutgoingQuotation\Builder\OutgoingQuotationBuilder;
+use Lemonade\Vario\Domain\OutgoingQuotation\Builder\OutgoingQuotationBuildPartiesInput;
 use Lemonade\Vario\Domain\OutgoingQuotation\Enum\OutgoingQuotationPaymentMeansCode;
 use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationLineItemInput;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentPriceMode;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentBuildIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLinePriceInput;
@@ -42,12 +45,17 @@ final class OutgoingQuotationBuilderTest extends TestCase
                 originCountry: 'CZ',
             ));
 
-        $quotation = $builder->build(
-            uuid: 'c676048c-3789-4228-82b2-9ca6e7b952f7',
+        $quotation = $builder->build(new OutgoingQuotationBuildInput(
+            identity: new DocumentBuildIdentityInput(
+                uuid: 'c676048c-3789-4228-82b2-9ca6e7b952f7',
+                id: 'ZAKTEST-2026-00002',
+            ),
             issueDate: new DateTimeImmutable('2026-06-18T00:00:00+02:00'),
             currency: Currency::CZK,
-            buyerCustomerParty: $buyer,
-            sellerSupplierParty: $seller,
+            parties: new OutgoingQuotationBuildPartiesInput(
+                buyerCustomerParty: $buyer,
+                sellerSupplierParty: $seller,
+            ),
             lines: [
                 new DocumentCalculatedLineInput(
                     identity: new DocumentCalculatedLineIdentityInput(
@@ -68,10 +76,9 @@ final class OutgoingQuotationBuilderTest extends TestCase
                     ),
                 ),
             ],
-            id: 'ZAKTEST-2026-00002',
             paymentMeansCode: OutgoingQuotationPaymentMeansCode::Cash,
             payableRoundingAmount: 0.05,
-        );
+        ));
 
         self::assertSame([
             'BuyerCustomerParty' => [
@@ -154,12 +161,16 @@ final class OutgoingQuotationBuilderTest extends TestCase
 
     public function test_build_transfers_line_allowance_and_immutable_with_method_preserves_it(): void
     {
-        $quotation = (new OutgoingQuotationBuilder())->build(
-            uuid: 'quotation-uuid',
+        $quotation = (new OutgoingQuotationBuilder())->build(new OutgoingQuotationBuildInput(
+            identity: new DocumentBuildIdentityInput(
+                uuid: 'quotation-uuid',
+            ),
             issueDate: new DateTimeImmutable('2026-06-18T00:00:00+02:00'),
             currency: Currency::CZK,
-            buyerCustomerParty: new KnownPartyInput('Buyer'),
-            sellerSupplierParty: new KnownPartyInput('Seller'),
+            parties: new OutgoingQuotationBuildPartiesInput(
+                buyerCustomerParty: new KnownPartyInput('Buyer'),
+                sellerSupplierParty: new KnownPartyInput('Seller'),
+            ),
             lines: [
                 new DocumentCalculatedLineInput(
                     identity: new DocumentCalculatedLineIdentityInput(
@@ -177,7 +188,7 @@ final class OutgoingQuotationBuilderTest extends TestCase
                     ),
                 ),
             ],
-        );
+        ));
 
         $line = $quotation->getDocumentLines()[0];
         self::assertSame(2400.0, $line->getLineAllowanceAmount());
@@ -197,12 +208,16 @@ final class OutgoingQuotationBuilderTest extends TestCase
 
     public function test_normalizer_omits_line_allowance_amount_when_null(): void
     {
-        $quotation = (new OutgoingQuotationBuilder())->build(
-            uuid: 'quotation-uuid',
+        $quotation = (new OutgoingQuotationBuilder())->build(new OutgoingQuotationBuildInput(
+            identity: new DocumentBuildIdentityInput(
+                uuid: 'quotation-uuid',
+            ),
             issueDate: new DateTimeImmutable('2026-06-18T00:00:00+02:00'),
             currency: Currency::CZK,
-            buyerCustomerParty: new KnownPartyInput('Buyer'),
-            sellerSupplierParty: new KnownPartyInput('Seller'),
+            parties: new OutgoingQuotationBuildPartiesInput(
+                buyerCustomerParty: new KnownPartyInput('Buyer'),
+                sellerSupplierParty: new KnownPartyInput('Seller'),
+            ),
             lines: [
                 new DocumentCalculatedLineInput(
                     identity: new DocumentCalculatedLineIdentityInput(
@@ -219,7 +234,7 @@ final class OutgoingQuotationBuilderTest extends TestCase
                     ),
                 ),
             ],
-        );
+        ));
 
         $payload = (new OutgoingQuotationInputNormalizer())->normalize($quotation);
         /** @var list<array<string, mixed>> $documentLines */
