@@ -25,6 +25,8 @@ use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentQuantity;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxExchangeRate;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxSubTotal;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxTotal;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentLineAmountsInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentLineIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentTotalsInput;
 use Lemonade\Vario\Enum\HttpMethod;
@@ -156,9 +158,13 @@ final class IncomingOrderApiTest extends TestCase
             );
 
         $line = new IncomingOrderLineInput(
-            uuid: 'd2045e34-49b4-4238-84e2-950362f2007e',
-            lineExtensionAmount: 100.0,
-            lineExtensionAmountTaxInclusive: 121.0,
+            identity: new DocumentLineIdentityInput(
+                uuid: 'd2045e34-49b4-4238-84e2-950362f2007e',
+            ),
+            amounts: new DocumentLineAmountsInput(
+                lineExtensionAmount: 100.0,
+                lineExtensionAmountTaxInclusive: 121.0,
+            ),
             lineItem: $lineItem,
             lineQuantity: new DocumentQuantity(
                 value: 1.0,

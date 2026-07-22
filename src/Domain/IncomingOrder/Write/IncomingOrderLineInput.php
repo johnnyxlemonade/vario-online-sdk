@@ -4,10 +4,11 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\IncomingOrder\Write;
 
-use InvalidArgumentException;
 use Lemonade\Vario\Domain\Shared\Document\DocumentLineInterface;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentQuantity;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxSubTotal;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentLineAmountsInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentLineIdentityInput;
 
 /**
  * Class IncomingOrderLineInput
@@ -26,64 +27,73 @@ use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxSubTotal;
 final class IncomingOrderLineInput implements DocumentLineInterface
 {
     public function __construct(
-        private string $uuid,
-        private float $lineExtensionAmount,
-        private float $lineExtensionAmountTaxInclusive,
+        private DocumentLineIdentityInput $identity,
+        private DocumentLineAmountsInput $amounts,
         private IncomingOrderLineItemInput $lineItem,
         private DocumentQuantity $lineQuantity,
         private DocumentTaxSubTotal $taxSubTotal,
-        private ?float $lineAllowanceAmount = null,
-        private ?string $id = null,
-        private ?string $note = null,
-    ) {
-        $this->assertLineAllowanceAmount($lineAllowanceAmount);
-    }
+    ) {}
 
     public function getUuid(): string
     {
-        return $this->uuid;
+        return $this->identity->getUuid();
     }
 
     public function withUuid(string $uuid): self
     {
-        $this->uuid = $uuid;
+        $this->identity = new DocumentLineIdentityInput(
+            uuid: $uuid,
+            id: $this->identity->getId(),
+            note: $this->identity->getNote(),
+        );
 
         return $this;
     }
 
     public function getLineExtensionAmount(): float
     {
-        return $this->lineExtensionAmount;
+        return $this->amounts->getLineExtensionAmount();
     }
 
     public function withLineExtensionAmount(float $lineExtensionAmount): self
     {
-        $this->lineExtensionAmount = $lineExtensionAmount;
+        $this->amounts = new DocumentLineAmountsInput(
+            lineExtensionAmount: $lineExtensionAmount,
+            lineExtensionAmountTaxInclusive: $this->amounts->getLineExtensionAmountTaxInclusive(),
+            lineAllowanceAmount: $this->amounts->getLineAllowanceAmount(),
+        );
 
         return $this;
     }
 
     public function getLineExtensionAmountTaxInclusive(): float
     {
-        return $this->lineExtensionAmountTaxInclusive;
+        return $this->amounts->getLineExtensionAmountTaxInclusive();
     }
 
     public function withLineExtensionAmountTaxInclusive(float $lineExtensionAmountTaxInclusive): self
     {
-        $this->lineExtensionAmountTaxInclusive = $lineExtensionAmountTaxInclusive;
+        $this->amounts = new DocumentLineAmountsInput(
+            lineExtensionAmount: $this->amounts->getLineExtensionAmount(),
+            lineExtensionAmountTaxInclusive: $lineExtensionAmountTaxInclusive,
+            lineAllowanceAmount: $this->amounts->getLineAllowanceAmount(),
+        );
 
         return $this;
     }
 
     public function getLineAllowanceAmount(): ?float
     {
-        return $this->lineAllowanceAmount;
+        return $this->amounts->getLineAllowanceAmount();
     }
 
     public function withLineAllowanceAmount(?float $lineAllowanceAmount): self
     {
-        $this->assertLineAllowanceAmount($lineAllowanceAmount);
-        $this->lineAllowanceAmount = $lineAllowanceAmount;
+        $this->amounts = new DocumentLineAmountsInput(
+            lineExtensionAmount: $this->amounts->getLineExtensionAmount(),
+            lineExtensionAmountTaxInclusive: $this->amounts->getLineExtensionAmountTaxInclusive(),
+            lineAllowanceAmount: $lineAllowanceAmount,
+        );
 
         return $this;
     }
@@ -126,32 +136,33 @@ final class IncomingOrderLineInput implements DocumentLineInterface
 
     public function getId(): ?string
     {
-        return $this->id;
+        return $this->identity->getId();
     }
 
     public function withId(?string $id): self
     {
-        $this->id = $id;
+        $this->identity = new DocumentLineIdentityInput(
+            uuid: $this->identity->getUuid(),
+            id: $id,
+            note: $this->identity->getNote(),
+        );
 
         return $this;
     }
 
     public function getNote(): ?string
     {
-        return $this->note;
+        return $this->identity->getNote();
     }
 
     public function withNote(?string $note): self
     {
-        $this->note = $note;
+        $this->identity = new DocumentLineIdentityInput(
+            uuid: $this->identity->getUuid(),
+            id: $this->identity->getId(),
+            note: $note,
+        );
 
         return $this;
-    }
-
-    private function assertLineAllowanceAmount(?float $lineAllowanceAmount): void
-    {
-        if ($lineAllowanceAmount !== null && $lineAllowanceAmount < 0.0) {
-            throw new InvalidArgumentException('Line allowance amount must not be negative.');
-        }
     }
 }

@@ -13,6 +13,8 @@ use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxCalculationMethod;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxExchangeRate;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxSubTotal;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxTotal;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentLineAmountsInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentLineIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentTotalsInput;
 use LogicException;
 
@@ -52,15 +54,19 @@ final class OutgoingQuotationBuilder
             }
 
             $documentLines[] = new OutgoingQuotationLineInput(
-                uuid: $line->getUuid(),
-                lineExtensionAmount: $calculated['lineExtensionAmount'],
-                lineExtensionAmountTaxInclusive: $calculated['lineExtensionAmountTaxInclusive'],
+                identity: new DocumentLineIdentityInput(
+                    uuid: $line->getUuid(),
+                    id: $line->getId(),
+                    note: $line->getNote(),
+                ),
+                amounts: new DocumentLineAmountsInput(
+                    lineExtensionAmount: $calculated['lineExtensionAmount'],
+                    lineExtensionAmountTaxInclusive: $calculated['lineExtensionAmountTaxInclusive'],
+                    lineAllowanceAmount: $line->getLineAllowanceAmount(),
+                ),
                 lineItem: $lineItem,
                 lineQuantity: $calculated['lineQuantity'],
                 taxSubTotal: $calculated['taxSubTotal'],
-                lineAllowanceAmount: $line->getLineAllowanceAmount(),
-                id: $line->getId(),
-                note: $line->getNote(),
             );
         }
 

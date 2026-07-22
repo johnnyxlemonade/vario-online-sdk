@@ -20,6 +20,8 @@ use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineInput;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderPartiesInput;
 use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentLineAmountsInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentLineIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentTotalsInput;
 use PHPUnit\Framework\TestCase;
@@ -344,9 +346,13 @@ final class IncomingOrderInputTest extends TestCase
     private function createLine(string $uuid, float $base, float $incl): IncomingOrderLineInput
     {
         return new IncomingOrderLineInput(
-            uuid: $uuid,
-            lineExtensionAmount: $base,
-            lineExtensionAmountTaxInclusive: $incl,
+            identity: new DocumentLineIdentityInput(
+                uuid: $uuid,
+            ),
+            amounts: new DocumentLineAmountsInput(
+                lineExtensionAmount: $base,
+                lineExtensionAmountTaxInclusive: $incl,
+            ),
             lineItem: new IncomingOrderLineItemInput(
                 catalogueItemIdentification: 'SKU-' . $uuid,
             ),

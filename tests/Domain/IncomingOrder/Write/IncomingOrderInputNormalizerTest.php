@@ -26,6 +26,8 @@ use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentUnitConversionFact
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentAdditionalAttributeInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentAdditionalAttributeValueInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentIdentityInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentLineAmountsInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentLineIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentTotalsInput;
 use Lemonade\Vario\Domain\Shared\Identification;
 use Lemonade\Vario\Domain\Shared\IdentificationScheme;
@@ -148,19 +150,27 @@ final class IncomingOrderInputNormalizerTest extends TestCase
             ));
 
         $line1 = new IncomingOrderLineInput(
-            uuid: 'line-1',
-            lineExtensionAmount: 1500.0,
-            lineExtensionAmountTaxInclusive: 1815.0,
+            identity: new DocumentLineIdentityInput(
+                uuid: 'line-1',
+            ),
+            amounts: new DocumentLineAmountsInput(
+                lineExtensionAmount: 1500.0,
+                lineExtensionAmountTaxInclusive: 1815.0,
+                lineAllowanceAmount: 2400.0,
+            ),
             lineItem: $lineItem1,
             lineQuantity: $this->createQuantity(1.0, 'Ks', DocumentUnitOfMeasureScheme::Unknown),
             taxSubTotal: $this->createTaxSubTotalAdd(1500.0, 315.0, 21.0),
-            lineAllowanceAmount: 2400.0,
         );
 
         $line2 = new IncomingOrderLineInput(
-            uuid: 'line-2',
-            lineExtensionAmount: 300.0,
-            lineExtensionAmountTaxInclusive: 363.0,
+            identity: new DocumentLineIdentityInput(
+                uuid: 'line-2',
+            ),
+            amounts: new DocumentLineAmountsInput(
+                lineExtensionAmount: 300.0,
+                lineExtensionAmountTaxInclusive: 363.0,
+            ),
             lineItem: $lineItem2,
             lineQuantity: $this->createQuantity(1.0, 'Ks', DocumentUnitOfMeasureScheme::Unknown),
             taxSubTotal: $this->createTaxSubTotalAdd(300.0, 63.0, 21.0),
@@ -238,15 +248,18 @@ final class IncomingOrderInputNormalizerTest extends TestCase
         $lineItem = (new IncomingOrderLineItemInput())->withBuyersItemIdentification('BUY-001');
 
         $line = new IncomingOrderLineInput(
-            uuid: 'line-uuid-1',
-            lineExtensionAmount: 100.0,
-            lineExtensionAmountTaxInclusive: 121.0,
+            identity: new DocumentLineIdentityInput(
+                uuid: 'line-uuid-1',
+                note: '',
+            ),
+            amounts: new DocumentLineAmountsInput(
+                lineExtensionAmount: 100.0,
+                lineExtensionAmountTaxInclusive: 121.0,
+                lineAllowanceAmount: null,
+            ),
             lineItem: $lineItem,
             lineQuantity: $this->createQuantity(1.0, 'Ks', DocumentUnitOfMeasureScheme::Unknown),
             taxSubTotal: $this->createTaxSubTotalAdd(100.0, 21.0, 21.0),
-            lineAllowanceAmount: null,
-            id: null,
-            note: '',
         );
 
         $input = new IncomingOrderInput(
@@ -342,9 +355,15 @@ final class IncomingOrderInputNormalizerTest extends TestCase
             ));
 
         $line = new IncomingOrderLineInput(
-            uuid: 'line-optional-1',
-            lineExtensionAmount: 50.0,
-            lineExtensionAmountTaxInclusive: 60.5,
+            identity: new DocumentLineIdentityInput(
+                uuid: 'line-optional-1',
+                id: 'ROW-1',
+                note: 'Line note',
+            ),
+            amounts: new DocumentLineAmountsInput(
+                lineExtensionAmount: 50.0,
+                lineExtensionAmountTaxInclusive: 60.5,
+            ),
             lineItem: $lineItem,
             lineQuantity: $this->createQuantity(5.0, 'bal', DocumentUnitOfMeasureScheme::SI),
             taxSubTotal: new DocumentTaxSubTotal(
@@ -355,8 +374,6 @@ final class IncomingOrderInputNormalizerTest extends TestCase
                 taxPercentage: 21.0,
                 taxSchemeExtensionCode: 'LOCAL-RC',
             ),
-            id: 'ROW-1',
-            note: 'Line note',
         );
 
         $input = new IncomingOrderInput(
@@ -470,13 +487,17 @@ final class IncomingOrderInputNormalizerTest extends TestCase
         );
 
         $input->addDocumentLine(new IncomingOrderLineInput(
-            uuid: 'line-zero-allowance',
-            lineExtensionAmount: 100.0,
-            lineExtensionAmountTaxInclusive: 121.0,
+            identity: new DocumentLineIdentityInput(
+                uuid: 'line-zero-allowance',
+            ),
+            amounts: new DocumentLineAmountsInput(
+                lineExtensionAmount: 100.0,
+                lineExtensionAmountTaxInclusive: 121.0,
+                lineAllowanceAmount: $allowance,
+            ),
             lineItem: new IncomingOrderLineItemInput(),
             lineQuantity: $this->createQuantity(1.0, 'Ks', DocumentUnitOfMeasureScheme::Unknown),
             taxSubTotal: $this->createTaxSubTotalAdd(100.0, 21.0, 21.0),
-            lineAllowanceAmount: $allowance,
         ));
 
         return $input;

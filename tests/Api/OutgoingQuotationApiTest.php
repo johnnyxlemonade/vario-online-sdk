@@ -24,6 +24,8 @@ use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentQuantity;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxExchangeRate;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxSubTotal;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxTotal;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentLineAmountsInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentLineIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentTotalsInput;
 use Lemonade\Vario\Domain\Shared\Identification;
@@ -263,9 +265,14 @@ final class OutgoingQuotationApiTest extends TestCase
             ),
             documentLines: [
                 new OutgoingQuotationLineInput(
-                    uuid: 'd4b5b29c-d658-4568-aaa9-839f11ce1446',
-                    lineExtensionAmount: 95.0,
-                    lineExtensionAmountTaxInclusive: 114.95,
+                    identity: new DocumentLineIdentityInput(
+                        uuid: 'd4b5b29c-d658-4568-aaa9-839f11ce1446',
+                        id: '1',
+                    ),
+                    amounts: new DocumentLineAmountsInput(
+                        lineExtensionAmount: 95.0,
+                        lineExtensionAmountTaxInclusive: 114.95,
+                    ),
                     lineItem: $lineItem,
                     lineQuantity: new DocumentQuantity(
                         value: 1.0,
@@ -279,7 +286,6 @@ final class OutgoingQuotationApiTest extends TestCase
                         taxAmount: 19.95,
                         taxPercentage: 21.0,
                     ),
-                    id: '1',
                 ),
             ],
             paymentMeansCode: OutgoingQuotationPaymentMeansCode::Cash,
