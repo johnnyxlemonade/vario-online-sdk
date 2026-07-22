@@ -18,7 +18,10 @@ use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxTotal;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderInput;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineInput;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
+use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderPartiesInput;
 use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentIdentityInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentTotalsInput;
 use PHPUnit\Framework\TestCase;
 
 final class IncomingOrderInputTest extends TestCase
@@ -61,18 +64,24 @@ final class IncomingOrderInputTest extends TestCase
         );
 
         $input = new IncomingOrderInput(
-            uuid: 'order-uuid-1',
+            identity: new DocumentIdentityInput(
+                uuid: 'order-uuid-1',
+                id: 'ESHOP-0001',
+                note: 'Test note',
+            ),
             issueDate: $issueDate,
             currency: Currency::CZK,
-            buyerCustomerParty: $buyer,
-            sellerSupplierParty: $seller,
-            monetaryTotal: $monetaryTotal,
-            taxExchangeRate: $taxExchangeRate,
-            taxTotal: $taxTotal,
-            id: 'ESHOP-0001',
-            accountingCustomerParty: $accounting,
-            delivery: $delivery,
-            note: 'Test note',
+            parties: new IncomingOrderPartiesInput(
+                buyerCustomerParty: $buyer,
+                sellerSupplierParty: $seller,
+                accountingCustomerParty: $accounting,
+                delivery: $delivery,
+            ),
+            totals: new DocumentTotalsInput(
+                monetaryTotal: $monetaryTotal,
+                taxExchangeRate: $taxExchangeRate,
+                taxTotal: $taxTotal,
+            ),
             partialDeliveryIndicator: true,
             paymentMeansCode: IncomingOrderPaymentMeansCode::BankAccount,
         );
@@ -167,14 +176,20 @@ final class IncomingOrderInputTest extends TestCase
         );
 
         $input = new IncomingOrderInput(
-            uuid: 'order-uuid-1',
+            identity: new DocumentIdentityInput(
+                uuid: 'order-uuid-1',
+            ),
             issueDate: $issueDate1,
             currency: Currency::CZK,
-            buyerCustomerParty: $buyer1,
-            sellerSupplierParty: $seller1,
-            monetaryTotal: $monetaryTotal1,
-            taxExchangeRate: $taxExchangeRate1,
-            taxTotal: $taxTotal1,
+            parties: new IncomingOrderPartiesInput(
+                buyerCustomerParty: $buyer1,
+                sellerSupplierParty: $seller1,
+            ),
+            totals: new DocumentTotalsInput(
+                monetaryTotal: $monetaryTotal1,
+                taxExchangeRate: $taxExchangeRate1,
+                taxTotal: $taxTotal1,
+            ),
         );
 
         $result = $input
@@ -214,36 +229,42 @@ final class IncomingOrderInputTest extends TestCase
     public function test_it_supports_nullable_optional_fields(): void
     {
         $input = new IncomingOrderInput(
-            uuid: 'order-uuid-1',
+            identity: new DocumentIdentityInput(
+                uuid: 'order-uuid-1',
+            ),
             issueDate: new DateTimeImmutable('2024-04-02T00:00:00+02:00'),
             currency: Currency::CZK,
-            buyerCustomerParty: new KnownPartyInput('Buyer'),
-            sellerSupplierParty: new KnownPartyInput('Seller'),
-            monetaryTotal: new DocumentMonetaryTotal(
-                payableAmount: 121.0,
-                payableRoundingAmount: 0.0,
-                taxExclusiveAmount: 100.0,
-                taxInclusiveAmount: 121.0,
+            parties: new IncomingOrderPartiesInput(
+                buyerCustomerParty: new KnownPartyInput('Buyer'),
+                sellerSupplierParty: new KnownPartyInput('Seller'),
             ),
-            taxExchangeRate: new DocumentTaxExchangeRate(
-                taxCurrency: Currency::CZK,
-                referenceCurrencyRate: 1.0,
-                taxCurrencyRate: 1.0,
-                rateDate: null,
-                exchangeMarketBic: null,
-            ),
-            taxTotal: new DocumentTaxTotal(
-                taxAmount: 21.0,
-                taxSubTotals: [
-                    new DocumentTaxSubTotal(
-                        calculationMethod: DocumentTaxCalculationMethod::Total,
-                        scheme: DocumentTaxScheme::Vat,
-                        taxableAmount: 100.0,
-                        taxAmount: 21.0,
-                        taxPercentage: 21.0,
-                        taxSchemeExtensionCode: null,
-                    ),
-                ],
+            totals: new DocumentTotalsInput(
+                monetaryTotal: new DocumentMonetaryTotal(
+                    payableAmount: 121.0,
+                    payableRoundingAmount: 0.0,
+                    taxExclusiveAmount: 100.0,
+                    taxInclusiveAmount: 121.0,
+                ),
+                taxExchangeRate: new DocumentTaxExchangeRate(
+                    taxCurrency: Currency::CZK,
+                    referenceCurrencyRate: 1.0,
+                    taxCurrencyRate: 1.0,
+                    rateDate: null,
+                    exchangeMarketBic: null,
+                ),
+                taxTotal: new DocumentTaxTotal(
+                    taxAmount: 21.0,
+                    taxSubTotals: [
+                        new DocumentTaxSubTotal(
+                            calculationMethod: DocumentTaxCalculationMethod::Total,
+                            scheme: DocumentTaxScheme::Vat,
+                            taxableAmount: 100.0,
+                            taxAmount: 21.0,
+                            taxPercentage: 21.0,
+                            taxSchemeExtensionCode: null,
+                        ),
+                    ],
+                ),
             ),
         );
 
@@ -271,36 +292,42 @@ final class IncomingOrderInputTest extends TestCase
     public function test_it_can_add_and_replace_document_lines(): void
     {
         $input = new IncomingOrderInput(
-            uuid: 'order-uuid-1',
+            identity: new DocumentIdentityInput(
+                uuid: 'order-uuid-1',
+            ),
             issueDate: new DateTimeImmutable('2024-04-02T00:00:00+02:00'),
             currency: Currency::CZK,
-            buyerCustomerParty: new KnownPartyInput('Buyer'),
-            sellerSupplierParty: new KnownPartyInput('Seller'),
-            monetaryTotal: new DocumentMonetaryTotal(
-                payableAmount: 121.0,
-                payableRoundingAmount: 0.0,
-                taxExclusiveAmount: 100.0,
-                taxInclusiveAmount: 121.0,
+            parties: new IncomingOrderPartiesInput(
+                buyerCustomerParty: new KnownPartyInput('Buyer'),
+                sellerSupplierParty: new KnownPartyInput('Seller'),
             ),
-            taxExchangeRate: new DocumentTaxExchangeRate(
-                taxCurrency: Currency::CZK,
-                referenceCurrencyRate: 1.0,
-                taxCurrencyRate: 1.0,
-                rateDate: null,
-                exchangeMarketBic: null,
-            ),
-            taxTotal: new DocumentTaxTotal(
-                taxAmount: 21.0,
-                taxSubTotals: [
-                    new DocumentTaxSubTotal(
-                        calculationMethod: DocumentTaxCalculationMethod::Total,
-                        scheme: DocumentTaxScheme::Vat,
-                        taxableAmount: 100.0,
-                        taxAmount: 21.0,
-                        taxPercentage: 21.0,
-                        taxSchemeExtensionCode: null,
-                    ),
-                ],
+            totals: new DocumentTotalsInput(
+                monetaryTotal: new DocumentMonetaryTotal(
+                    payableAmount: 121.0,
+                    payableRoundingAmount: 0.0,
+                    taxExclusiveAmount: 100.0,
+                    taxInclusiveAmount: 121.0,
+                ),
+                taxExchangeRate: new DocumentTaxExchangeRate(
+                    taxCurrency: Currency::CZK,
+                    referenceCurrencyRate: 1.0,
+                    taxCurrencyRate: 1.0,
+                    rateDate: null,
+                    exchangeMarketBic: null,
+                ),
+                taxTotal: new DocumentTaxTotal(
+                    taxAmount: 21.0,
+                    taxSubTotals: [
+                        new DocumentTaxSubTotal(
+                            calculationMethod: DocumentTaxCalculationMethod::Total,
+                            scheme: DocumentTaxScheme::Vat,
+                            taxableAmount: 100.0,
+                            taxAmount: 21.0,
+                            taxPercentage: 21.0,
+                            taxSchemeExtensionCode: null,
+                        ),
+                    ],
+                ),
             ),
         );
 

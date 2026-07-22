@@ -12,6 +12,7 @@ use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxCalculationMethod;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxExchangeRate;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxSubTotal;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxTotal;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentTotalsInput;
 
 final class OutgoingQuotationBuilder
 {
@@ -77,17 +78,16 @@ final class OutgoingQuotationBuilder
         }
 
         return new OutgoingQuotationInput(
-            uuid: $identity->getUuid(),
+            identity: $identity,
             issueDate: $issueDate,
             currency: $currency,
-            buyerCustomerParty: $parties->getBuyerCustomerParty(),
-            sellerSupplierParty: $parties->getSellerSupplierParty(),
-            monetaryTotal: $totals['monetaryTotal'],
-            taxExchangeRate: $taxExchangeRate,
-            taxTotal: $taxTotal,
+            parties: $parties,
+            totals: new DocumentTotalsInput(
+                monetaryTotal: $totals['monetaryTotal'],
+                taxExchangeRate: $taxExchangeRate,
+                taxTotal: $taxTotal,
+            ),
             documentLines: $documentLines,
-            id: $identity->getId(),
-            note: $identity->getNote(),
             paymentMeansCode: $input->getPaymentMeansCode(),
         );
     }

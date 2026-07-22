@@ -15,15 +15,18 @@ use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
 use Lemonade\Vario\Domain\IncomingOrder\Read\IncomingOrder;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
 use Lemonade\Vario\Domain\IncomingOrder\Result\IncomingOrderUpsertResult;
+use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderInput;
+use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineInput;
+use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
+use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderPartiesInput;
+use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentMonetaryTotal;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentQuantity;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxExchangeRate;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxSubTotal;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxTotal;
-use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderInput;
-use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineInput;
-use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
-use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentIdentityInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentTotalsInput;
 use Lemonade\Vario\Enum\HttpMethod;
 use Lemonade\Vario\Enum\VarioEndpoint;
 use Lemonade\Vario\Mapper\IncomingOrder\IncomingOrderMapper;
@@ -173,36 +176,42 @@ final class IncomingOrderApiTest extends TestCase
         );
 
         return (new IncomingOrderInput(
-            uuid: 'e4daf94d-fd98-4f7d-a7c6-93cd21dee5f8',
+            identity: new DocumentIdentityInput(
+                uuid: 'e4daf94d-fd98-4f7d-a7c6-93cd21dee5f8',
+            ),
             issueDate: new DateTimeImmutable('2024-04-02T00:00:00+02:00'),
             currency: Currency::CZK,
-            buyerCustomerParty: $buyer,
-            sellerSupplierParty: $seller,
-            monetaryTotal: new DocumentMonetaryTotal(
-                payableAmount: 121.0,
-                payableRoundingAmount: 0.0,
-                taxExclusiveAmount: 100.0,
-                taxInclusiveAmount: 121.0,
+            parties: new IncomingOrderPartiesInput(
+                buyerCustomerParty: $buyer,
+                sellerSupplierParty: $seller,
             ),
-            taxExchangeRate: new DocumentTaxExchangeRate(
-                taxCurrency: Currency::CZK,
-                referenceCurrencyRate: 1.0,
-                taxCurrencyRate: 1.0,
-                rateDate: new DateTimeImmutable('2024-04-02T00:00:00+02:00'),
-                exchangeMarketBic: null,
-            ),
-            taxTotal: new DocumentTaxTotal(
-                taxAmount: 21.0,
-                taxSubTotals: [
-                    new DocumentTaxSubTotal(
-                        calculationMethod: DocumentTaxCalculationMethod::Total,
-                        scheme: DocumentTaxScheme::Vat,
-                        taxableAmount: 100.0,
-                        taxAmount: 21.0,
-                        taxPercentage: 21.0,
-                        taxSchemeExtensionCode: null,
-                    ),
-                ],
+            totals: new DocumentTotalsInput(
+                monetaryTotal: new DocumentMonetaryTotal(
+                    payableAmount: 121.0,
+                    payableRoundingAmount: 0.0,
+                    taxExclusiveAmount: 100.0,
+                    taxInclusiveAmount: 121.0,
+                ),
+                taxExchangeRate: new DocumentTaxExchangeRate(
+                    taxCurrency: Currency::CZK,
+                    referenceCurrencyRate: 1.0,
+                    taxCurrencyRate: 1.0,
+                    rateDate: new DateTimeImmutable('2024-04-02T00:00:00+02:00'),
+                    exchangeMarketBic: null,
+                ),
+                taxTotal: new DocumentTaxTotal(
+                    taxAmount: 21.0,
+                    taxSubTotals: [
+                        new DocumentTaxSubTotal(
+                            calculationMethod: DocumentTaxCalculationMethod::Total,
+                            scheme: DocumentTaxScheme::Vat,
+                            taxableAmount: 100.0,
+                            taxAmount: 21.0,
+                            taxPercentage: 21.0,
+                            taxSchemeExtensionCode: null,
+                        ),
+                    ],
+                ),
             ),
             paymentMeansCode: IncomingOrderPaymentMeansCode::BankAccount,
         ))->addDocumentLine($line);

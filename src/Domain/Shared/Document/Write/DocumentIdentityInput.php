@@ -6,7 +6,7 @@ namespace Lemonade\Vario\Domain\Shared\Document\Write;
 
 use InvalidArgumentException;
 
-final class DocumentBuildIdentityInput
+final class DocumentIdentityInput
 {
     public function __construct(
         private readonly string $uuid,

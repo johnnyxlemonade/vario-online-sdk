@@ -14,6 +14,7 @@ use Lemonade\Vario\Domain\OutgoingQuotation\Result\OutgoingQuotationUpsertResult
 use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationInput;
 use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationLineInput;
 use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationLineItemInput;
+use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationPartiesInput;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxCalculationMethod;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxScheme;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
@@ -23,6 +24,8 @@ use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentQuantity;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxExchangeRate;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxSubTotal;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxTotal;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentIdentityInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentTotalsInput;
 use Lemonade\Vario\Domain\Shared\Identification;
 use Lemonade\Vario\Domain\Shared\IdentificationScheme;
 use Lemonade\Vario\Enum\HttpMethod;
@@ -223,33 +226,40 @@ final class OutgoingQuotationApiTest extends TestCase
             ->addDescription(new DocumentDescription('Adam křeslo - skládačka'));
 
         return new OutgoingQuotationInput(
-            uuid: 'c676048c-3789-4228-82b2-9ca6e7b952f7',
+            identity: new DocumentIdentityInput(
+                uuid: 'c676048c-3789-4228-82b2-9ca6e7b952f7',
+                id: 'ZAKTEST-2026-00002',
+            ),
             issueDate: new DateTimeImmutable('2026-06-18T00:00:00+02:00'),
             currency: Currency::CZK,
-            buyerCustomerParty: $buyer,
-            sellerSupplierParty: $seller,
-            monetaryTotal: new DocumentMonetaryTotal(
-                payableAmount: 115.0,
-                payableRoundingAmount: 0.05,
-                taxExclusiveAmount: 95.0,
-                taxInclusiveAmount: 114.95,
+            parties: new OutgoingQuotationPartiesInput(
+                buyerCustomerParty: $buyer,
+                sellerSupplierParty: $seller,
             ),
-            taxExchangeRate: new DocumentTaxExchangeRate(
-                taxCurrency: Currency::CZK,
-                referenceCurrencyRate: 1.0,
-                taxCurrencyRate: 1.0,
-            ),
-            taxTotal: new DocumentTaxTotal(
-                taxAmount: 19.95,
-                taxSubTotals: [
-                    new DocumentTaxSubTotal(
-                        calculationMethod: DocumentTaxCalculationMethod::Total,
-                        scheme: DocumentTaxScheme::Vat,
-                        taxableAmount: 95.0,
-                        taxAmount: 19.95,
-                        taxPercentage: 21.0,
-                    ),
-                ],
+            totals: new DocumentTotalsInput(
+                monetaryTotal: new DocumentMonetaryTotal(
+                    payableAmount: 115.0,
+                    payableRoundingAmount: 0.05,
+                    taxExclusiveAmount: 95.0,
+                    taxInclusiveAmount: 114.95,
+                ),
+                taxExchangeRate: new DocumentTaxExchangeRate(
+                    taxCurrency: Currency::CZK,
+                    referenceCurrencyRate: 1.0,
+                    taxCurrencyRate: 1.0,
+                ),
+                taxTotal: new DocumentTaxTotal(
+                    taxAmount: 19.95,
+                    taxSubTotals: [
+                        new DocumentTaxSubTotal(
+                            calculationMethod: DocumentTaxCalculationMethod::Total,
+                            scheme: DocumentTaxScheme::Vat,
+                            taxableAmount: 95.0,
+                            taxAmount: 19.95,
+                            taxPercentage: 21.0,
+                        ),
+                    ],
+                ),
             ),
             documentLines: [
                 new OutgoingQuotationLineInput(
@@ -272,7 +282,6 @@ final class OutgoingQuotationApiTest extends TestCase
                     id: '1',
                 ),
             ],
-            id: 'ZAKTEST-2026-00002',
             paymentMeansCode: OutgoingQuotationPaymentMeansCode::Cash,
         );
     }

@@ -9,6 +9,8 @@ use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineInput;
 use Lemonade\Vario\Domain\Shared\Document\Calculator\DocumentLineCalculator;
 use Lemonade\Vario\Domain\Shared\Document\Calculator\DocumentTotalsCalculator;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxExchangeRate;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentIdentityInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentTotalsInput;
 
 /**
  * Class IncomingOrderBuilder
@@ -75,21 +77,22 @@ final class IncomingOrderBuilder
         }
 
         return (new IncomingOrderInput(
-            uuid: $identity->getUuid(),
+            identity: new DocumentIdentityInput(
+                uuid: $identity->getUuid(),
+                id: $identity->getId(),
+                note: $identity->getNote(),
+            ),
             issueDate: $issueDate,
             currency: $currency,
-            buyerCustomerParty: $parties->getBuyerCustomerParty(),
-            sellerSupplierParty: $parties->getSellerSupplierParty(),
-            monetaryTotal: $totals['monetaryTotal'],
-            taxExchangeRate: $taxExchangeRate,
-            taxTotal: $totals['taxTotal'],
+            parties: $parties,
+            totals: new DocumentTotalsInput(
+                monetaryTotal: $totals['monetaryTotal'],
+                taxExchangeRate: $taxExchangeRate,
+                taxTotal: $totals['taxTotal'],
+            ),
+            partialDeliveryIndicator: $input->isPartialDeliveryIndicator(),
+            paymentMeansCode: $input->getPaymentMeansCode(),
         ))
-            ->withId($identity->getId())
-            ->withAccountingCustomerParty($parties->getAccountingCustomerParty())
-            ->withDelivery($parties->getDelivery())
-            ->withNote($identity->getNote())
-            ->withPartialDeliveryIndicator($input->isPartialDeliveryIndicator())
-            ->withPaymentMeansCode($input->getPaymentMeansCode())
             ->withDocumentLines($documentLines);
     }
 }

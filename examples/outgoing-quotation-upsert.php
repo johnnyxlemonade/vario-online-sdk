@@ -10,12 +10,12 @@ use Lemonade\Vario\Domain\Common\Currency;
 use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
 use Lemonade\Vario\Domain\OutgoingQuotation\Builder\OutgoingQuotationBuildInput;
 use Lemonade\Vario\Domain\OutgoingQuotation\Builder\OutgoingQuotationBuilder;
-use Lemonade\Vario\Domain\OutgoingQuotation\Builder\OutgoingQuotationBuildPartiesInput;
 use Lemonade\Vario\Domain\OutgoingQuotation\Enum\OutgoingQuotationPaymentMeansCode;
 use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationLineItemInput;
+use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationPartiesInput;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentPriceMode;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
-use Lemonade\Vario\Domain\Shared\Document\Write\DocumentBuildIdentityInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLinePriceInput;
@@ -71,13 +71,13 @@ $lines = [
 ];
 
 $quotation = $builder->build(new OutgoingQuotationBuildInput(
-    identity: new DocumentBuildIdentityInput(
+    identity: new DocumentIdentityInput(
         uuid: 'c676048c-3789-4228-82b2-9ca6e7b952f7',
         id: 'ZAKTEST-2026-00002',
     ),
     issueDate: new DateTimeImmutable('2026-06-18T00:00:00+02:00'),
     currency: Currency::CZK,
-    parties: new OutgoingQuotationBuildPartiesInput(
+    parties: new OutgoingQuotationPartiesInput(
         buyerCustomerParty: $buyer,
         sellerSupplierParty: $seller,
     ),

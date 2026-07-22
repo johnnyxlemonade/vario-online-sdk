@@ -8,9 +8,10 @@ use DateTimeImmutable;
 use Lemonade\Vario\Domain\Common\Currency;
 use Lemonade\Vario\Domain\OutgoingQuotation\Enum\OutgoingQuotationPaymentMeansCode;
 use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationLineItemInput;
+use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationPartiesInput;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxExchangeRate;
-use Lemonade\Vario\Domain\Shared\Document\Write\DocumentBuildIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentIdentityInput;
 
 final class OutgoingQuotationBuildInput
 {
@@ -18,17 +19,17 @@ final class OutgoingQuotationBuildInput
      * @param list<DocumentCalculatedLineInput<OutgoingQuotationLineItemInput>> $lines
      */
     public function __construct(
-        private readonly DocumentBuildIdentityInput $identity,
+        private readonly DocumentIdentityInput $identity,
         private readonly DateTimeImmutable $issueDate,
         private readonly Currency $currency,
-        private readonly OutgoingQuotationBuildPartiesInput $parties,
+        private readonly OutgoingQuotationPartiesInput $parties,
         private readonly array $lines,
         private readonly ?OutgoingQuotationPaymentMeansCode $paymentMeansCode = null,
         private readonly ?DocumentTaxExchangeRate $taxExchangeRate = null,
         private readonly float $payableRoundingAmount = 0.0,
     ) {}
 
-    public function getIdentity(): DocumentBuildIdentityInput
+    public function getIdentity(): DocumentIdentityInput
     {
         return $this->identity;
     }
@@ -43,7 +44,7 @@ final class OutgoingQuotationBuildInput
         return $this->currency;
     }
 
-    public function getParties(): OutgoingQuotationBuildPartiesInput
+    public function getParties(): OutgoingQuotationPartiesInput
     {
         return $this->parties;
     }

@@ -394,11 +394,11 @@ use DateTimeImmutable;
 use Lemonade\Vario\Domain\Common\Currency;
 use Lemonade\Vario\Domain\IncomingOrder\Builder\IncomingOrderBuildInput;
 use Lemonade\Vario\Domain\IncomingOrder\Builder\IncomingOrderBuilder;
-use Lemonade\Vario\Domain\IncomingOrder\Builder\IncomingOrderBuildPartiesInput;
 use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderPaymentMeansCode;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
+use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderPartiesInput;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentPriceMode;
-use Lemonade\Vario\Domain\Shared\Document\Write\DocumentBuildIdentityInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLinePriceInput;
@@ -411,12 +411,12 @@ $lineItem = (new IncomingOrderLineItemInput())
     ->withSellersItemIdentification('SKU-001');
 
 $order = $builder->build(new IncomingOrderBuildInput(
-    identity: new DocumentBuildIdentityInput(
+    identity: new DocumentIdentityInput(
         uuid: 'e4daf94d-fd98-4f7d-a7c6-93cd21dee5f8',
     ),
     issueDate: new DateTimeImmutable('2024-04-02T00:00:00+02:00'),
     currency: Currency::CZK,
-    parties: new IncomingOrderBuildPartiesInput(
+    parties: new IncomingOrderPartiesInput(
         buyerCustomerParty: $buyer,
         sellerSupplierParty: $seller,
     ),
@@ -465,12 +465,12 @@ use Lemonade\Vario\Domain\Common\Currency;
 use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
 use Lemonade\Vario\Domain\OutgoingQuotation\Builder\OutgoingQuotationBuildInput;
 use Lemonade\Vario\Domain\OutgoingQuotation\Builder\OutgoingQuotationBuilder;
-use Lemonade\Vario\Domain\OutgoingQuotation\Builder\OutgoingQuotationBuildPartiesInput;
 use Lemonade\Vario\Domain\OutgoingQuotation\Enum\OutgoingQuotationPaymentMeansCode;
 use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationLineItemInput;
+use Lemonade\Vario\Domain\OutgoingQuotation\Write\OutgoingQuotationPartiesInput;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentPriceMode;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
-use Lemonade\Vario\Domain\Shared\Document\Write\DocumentBuildIdentityInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLinePriceInput;
@@ -485,13 +485,13 @@ $seller = (new KnownPartyInput(''))
     ->addIdentification(new Identification(IdentificationScheme::VAT, 'CZ61681229', 'CZ'));
 
 $quotation = (new OutgoingQuotationBuilder())->build(new OutgoingQuotationBuildInput(
-    identity: new DocumentBuildIdentityInput(
+    identity: new DocumentIdentityInput(
         uuid: 'c676048c-3789-4228-82b2-9ca6e7b952f7',
         id: 'ZAKTEST-2026-00002',
     ),
     issueDate: new DateTimeImmutable('2026-06-18T00:00:00+02:00'),
     currency: Currency::CZK,
-    parties: new OutgoingQuotationBuildPartiesInput(
+    parties: new OutgoingQuotationPartiesInput(
         buyerCustomerParty: $buyer,
         sellerSupplierParty: $seller,
     ),

@@ -2,17 +2,15 @@
 
 declare(strict_types=1);
 
-namespace Lemonade\Vario\Domain\IncomingOrder\Builder;
+namespace Lemonade\Vario\Domain\OutgoingQuotation\Write;
 
 use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
 
-final class IncomingOrderBuildPartiesInput
+final class OutgoingQuotationPartiesInput
 {
     public function __construct(
         private readonly KnownPartyInput $buyerCustomerParty,
         private readonly KnownPartyInput $sellerSupplierParty,
-        private readonly ?KnownPartyInput $accountingCustomerParty = null,
-        private readonly ?KnownPartyInput $delivery = null,
     ) {}
 
     public function getBuyerCustomerParty(): KnownPartyInput
@@ -23,15 +21,5 @@ final class IncomingOrderBuildPartiesInput
     public function getSellerSupplierParty(): KnownPartyInput
     {
         return $this->sellerSupplierParty;
-    }
-
-    public function getAccountingCustomerParty(): ?KnownPartyInput
-    {
-        return $this->accountingCustomerParty;
-    }
-
-    public function getDelivery(): ?KnownPartyInput
-    {
-        return $this->delivery;
     }
 }

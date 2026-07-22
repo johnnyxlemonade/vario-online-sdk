@@ -8,9 +8,10 @@ use DateTimeImmutable;
 use Lemonade\Vario\Domain\Common\Currency;
 use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderPaymentMeansCode;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
+use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderPartiesInput;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxExchangeRate;
-use Lemonade\Vario\Domain\Shared\Document\Write\DocumentBuildIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentIdentityInput;
 
 final class IncomingOrderBuildInput
 {
@@ -18,17 +19,17 @@ final class IncomingOrderBuildInput
      * @param list<DocumentCalculatedLineInput<IncomingOrderLineItemInput>> $lines
      */
     public function __construct(
-        private readonly DocumentBuildIdentityInput $identity,
+        private readonly DocumentIdentityInput $identity,
         private readonly DateTimeImmutable $issueDate,
         private readonly Currency $currency,
-        private readonly IncomingOrderBuildPartiesInput $parties,
+        private readonly IncomingOrderPartiesInput $parties,
         private readonly array $lines,
         private readonly bool $partialDeliveryIndicator = false,
         private readonly ?IncomingOrderPaymentMeansCode $paymentMeansCode = null,
         private readonly ?DocumentTaxExchangeRate $taxExchangeRate = null,
     ) {}
 
-    public function getIdentity(): DocumentBuildIdentityInput
+    public function getIdentity(): DocumentIdentityInput
     {
         return $this->identity;
     }
@@ -43,7 +44,7 @@ final class IncomingOrderBuildInput
         return $this->currency;
     }
 
-    public function getParties(): IncomingOrderBuildPartiesInput
+    public function getParties(): IncomingOrderPartiesInput
     {
         return $this->parties;
     }

@@ -11,6 +11,8 @@ use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentMonetaryTotal;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxExchangeRate;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxTotal;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentIdentityInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentTotalsInput;
 
 /**
  * Class IncomingOrderInput
@@ -33,30 +35,27 @@ final class IncomingOrderInput
     private array $documentLines = [];
 
     public function __construct(
-        private string $uuid,
+        private DocumentIdentityInput $identity,
         private DateTimeImmutable $issueDate,
         private Currency $currency,
-        private KnownPartyInput $buyerCustomerParty,
-        private KnownPartyInput $sellerSupplierParty,
-        private DocumentMonetaryTotal $monetaryTotal,
-        private DocumentTaxExchangeRate $taxExchangeRate,
-        private DocumentTaxTotal $taxTotal,
-        private ?string $id = null,
-        private ?KnownPartyInput $accountingCustomerParty = null,
-        private ?KnownPartyInput $delivery = null,
-        private ?string $note = null,
+        private IncomingOrderPartiesInput $parties,
+        private DocumentTotalsInput $totals,
         private bool $partialDeliveryIndicator = false,
         private ?IncomingOrderPaymentMeansCode $paymentMeansCode = null,
     ) {}
 
     public function getUuid(): string
     {
-        return $this->uuid;
+        return $this->identity->getUuid();
     }
 
     public function withUuid(string $uuid): self
     {
-        $this->uuid = $uuid;
+        $this->identity = new DocumentIdentityInput(
+            uuid: $uuid,
+            id: $this->identity->getId(),
+            note: $this->identity->getNote(),
+        );
 
         return $this;
     }
@@ -87,108 +86,148 @@ final class IncomingOrderInput
 
     public function getBuyerCustomerParty(): KnownPartyInput
     {
-        return $this->buyerCustomerParty;
+        return $this->parties->getBuyerCustomerParty();
     }
 
     public function withBuyerCustomerParty(KnownPartyInput $buyerCustomerParty): self
     {
-        $this->buyerCustomerParty = $buyerCustomerParty;
+        $this->parties = new IncomingOrderPartiesInput(
+            buyerCustomerParty: $buyerCustomerParty,
+            sellerSupplierParty: $this->parties->getSellerSupplierParty(),
+            accountingCustomerParty: $this->parties->getAccountingCustomerParty(),
+            delivery: $this->parties->getDelivery(),
+        );
 
         return $this;
     }
 
     public function getSellerSupplierParty(): KnownPartyInput
     {
-        return $this->sellerSupplierParty;
+        return $this->parties->getSellerSupplierParty();
     }
 
     public function withSellerSupplierParty(KnownPartyInput $sellerSupplierParty): self
     {
-        $this->sellerSupplierParty = $sellerSupplierParty;
+        $this->parties = new IncomingOrderPartiesInput(
+            buyerCustomerParty: $this->parties->getBuyerCustomerParty(),
+            sellerSupplierParty: $sellerSupplierParty,
+            accountingCustomerParty: $this->parties->getAccountingCustomerParty(),
+            delivery: $this->parties->getDelivery(),
+        );
 
         return $this;
     }
 
     public function getMonetaryTotal(): DocumentMonetaryTotal
     {
-        return $this->monetaryTotal;
+        return $this->totals->getMonetaryTotal();
     }
 
     public function withMonetaryTotal(DocumentMonetaryTotal $monetaryTotal): self
     {
-        $this->monetaryTotal = $monetaryTotal;
+        $this->totals = new DocumentTotalsInput(
+            monetaryTotal: $monetaryTotal,
+            taxExchangeRate: $this->totals->getTaxExchangeRate(),
+            taxTotal: $this->totals->getTaxTotal(),
+        );
 
         return $this;
     }
 
     public function getTaxExchangeRate(): DocumentTaxExchangeRate
     {
-        return $this->taxExchangeRate;
+        return $this->totals->getTaxExchangeRate();
     }
 
     public function withTaxExchangeRate(DocumentTaxExchangeRate $taxExchangeRate): self
     {
-        $this->taxExchangeRate = $taxExchangeRate;
+        $this->totals = new DocumentTotalsInput(
+            monetaryTotal: $this->totals->getMonetaryTotal(),
+            taxExchangeRate: $taxExchangeRate,
+            taxTotal: $this->totals->getTaxTotal(),
+        );
 
         return $this;
     }
 
     public function getTaxTotal(): DocumentTaxTotal
     {
-        return $this->taxTotal;
+        return $this->totals->getTaxTotal();
     }
 
     public function withTaxTotal(DocumentTaxTotal $taxTotal): self
     {
-        $this->taxTotal = $taxTotal;
+        $this->totals = new DocumentTotalsInput(
+            monetaryTotal: $this->totals->getMonetaryTotal(),
+            taxExchangeRate: $this->totals->getTaxExchangeRate(),
+            taxTotal: $taxTotal,
+        );
 
         return $this;
     }
 
     public function getId(): ?string
     {
-        return $this->id;
+        return $this->identity->getId();
     }
 
     public function withId(?string $id): self
     {
-        $this->id = $id;
+        $this->identity = new DocumentIdentityInput(
+            uuid: $this->identity->getUuid(),
+            id: $id,
+            note: $this->identity->getNote(),
+        );
 
         return $this;
     }
 
     public function getAccountingCustomerParty(): ?KnownPartyInput
     {
-        return $this->accountingCustomerParty;
+        return $this->parties->getAccountingCustomerParty();
     }
 
     public function withAccountingCustomerParty(?KnownPartyInput $accountingCustomerParty): self
     {
-        $this->accountingCustomerParty = $accountingCustomerParty;
+        $this->parties = new IncomingOrderPartiesInput(
+            buyerCustomerParty: $this->parties->getBuyerCustomerParty(),
+            sellerSupplierParty: $this->parties->getSellerSupplierParty(),
+            accountingCustomerParty: $accountingCustomerParty,
+            delivery: $this->parties->getDelivery(),
+        );
 
         return $this;
     }
 
     public function getDelivery(): ?KnownPartyInput
     {
-        return $this->delivery;
+        return $this->parties->getDelivery();
     }
 
     public function withDelivery(?KnownPartyInput $delivery): self
     {
-        $this->delivery = $delivery;
+        $this->parties = new IncomingOrderPartiesInput(
+            buyerCustomerParty: $this->parties->getBuyerCustomerParty(),
+            sellerSupplierParty: $this->parties->getSellerSupplierParty(),
+            accountingCustomerParty: $this->parties->getAccountingCustomerParty(),
+            delivery: $delivery,
+        );
 
         return $this;
     }
 
     public function getNote(): ?string
     {
-        return $this->note;
+        return $this->identity->getNote();
     }
 
     public function withNote(?string $note): self
     {
-        $this->note = $note;
+        $this->identity = new DocumentIdentityInput(
+            uuid: $this->identity->getUuid(),
+            id: $this->identity->getId(),
+            note: $note,
+        );
 
         return $this;
     }

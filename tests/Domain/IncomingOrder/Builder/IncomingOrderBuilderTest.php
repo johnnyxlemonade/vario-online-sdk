@@ -8,21 +8,21 @@ use DateTimeImmutable;
 use Lemonade\Vario\Domain\Common\Currency;
 use Lemonade\Vario\Domain\IncomingOrder\Builder\IncomingOrderBuildInput;
 use Lemonade\Vario\Domain\IncomingOrder\Builder\IncomingOrderBuilder;
-use Lemonade\Vario\Domain\IncomingOrder\Builder\IncomingOrderBuildPartiesInput;
 use Lemonade\Vario\Domain\IncomingOrder\Enum\IncomingOrderPaymentMeansCode;
 use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderLineItemInput;
+use Lemonade\Vario\Domain\IncomingOrder\Write\IncomingOrderPartiesInput;
 use Lemonade\Vario\Domain\KnownParty\KnownPartyInput;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentPriceMode;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxCalculationMethod;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTaxScheme;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentTaxExchangeRate;
-use Lemonade\Vario\Domain\Shared\Document\Write\DocumentBuildIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLinePriceInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineQuantityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineTaxInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentIdentityInput;
 use PHPUnit\Framework\TestCase;
 
 final class IncomingOrderBuilderTest extends TestCase
@@ -92,14 +92,14 @@ final class IncomingOrderBuilderTest extends TestCase
         ];
 
         $order = $builder->build(new IncomingOrderBuildInput(
-            identity: new DocumentBuildIdentityInput(
+            identity: new DocumentIdentityInput(
                 uuid: 'order-uuid-1',
                 id: 'ORD-001',
                 note: 'Header note',
             ),
             issueDate: $issueDate,
             currency: Currency::CZK,
-            parties: new IncomingOrderBuildPartiesInput(
+            parties: new IncomingOrderPartiesInput(
                 buyerCustomerParty: $buyer,
                 sellerSupplierParty: $seller,
                 accountingCustomerParty: $accounting,
@@ -180,12 +180,12 @@ final class IncomingOrderBuilderTest extends TestCase
         );
 
         $order = $builder->build(new IncomingOrderBuildInput(
-            identity: new DocumentBuildIdentityInput(
+            identity: new DocumentIdentityInput(
                 uuid: 'order-uuid-2',
             ),
             issueDate: $issueDate,
             currency: Currency::CZK,
-            parties: new IncomingOrderBuildPartiesInput(
+            parties: new IncomingOrderPartiesInput(
                 buyerCustomerParty: $buyer,
                 sellerSupplierParty: $seller,
             ),
