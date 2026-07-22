@@ -10,6 +10,7 @@ use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentUnitConversionFactor;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentAdditionalAttributeInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentAdditionalAttributeValueInput;
 use PHPUnit\Framework\TestCase;
 
 final class IncomingOrderLineItemInputTest extends TestCase
@@ -50,7 +51,7 @@ final class IncomingOrderLineItemInputTest extends TestCase
     {
         $item = new IncomingOrderLineItemInput();
 
-        $first = new DocumentDescription('První popis', 'cs');
+        $first = new DocumentDescription('First description', 'cs');
         $second = new DocumentDescription('Second description', 'en');
 
         self::assertSame($item, $item->addDescription($first));
@@ -65,21 +66,25 @@ final class IncomingOrderLineItemInputTest extends TestCase
         $item = new IncomingOrderLineItemInput();
 
         $first = new DocumentAdditionalAttributeInput(
-            name: 'Varianta',
-            value: 'velká díra',
+            name: 'Variant',
+            value: new DocumentAdditionalAttributeValueInput(
+                value: 'Large hole',
+                langId: 'cs',
+                unitCode: null,
+                scheme: DocumentUnitOfMeasureScheme::Unknown,
+            ),
             attributeKind: DocumentTextualAttributeKind::ExtendedID,
-            langId: 'cs',
-            unitCode: null,
-            scheme: DocumentUnitOfMeasureScheme::Unknown,
         );
 
         $second = new DocumentAdditionalAttributeInput(
-            name: 'Barva',
-            value: 'černá',
+            name: 'Color',
+            value: new DocumentAdditionalAttributeValueInput(
+                value: 'Black',
+                langId: 'cs',
+                unitCode: null,
+                scheme: null,
+            ),
             attributeKind: DocumentTextualAttributeKind::FreeText,
-            langId: 'cs',
-            unitCode: null,
-            scheme: null,
         );
 
         self::assertSame($item, $item->addAdditionalAttribute($first));

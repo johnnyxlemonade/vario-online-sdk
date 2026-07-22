@@ -24,6 +24,7 @@ use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentDescription;
 use Lemonade\Vario\Domain\Shared\Document\ValueObject\DocumentUnitConversionFactor;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentAdditionalAttributeInput;
+use Lemonade\Vario\Domain\Shared\Document\Write\DocumentAdditionalAttributeValueInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineIdentityInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLineInput;
 use Lemonade\Vario\Domain\Shared\Document\Write\DocumentCalculatedLinePriceInput;
@@ -57,11 +58,13 @@ $lineItem1 = (new IncomingOrderLineItemInput())
     ->addDescription(new DocumentDescription('deravy grosh'))
     ->addAdditionalAttribute(new DocumentAdditionalAttributeInput(
         name: 'Varianta',
-        value: 'velka dira',
+        value: new DocumentAdditionalAttributeValueInput(
+            value: 'velka dira',
+            langId: null,
+            unitCode: null,
+            scheme: DocumentUnitOfMeasureScheme::Unknown,
+        ),
         attributeKind: DocumentTextualAttributeKind::ExtendedID,
-        langId: null,
-        unitCode: null,
-        scheme: DocumentUnitOfMeasureScheme::Unknown,
     ))
     ->addUnitConversionFactor(new DocumentUnitConversionFactor(
         value: 1.0,

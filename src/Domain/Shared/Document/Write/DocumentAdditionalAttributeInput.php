@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Lemonade\Vario\Domain\Shared\Document\Write;
 
+use InvalidArgumentException;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentTextualAttributeKind;
 use Lemonade\Vario\Domain\Shared\Document\Enum\DocumentUnitOfMeasureScheme;
 
@@ -11,12 +12,13 @@ final class DocumentAdditionalAttributeInput
 {
     public function __construct(
         private readonly string $name,
-        private readonly string $value,
+        private readonly DocumentAdditionalAttributeValueInput $value,
         private readonly DocumentTextualAttributeKind $attributeKind = DocumentTextualAttributeKind::ExtendedID,
-        private readonly ?string $langId = null,
-        private readonly ?string $unitCode = null,
-        private readonly ?DocumentUnitOfMeasureScheme $scheme = null,
-    ) {}
+    ) {
+        if ($name === '') {
+            throw new InvalidArgumentException('Additional attribute name must not be empty.');
+        }
+    }
 
     public function getName(): string
     {
@@ -25,7 +27,7 @@ final class DocumentAdditionalAttributeInput
 
     public function getValue(): string
     {
-        return $this->value;
+        return $this->value->getValue();
     }
 
     public function getAttributeKind(): DocumentTextualAttributeKind
@@ -35,16 +37,16 @@ final class DocumentAdditionalAttributeInput
 
     public function getLangId(): ?string
     {
-        return $this->langId;
+        return $this->value->getLangId();
     }
 
     public function getUnitCode(): ?string
     {
-        return $this->unitCode;
+        return $this->value->getUnitCode();
     }
 
     public function getScheme(): ?DocumentUnitOfMeasureScheme
     {
-        return $this->scheme;
+        return $this->value->getScheme();
     }
 }
